@@ -9,6 +9,7 @@ export const colors = {
     warning: '#E6A33A',
     error: '#D9534F',
     info: '#4F8EF7',
+    amber300: '#F3C35B',
   },
   surface: {
     background: '#FAF8F3',
