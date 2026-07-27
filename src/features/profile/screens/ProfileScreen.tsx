@@ -6,6 +6,7 @@ import Svg, { Circle, Defs, LinearGradient, RadialGradient, Stop } from 'react-n
 import { SvgIcon } from '../../../components/ui/SvgIcon';
 import { ImpactCard } from '../components/ImpactCard';
 import { ProfileListItem } from '../components/ProfileListItem';
+import { useProfileStore } from '../../../store/useProfileStore';
 
 const nouraAvatar = require('../../../assets/images/avatar-noura.png');
 
@@ -13,11 +14,9 @@ export default function ProfileScreen() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
 
-  const profileData = {
-    name: 'Noura Hassan',
-    email: 'noura@example.com',
-    family: 'Hassan Family',
-  };
+  const { firstName, lastName, email, profileImageUri, family } = useProfileStore();
+  const name = `${firstName} ${lastName}`;
+  const imageSource = profileImageUri ? { uri: profileImageUri } : nouraAvatar;
 
   return (
     <SafeAreaView className="flex-1 bg-surface-background">
@@ -30,14 +29,15 @@ export default function ProfileScreen() {
             <SvgIcon name="bell" width={20} height={20} fill="#356859" />
             <View className="absolute right-2 top-2 h-2.5 w-2.5 rounded-radius-full border border-surface-surface bg-brand-accent" />
           </Pressable>
-          <View className="bg-brand-primaryContainer h-10 w-10 items-center justify-center overflow-hidden rounded-radius-full border border-brand-primary/20">
-            <Image source={nouraAvatar} className="h-full w-full" />
-          </View>
+          <Pressable
+            className="bg-brand-primaryContainer h-10 w-10 items-center justify-center overflow-hidden rounded-radius-full border border-brand-primary/20"
+            onPress={() => router.push('/edit-profile' as Href)}>
+            <Image source={imageSource} className="h-full w-full" />
+          </Pressable>
         </View>
       </View>
 
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 48 }}>
-        {/* Hero Section */}
         <View className="px-spacing-16 pb-spacing-24 pt-spacing-16">
           <View className="relative min-h-[300px] items-center justify-center overflow-hidden rounded-radius-large border border-surface-border/80 bg-surface-surface p-spacing-24 shadow-md">
             <View className="absolute -right-16 -top-16 h-48 w-48 opacity-80">
@@ -95,24 +95,26 @@ export default function ProfileScreen() {
                 </Svg>
               </View>
               <View className="h-[80px] w-[80px] overflow-hidden rounded-radius-full border-2 border-surface-surface bg-surface-surface">
-                <Image source={nouraAvatar} className="h-full w-full" />
+                <Image source={imageSource} className="h-full w-full" />
               </View>
               <View className="absolute bottom-0 right-0 h-8 w-8 items-center justify-center rounded-radius-full border border-surface-border bg-brand-primary shadow">
-                <SvgIcon name="edit-pencil" width={14} height={14} fill="#FAF8F3" />
+                <Pressable onPress={() => router.push('/edit-profile' as Href)}>
+                  <SvgIcon name="edit-pencil" width={14} height={14} fill="#FAF8F3" />
+                </Pressable>
               </View>
             </View>
 
             <Text className="text-h3 mb-spacing-4 font-cairo font-bold text-text-primary">
-              {profileData.name}
+              {name}
             </Text>
             <Text className="text-bodySmall mb-spacing-12 font-cairo text-text-primary">
-              {profileData.email}
+              {email}
             </Text>
 
             <View className="bg-surface-surfaceVariant py-spacing-6 mb-spacing-16 flex-row items-center gap-spacing-8 rounded-radius-full border border-surface-border px-spacing-16">
               <SvgIcon name="leaf" width={12} height={14} fill="#356859" />
               <Text className="text-label font-cairo font-semibold text-brand-primary">
-                {profileData.family}
+                {family}
               </Text>
             </View>
 

@@ -1,12 +1,14 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { router, Href, Stack } from 'expo-router';
+import { useProfileStore } from '../../../store/useProfileStore';
 
 export default function HomeScreen() {
+  const { firstName, lastName, family } = useProfileStore();
   const user = {
-    firstName: 'Noura',
-    lastName: 'Hassan',
-    family: 'Hassan Family',
+    firstName,
+    lastName,
+    family,
   };
 
   return (

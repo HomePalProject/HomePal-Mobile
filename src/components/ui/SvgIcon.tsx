@@ -89,7 +89,6 @@ export function SvgIcon({ name, width, height, fill, stroke, className }: SvgIco
     return null;
   }
 
-  // Resolve CSS var fill/stroke variables to their fallbacks
   xml = xml.replace(/var\(--fill-0,\s*([^)]+)\)/g, '$1');
   xml = xml.replace(/var\(--stroke-0,\s*([^)]+)\)/g, '$1');
 
