@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, ScrollView, Pressable } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Text } from '@/src/components/ui/text';
@@ -11,6 +11,8 @@ import { useAppDispatch, useAppSelector } from '@/src/store';
 import { saveTempRegistration } from '@/src/store/slices/authSlice';
 import { onboardingStep1Schema } from '@/src/utils/validation';
 import { Gender } from '@/src/types/api';
+import { AnimatedPressable } from '@/src/components/ui/animated-pressable';
+import * as Haptics from 'expo-haptics';
 
 export default function OnboardingStep1Screen() {
   const router = useRouter();
@@ -28,6 +30,7 @@ export default function OnboardingStep1Screen() {
     });
 
     if (!result.success) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       const newErrors: typeof errors = {};
       result.error.issues.forEach((issue) => {
         const field = issue.path[0] as keyof typeof errors;
@@ -40,6 +43,7 @@ export default function OnboardingStep1Screen() {
     }
 
     setErrors({});
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     dispatch(
       saveTempRegistration({
         gender: gender as Gender,
@@ -59,11 +63,12 @@ export default function OnboardingStep1Screen() {
           showsVerticalScrollIndicator={false}>
           {/* Header Bar */}
           <View className="flex-row items-center justify-between py-2">
-            <Pressable
+            <AnimatedPressable
               onPress={() => router.back()}
+              hapticStyle="light"
               className="h-10 w-10 items-center justify-center rounded-full bg-surface-surface-variant">
               <Icon as={ArrowLeft} size={20} className="text-text-primary" />
-            </Pressable>
+            </AnimatedPressable>
             <Text className="font-cairo text-[14px] font-bold text-text-secondary">
               Step 1 of 4
             </Text>
@@ -99,12 +104,13 @@ export default function OnboardingStep1Screen() {
                 ].map((item) => {
                   const isSelected = gender === item.value;
                   return (
-                    <Pressable
+                    <AnimatedPressable
                       key={item.label}
                       onPress={() => {
                         setGender(item.value);
                         if (errors.gender) setErrors({ ...errors, gender: undefined });
                       }}
+                      hapticStyle="medium"
                       className={`flex-1 flex-row items-center justify-center gap-2 rounded-2xl border p-4 ${
                         isSelected
                           ? 'border-brand-primary bg-brand-primary-container'
@@ -126,7 +132,7 @@ export default function OnboardingStep1Screen() {
                           <Icon as={Check} size={12} className="text-white" />
                         </View>
                       )}
-                    </Pressable>
+                    </AnimatedPressable>
                   );
                 })}
               </View>
@@ -155,7 +161,10 @@ export default function OnboardingStep1Screen() {
 
         {/* Footer CTA */}
         <View className="border-t border-surface-border bg-surface-surface px-6 py-4">
-          <Button onPress={handleNext} className="h-[56px] w-full rounded-full bg-brand-primary">
+          <Button
+            onPress={handleNext}
+            hapticStyle="medium"
+            className="h-[56px] w-full rounded-full bg-brand-primary">
             <Text className="font-cairo text-[16px] font-bold text-white">Continue</Text>
           </Button>
         </View>

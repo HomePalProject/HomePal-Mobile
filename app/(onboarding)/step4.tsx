@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
-import { View, ScrollView, Pressable, Alert } from 'react-native';
+import { View, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Text } from '@/src/components/ui/text';
 import { Button } from '@/src/components/ui/button';
 import { TextField } from '@/src/components/ui/text-field';
 import { Icon } from '@/src/components/ui/icon';
-import { ArrowLeft, Sparkles, Heart, AlertTriangle, AlertCircle, Check } from 'lucide-react-native';
+import { ArrowLeft, Sparkles, Heart, AlertTriangle, Check } from 'lucide-react-native';
 import { useAppDispatch, useAppSelector } from '@/src/store';
 import { registerUser, saveOnboardingData, clearError } from '@/src/store/slices/authSlice';
 import { onboardingStep4Schema } from '@/src/utils/validation';
 import { Gender } from '@/src/types/api';
 import { toast } from '@/src/providers/ToastProvider';
+import { AnimatedPressable } from '@/src/components/ui/animated-pressable';
+import { ErrorBanner } from '@/src/components/common/ErrorBanner';
+import * as Haptics from 'expo-haptics';
 
 const LIFESTYLES = [
   'Halal',
@@ -79,7 +82,8 @@ export default function OnboardingStep4Screen() {
     });
 
     if (!result.success) {
-      setErrors({ general: 'Please check your preferences.' });
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      setErrors({ general: result.error.issues[0]?.message || 'Please check your preferences.' });
       return;
     }
 
@@ -91,6 +95,7 @@ export default function OnboardingStep4Screen() {
 
     // Check if we have required basic credentials
     if (!tempRegistration?.email || !tempRegistration?.username || !tempRegistration?.password) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert(
         'Missing Account Information',
         'Your login credentials expired from temporary session. Please restart registration.',
@@ -114,164 +119,169 @@ export default function OnboardingStep4Screen() {
         })
       ).unwrap();
 
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       toast.success(
         'Registration Successful 🎉',
         'Please check your email for confirmation instructions to activate your account.'
       );
       router.replace('/(auth)/login');
     } catch (err: any) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       toast.error('Registration Failed', err.message || 'Could not create account.');
     }
   };
 
   return (
     <SafeAreaView className="flex-1 bg-surface-background">
-      <View className="flex-1 justify-between">
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1 }}
-          className="px-6 py-4"
-          showsVerticalScrollIndicator={false}>
-          {/* Header Bar */}
-          <View className="flex-row items-center justify-between py-2">
-            <Pressable
-              onPress={() => router.back()}
-              className="h-10 w-10 items-center justify-center rounded-full bg-surface-surface-variant">
-              <Icon as={ArrowLeft} size={20} className="text-text-primary" />
-            </Pressable>
-            <Text className="font-cairo text-[14px] font-bold text-text-secondary">
-              Step 4 of 4
-            </Text>
-            <View className="w-10" />
-          </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={{ flex: 1 }}>
+        <View className="flex-1 justify-between">
+          <ScrollView
+            contentContainerStyle={{ flexGrow: 1 }}
+            className="px-6 py-4"
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}>
+            {/* Header Bar */}
+            <View className="flex-row items-center justify-between py-2">
+              <AnimatedPressable
+                onPress={() => router.back()}
+                hapticStyle="light"
+                className="h-10 w-10 items-center justify-center rounded-full bg-surface-surface-variant">
+                <Icon as={ArrowLeft} size={20} className="text-text-primary" />
+              </AnimatedPressable>
+              <Text className="font-cairo text-[14px] font-bold text-text-secondary">
+                Step 4 of 4
+              </Text>
+              <View className="w-10" />
+            </View>
 
-          {/* Progress Bar */}
-          <View className="mt-3 h-2 w-full overflow-hidden rounded-full bg-surface-surface-variant">
-            <View className="h-full w-full rounded-full bg-brand-primary" />
-          </View>
+            {/* Progress Bar */}
+            <View className="mt-3 h-2 w-full overflow-hidden rounded-full bg-surface-surface-variant">
+              <View className="h-full w-full rounded-full bg-brand-primary" />
+            </View>
 
-          {/* Backend Error Banner */}
-          {authError ? (
-            <View className="border-status-error/30 bg-status-error/10 mt-4 flex-row items-center gap-2.5 rounded-[12px] border p-3.5">
-              <Icon as={AlertCircle} size={20} className="shrink-0 text-status-error" />
-              <Text className="flex-1 font-cairo text-[13px] font-medium leading-[18px] text-status-error">
-                {authError}
+            {/* Error Banner */}
+            <ErrorBanner error={authError || errors.general} />
+
+            {/* Heading */}
+            <View className="mt-6 flex-col gap-1">
+              <Text className="font-cairo text-[26px] font-bold leading-[34px] text-text-primary">
+                Dietary & AI Profile
+              </Text>
+              <Text className="font-cairo text-[15px] leading-[22px] text-text-secondary">
+                Select lifestyles and allergies so our AI only recommends safe, tailored recipes.
               </Text>
             </View>
-          ) : null}
 
-          {/* Heading */}
-          <View className="mt-6 flex-col gap-1">
-            <Text className="font-cairo text-[26px] font-bold leading-[34px] text-text-primary">
-              Dietary & AI Profile
-            </Text>
-            <Text className="font-cairo text-[15px] leading-[22px] text-text-secondary">
-              Select lifestyles and allergies so our AI only recommends safe, tailored recipes.
-            </Text>
-          </View>
-
-          {/* Section 1: Lifestyle */}
-          <View className="mt-6 flex-col gap-3">
-            <View className="flex-row items-center gap-2">
-              <Icon as={Heart} size={18} className="text-brand-primary" />
-              <Text className="font-cairo text-[18px] font-bold text-text-primary">
-                Lifestyle Preferences
-              </Text>
-            </View>
-            <View className="flex-row flex-wrap gap-2">
-              {LIFESTYLES.map((item) => {
-                const isSelected = lifestyles.includes(item);
-                return (
-                  <Pressable
-                    key={item}
-                    onPress={() => toggleLifestyle(item)}
-                    className={`flex-row items-center gap-1.5 rounded-full border px-3.5 py-2 ${
-                      isSelected
-                        ? 'border-brand-primary bg-brand-primary-container'
-                        : 'border-surface-border bg-surface-surface'
-                    }`}>
-                    <Text
-                      className={`font-cairo text-[13px] font-bold ${
-                        isSelected ? 'text-brand-primary' : 'text-text-secondary'
+            {/* Section 1: Lifestyle */}
+            <View className="mt-6 flex-col gap-3">
+              <View className="flex-row items-center gap-2">
+                <Icon as={Heart} size={18} className="text-brand-primary" />
+                <Text className="font-cairo text-[18px] font-bold text-text-primary">
+                  Lifestyle Preferences
+                </Text>
+              </View>
+              <View className="flex-row flex-wrap gap-2">
+                {LIFESTYLES.map((item) => {
+                  const isSelected = lifestyles.includes(item);
+                  return (
+                    <AnimatedPressable
+                      key={item}
+                      onPress={() => toggleLifestyle(item)}
+                      hapticStyle="light"
+                      className={`flex-row items-center gap-1.5 rounded-full border px-3.5 py-2 ${
+                        isSelected
+                          ? 'border-brand-primary bg-brand-primary-container'
+                          : 'border-surface-border bg-surface-surface'
                       }`}>
-                      {item}
-                    </Text>
-                    {isSelected && <Icon as={Check} size={13} className="text-brand-primary" />}
-                  </Pressable>
-                );
-              })}
+                      <Text
+                        className={`font-cairo text-[13px] font-bold ${
+                          isSelected ? 'text-brand-primary' : 'text-text-secondary'
+                        }`}>
+                        {item}
+                      </Text>
+                      {isSelected && <Icon as={Check} size={13} className="text-brand-primary" />}
+                    </AnimatedPressable>
+                  );
+                })}
+              </View>
             </View>
-          </View>
 
-          {/* Section 2: Allergies */}
-          <View className="mt-6 flex-col gap-3">
-            <View className="flex-row items-center gap-2">
-              <Icon as={AlertTriangle} size={18} className="text-status-warning" />
-              <Text className="font-cairo text-[18px] font-bold text-text-primary">
-                Allergies & Avoidances
-              </Text>
-            </View>
-            <View className="flex-row flex-wrap gap-2">
-              {ALLERGIES.map((item) => {
-                const isSelected = allergies.includes(item);
-                return (
-                  <Pressable
-                    key={item}
-                    onPress={() => toggleAllergy(item)}
-                    className={`flex-row items-center gap-1.5 rounded-full border px-3.5 py-2 ${
-                      isSelected
-                        ? 'border-status-error bg-brand-error-container'
-                        : 'border-surface-border bg-surface-surface'
-                    }`}>
-                    <Text
-                      className={`font-cairo text-[13px] font-bold ${
-                        isSelected ? 'text-status-error' : 'text-text-secondary'
+            {/* Section 2: Allergies */}
+            <View className="mt-6 flex-col gap-3">
+              <View className="flex-row items-center gap-2">
+                <Icon as={AlertTriangle} size={18} className="text-status-warning" />
+                <Text className="font-cairo text-[18px] font-bold text-text-primary">
+                  Allergies & Avoidances
+                </Text>
+              </View>
+              <View className="flex-row flex-wrap gap-2">
+                {ALLERGIES.map((item) => {
+                  const isSelected = allergies.includes(item);
+                  return (
+                    <AnimatedPressable
+                      key={item}
+                      onPress={() => toggleAllergy(item)}
+                      hapticStyle="light"
+                      className={`flex-row items-center gap-1.5 rounded-full border px-3.5 py-2 ${
+                        isSelected
+                          ? 'border-status-error bg-brand-error-container'
+                          : 'border-surface-border bg-surface-surface'
                       }`}>
-                      {item}
-                    </Text>
-                    {isSelected && <Icon as={Check} size={13} className="text-status-error" />}
-                  </Pressable>
-                );
-              })}
+                      <Text
+                        className={`font-cairo text-[13px] font-bold ${
+                          isSelected ? 'text-status-error' : 'text-text-secondary'
+                        }`}>
+                        {item}
+                      </Text>
+                      {isSelected && <Icon as={Check} size={13} className="text-status-error" />}
+                    </AnimatedPressable>
+                  );
+                })}
+              </View>
             </View>
-          </View>
 
-          {/* Section 3: AI Text Area */}
-          <View className="mt-6 flex-col gap-2 pb-6">
-            <View className="flex-row items-center gap-2">
-              <Icon as={Sparkles} size={18} className="text-brand-accent" />
-              <Text className="font-cairo text-[18px] font-bold text-text-primary">
-                ✨ Anything else? — AI Personalized
+            {/* Section 3: AI Text Area */}
+            <View className="mt-6 flex-col gap-2 pb-6">
+              <View className="flex-row items-center gap-2">
+                <Icon as={Sparkles} size={18} className="text-brand-accent" />
+                <Text className="font-cairo text-[18px] font-bold text-text-primary">
+                  ✨ Anything else? — AI Personalized
+                </Text>
+              </View>
+              <Text className="font-cairo text-[13px] text-text-secondary">
+                Tell our AI kitchen assistant any special notes, likes, or dislikes.
               </Text>
+              <TextField
+                placeholder="e.g. We love spicy food, prefer quick 15-min weekday meals, and no cilantro please..."
+                value={aiNote}
+                onChangeText={setAiNote}
+                multiline
+                numberOfLines={4}
+                style={{ minHeight: 90, textAlignVertical: 'top', paddingTop: 12 }}
+              />
             </View>
-            <Text className="font-cairo text-[13px] text-text-secondary">
-              Tell our AI kitchen assistant any special notes, likes, or dislikes.
-            </Text>
-            <TextField
-              placeholder="e.g. We love spicy food, prefer quick 15-min weekday meals, and no cilantro please..."
-              value={aiNote}
-              onChangeText={setAiNote}
-              multiline
-              numberOfLines={4}
-              style={{ minHeight: 90, textAlignVertical: 'top', paddingTop: 12 }}
-            />
-          </View>
-        </ScrollView>
+          </ScrollView>
 
-        {/* Footer CTA */}
-        <View className="border-t border-surface-border bg-surface-surface px-6 py-4">
-          <Text className="mb-2 text-center font-cairo text-[12px] text-text-disabled">
-            HomePal builds your personalized plan in seconds.
-          </Text>
-          <Button
-            onPress={handleFinish}
-            disabled={isLoading}
-            className="h-[56px] w-full rounded-full bg-brand-primary">
-            <Text className="font-cairo text-[16px] font-bold text-white">
-              {isLoading ? 'Generating Profile & Registering...' : 'Finish & Create Account'}
+          {/* Footer CTA */}
+          <View className="border-t border-surface-border bg-surface-surface px-6 py-4">
+            <Text className="mb-2 text-center font-cairo text-[12px] text-text-disabled">
+              HomePal builds your personalized plan in seconds.
             </Text>
-          </Button>
+            <Button
+              onPress={handleFinish}
+              disabled={isLoading}
+              isLoading={isLoading}
+              hapticStyle="medium"
+              className="h-[56px] w-full rounded-full bg-brand-primary">
+              <Text className="font-cairo text-[16px] font-bold text-white">
+                Finish & Create Account
+              </Text>
+            </Button>
+          </View>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

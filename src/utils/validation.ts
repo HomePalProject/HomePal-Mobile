@@ -47,7 +47,12 @@ export const loginFormSchema = z.object({
  */
 export const registerFormSchema = z
   .object({
-    fullName: z.string().min(2, 'Full name must be at least 2 characters'),
+    fullName: z
+      .string()
+      .min(2, 'Full name must be at least 2 characters')
+      .refine((val) => (val.match(/\p{L}/gu) || []).length >= 2, {
+        message: 'Full name must contain at least 2 alphabetical letters',
+      }),
     username: usernameSchema,
     email: emailSchema,
     password: passwordSchema,
@@ -86,23 +91,65 @@ export const onboardingStep1Schema = z.object({
  * Onboarding Step 2 schema — Location & Region.
  */
 export const onboardingStep2Schema = z.object({
-  governorate: z.string().min(2, 'Please select or enter your governorate'),
-  city: z.string().min(2, 'Please enter your city or district'),
+  governorate: z
+    .string()
+    .min(2, 'Please select or enter a valid governorate name (at least 2 letters)')
+    .regex(/^[\p{L}\s.-]+$/u, 'Governorate can only contain letters and spaces')
+    .refine((val) => (val.match(/\p{L}/gu) || []).length >= 2, {
+      message: 'Governorate name must contain at least 2 alphabetical letters',
+    }),
+  city: z
+    .string()
+    .min(2, 'Please enter your city or district (at least 2 letters)')
+    .regex(/^[\p{L}0-9\s.,-]+$/u, 'City can only contain letters, numbers, and spaces')
+    .refine((val) => (val.match(/\p{L}/gu) || []).length >= 2, {
+      message:
+        'City or district name must contain at least 2 alphabetical letters (e.g., Nasr City, Maadi)',
+    }),
 });
 
 /**
  * Onboarding Step 3 schema — Household Setup.
  */
 export const onboardingStep3Schema = z.object({
-  memberCount: z.number().int().min(1, 'Household must have at least 1 member').max(20),
-  monthlyBudget: z.string().min(1, 'Please select or enter your monthly grocery budget'),
+  memberCount: z
+    .number()
+    .int()
+    .min(1, 'Household must have at least 1 member')
+    .max(20, 'Household size cannot exceed 20 members'),
+  monthlyBudget: z
+    .string()
+    .min(1, 'Please select or enter your monthly grocery budget')
+    .refine(
+      (val) => {
+        const trimmed = val.trim();
+        if (trimmed === 'EGP' || trimmed === '') return false;
+        // Accept predefined budget range chips immediately
+        if (
+          trimmed.includes('–') ||
+          trimmed.includes('-') ||
+          trimmed.includes('Under') ||
+          trimmed.includes('+')
+        ) {
+          return true;
+        }
+        // For exact custom amounts, validate numeric bounds
+        const cleanNum = trimmed.replace(/[^0-9]/g, '');
+        if (!cleanNum) return false;
+        const num = parseInt(cleanNum, 10);
+        return !isNaN(num) && num >= 500 && num <= 200000;
+      },
+      { message: 'Budget must be between 500 and 200,000 EGP per month' }
+    ),
 });
 
 /**
  * Onboarding Step 4 schema — Dietary Preferences & AI Personalization.
  */
 export const onboardingStep4Schema = z.object({
-  lifestyles: z.array(z.string()),
+  lifestyles: z
+    .array(z.string())
+    .min(1, 'Please select at least one dietary lifestyle (e.g., Halal)'),
   allergies: z.array(z.string()),
-  aiNote: z.string().optional(),
+  aiNote: z.string().max(500, 'AI notes cannot exceed 500 characters').optional(),
 });
