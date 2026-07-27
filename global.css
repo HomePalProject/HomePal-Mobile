@@ -28,9 +28,29 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
+
+    /* HomePal Brand & Surface Variables - Light */
+    --surface-bg: #faf8f3;
+    --surface-card: #ffffff;
+    --surface-variant: #f4f2ee;
+    --surface-border: #e4e0da;
+    --surface-divider: #e4e0da;
+    --text-primary: #2d2a26;
+    --text-secondary: #6d6862;
+    --text-disabled: #a8a29b;
+    --text-inverse: #ffffff;
+    --brand-primary: #356859;
+    --brand-primary-pressed: #2a5347;
+    --brand-primary-container: #dceee8;
+    --status-error: #d9534f;
+    --status-error-container: #fce8e6;
+    --status-success: #43a66f;
+    --status-warning: #e6a33a;
+    --status-info: #4f8ef7;
   }
 
-  .dark:root {
+  .dark:root,
+  .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
@@ -54,5 +74,24 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+
+    /* HomePal Brand & Surface Variables - Dark */
+    --surface-bg: #121413;
+    --surface-card: #242826;
+    --surface-variant: #1a1d1c;
+    --surface-border: #363d3a;
+    --surface-divider: #363d3a;
+    --text-primary: #f2efe9;
+    --text-secondary: #c2bcb3;
+    --text-disabled: #6d6862;
+    --text-inverse: #121413;
+    --brand-primary: #42826f;
+    --brand-primary-pressed: #356859;
+    --brand-primary-container: #1a332b;
+    --status-error: #ff6b6b;
+    --status-error-container: #3d1c1c;
+    --status-success: #52c480;
+    --status-warning: #f5b041;
+    --status-info: #5b9cf6;
   }
 }

@@ -2,31 +2,20 @@ const { hairlineWidth } = require('nativewind/theme');
 const fs = require('fs');
 const path = require('path');
 
-function readThemeFile(fileName) {
-  const filePath = path.join(__dirname, 'src', 'theme', fileName);
-  let content = fs.readFileSync(filePath, 'utf-8');
+const jiti = require('jiti')(__dirname, { interopDefault: true });
 
-  content = content.replace(/export\s+type\s+[\s\S]*$/g, '');
-  content = content.replace(/as\s+const;?/g, '');
-  content = content.replace(/export\s+const\s+(\w+)\s*=/g, 'global.$1 =');
-
-  const sandbox = {};
-  const fn = new Function('global', content);
-  fn(sandbox);
-  return sandbox;
-}
-
-// Load design tokens from src/theme
-const { colors } = readThemeFile('colors.ts');
-const { typography } = readThemeFile('typography.ts');
-const { spacing } = readThemeFile('spacing.ts');
-const { radius } = readThemeFile('radius.ts');
+// Load design tokens from src/theme cleanly using jiti TypeScript transpiler
+const { colors } = jiti('./src/theme/colors.ts');
+const { typography } = jiti('./src/theme/typography.ts');
+const { spacing } = jiti('./src/theme/spacing.ts');
+const { radius } = jiti('./src/theme/radius.ts');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: 'class',
   // content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
   content: [
+    './app/**/*.{ts,tsx}',
     './src/app/**/*.{ts,tsx}',
     './src/components/**/*.{ts,tsx}',
     './src/features/**/*.{ts,tsx}',
@@ -37,28 +26,36 @@ module.exports = {
       colors: {
         // Expose brand semantic design system tokens
         brand: {
-          primary: colors.brand.primary,
-          'primary-pressed': colors.brand.primaryPressed,
-          'primary-container': colors.brand.primaryContainer,
+          primary: 'var(--brand-primary, #356859)',
+          'primary-pressed': 'var(--brand-primary-pressed, #2A5347)',
+          'primary-container': 'var(--brand-primary-container, #DCEEE8)',
           accent: colors.brand.accent,
           'accent-container': colors.brand.accentContainer,
           success: colors.brand.success,
           warning: colors.brand.warning,
           error: colors.brand.error,
+          'error-container': colors.brand.errorContainer || '#FCE8E6',
           info: colors.brand.info,
         },
+        status: {
+          error: 'var(--status-error, #D9534F)',
+          'error-container': 'var(--status-error-container, #FCE8E6)',
+          success: 'var(--status-success, #43A66F)',
+          warning: 'var(--status-warning, #E6A33A)',
+          info: 'var(--status-info, #4F8EF7)',
+        },
         surface: {
-          background: colors.surface.background,
-          surface: colors.surface.surface,
-          'surface-variant': colors.surface.surfaceVariant,
-          border: colors.surface.border,
-          divider: colors.surface.divider,
+          background: 'var(--surface-bg, #FAF8F3)',
+          surface: 'var(--surface-card, #FFFFFF)',
+          'surface-variant': 'var(--surface-variant, #F4F2EE)',
+          border: 'var(--surface-border, #E4E0DA)',
+          divider: 'var(--surface-divider, #E4E0DA)',
         },
         text: {
-          primary: colors.text.primary,
-          secondary: colors.text.secondary,
-          disabled: colors.text.disabled,
-          inverse: colors.text.inverse,
+          primary: 'var(--text-primary, #2D2A26)',
+          secondary: 'var(--text-secondary, #6D6862)',
+          disabled: 'var(--text-disabled, #A8A29B)',
+          inverse: 'var(--text-inverse, #FFFFFF)',
           'on-accent': colors.text.onAccent,
         },
         // Keep existing CSS-variable backed colors for NativeWind consumer components

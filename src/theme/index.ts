@@ -1,5 +1,5 @@
 import { DarkTheme, DefaultTheme, type Theme } from 'expo-router/react-navigation';
-import { colors } from './colors';
+import { colors, darkColors } from './colors';
 import { typography } from './typography';
 import { spacing } from './spacing';
 import { radius } from './radius';
@@ -14,6 +14,14 @@ export * from './shadows';
 // Export unified theme object
 export const theme = {
   colors,
+  typography,
+  spacing,
+  radius,
+  shadows,
+} as const;
+
+export const darkTheme = {
+  colors: darkColors,
   typography,
   spacing,
   radius,
@@ -46,26 +54,25 @@ export const THEME = {
     radius: `${radius.small}px`,
   },
   dark: {
-    // Retain dark mode defaults from the original index.ts
-    background: 'hsl(0 0% 3.9%)',
-    foreground: 'hsl(0 0% 98%)',
-    card: 'hsl(0 0% 3.9%)',
-    cardForeground: 'hsl(0 0% 98%)',
-    popover: 'hsl(0 0% 3.9%)',
-    popoverForeground: 'hsl(0 0% 98%)',
-    primary: 'hsl(0 0% 98%)',
-    primaryForeground: 'hsl(0 0% 9%)',
-    secondary: 'hsl(0 0% 14.9%)',
-    secondaryForeground: 'hsl(0 0% 98%)',
-    muted: 'hsl(0 0% 14.9%)',
-    mutedForeground: 'hsl(0 0% 63.9%)',
-    accent: 'hsl(0 0% 14.9%)',
-    accentForeground: 'hsl(0 0% 98%)',
-    destructive: 'hsl(0 70.9% 59.4%)',
-    border: 'hsl(0 0% 14.9%)',
-    input: 'hsl(0 0% 14.9%)',
-    ring: 'hsl(300 0% 45%)',
-    radius: '0.625rem',
+    background: darkColors.surface.background,
+    foreground: darkColors.text.primary,
+    card: darkColors.surface.surface,
+    cardForeground: darkColors.text.primary,
+    popover: darkColors.surface.surface,
+    popoverForeground: darkColors.text.primary,
+    primary: darkColors.brand.primary,
+    primaryForeground: darkColors.text.inverse,
+    secondary: darkColors.surface.surfaceVariant,
+    secondaryForeground: darkColors.text.primary,
+    muted: darkColors.surface.surfaceVariant,
+    mutedForeground: darkColors.text.secondary,
+    accent: darkColors.brand.accent,
+    accentForeground: darkColors.text.onAccent,
+    destructive: darkColors.brand.error,
+    border: darkColors.surface.border,
+    input: darkColors.surface.border,
+    ring: darkColors.brand.primary,
+    radius: `${radius.small}px`,
   },
 } as const;
 
