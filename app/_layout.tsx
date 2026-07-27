@@ -20,6 +20,7 @@ import { useColorScheme } from 'nativewind';
 import { Provider } from 'react-redux';
 import { store, useAppDispatch } from '@/src/store';
 import { bootstrapAuth } from '@/src/store/slices/authSlice';
+import { useProtectedRoute } from '@/src/hooks/useProtectedRoute';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -27,6 +28,8 @@ SplashScreen.preventAutoHideAsync();
 
 function SessionBootstrapper() {
   const dispatch = useAppDispatch();
+  useProtectedRoute();
+
   useEffect(() => {
     dispatch(bootstrapAuth());
   }, [dispatch]);
