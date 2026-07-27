@@ -1,132 +1,64 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { View } from 'react-native';
-import { SvgIcon } from '../../src/components/ui/SvgIcon';
+import { useColorScheme } from 'nativewind';
+import { Home, Package, UtensilsCrossed, ShoppingCart, User } from 'lucide-react-native';
+import { Icon } from '@/src/components/ui/icon';
 
 export default function TabLayout() {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarStyle: {
-          backgroundColor: '#FAF8F3',
-          borderTopWidth: 0,
-          height: 74,
-          paddingBottom: 12,
-          paddingTop: 8,
-          elevation: 8,
-          shadowColor: '#2D2A26',
-          shadowOffset: { width: 0, height: -2 },
-          shadowOpacity: 0.05,
-          shadowRadius: 4,
-        },
-        tabBarIconStyle: {
-          width: 72,
-          height: 32,
-        },
-        tabBarActiveTintColor: '#356859',
-        tabBarInactiveTintColor: '#C8C5BF',
+        tabBarActiveTintColor: isDark ? '#42826f' : '#356859',
+        tabBarInactiveTintColor: isDark ? '#6d6862' : '#a8a29b',
         tabBarLabelStyle: {
-          fontFamily: 'Cairo',
+          fontFamily: 'Cairo_600SemiBold',
           fontSize: 12,
-          fontWeight: '500',
+        },
+        tabBarStyle: {
+          backgroundColor: isDark ? '#1a1d1c' : '#ffffff',
+          borderTopColor: isDark ? '#363d3a' : '#e4e0da',
+          height: 74,
+          paddingBottom: 10,
+          paddingTop: 8,
         },
       }}>
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
-            <View
-              style={{
-                width: 64,
-                height: 36,
-                borderRadius: 999,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: focused ? '#356859' : 'transparent',
-              }}>
-              <SvgIcon
-                name="nav-home"
-                width={22}
-                height={22}
-                stroke={focused ? '#FAF8F3' : (color as string)}
-              />
-            </View>
-          ),
+          tabBarIcon: ({ color, size }) => <Icon as={Home} size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="pantry"
         options={{
           title: 'Pantry',
-          tabBarIcon: ({ color, focused }) => (
-            <View
-              style={{
-                width: 72,
-                height: 32,
-                borderRadius: 16,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: focused ? '#356859' : 'transparent',
-              }}>
-              <SvgIcon
-                name="pantry"
-                width={22}
-                height={22}
-                stroke={focused ? '#FAF8F3' : (color as string)}
-                fill={focused ? '#FAF8F3' : (color as string)}
-              />
-            </View>
-          ),
+          tabBarIcon: ({ color, size }) => <Icon as={Package} size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="meals"
         options={{
           title: 'Meals',
-          tabBarIcon: ({ color, focused }) => (
-            <View
-              style={{
-                width: 72,
-                height: 32,
-                borderRadius: 16,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: focused ? '#356859' : 'transparent',
-              }}>
-              <SvgIcon
-                name="nav-meals"
-                width={22}
-                height={22}
-                stroke={focused ? '#FAF8F3' : (color as string)}
-              />
-            </View>
-          ),
+          tabBarIcon: ({ color, size }) => <Icon as={UtensilsCrossed} size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="shop"
         options={{
           title: 'Shop',
-          tabBarIcon: ({ color, focused }) => (
-            <View
-              style={{
-                width: 72,
-                height: 32,
-                borderRadius: 16,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: focused ? '#356859' : 'transparent',
-              }}>
-              <SvgIcon
-                name="nav-meals"
-                width={22}
-                height={22}
-                stroke={focused ? '#FAF8F3' : (color as string)}
-              />
-            </View>
-          ),
+          tabBarIcon: ({ color, size }) => <Icon as={ShoppingCart} size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color, size }) => <Icon as={User} size={size} color={color} />,
         }}
       />
     </Tabs>

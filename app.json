@@ -15,7 +15,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.homepal.app"
     },
     "web": {
       "bundler": "metro",
@@ -32,10 +33,17 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-status-bar"
+      "expo-status-bar",
+      "expo-font",
+      "expo-secure-store",
+      "@react-native-google-signin/google-signin"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "apiBaseUrl": "https://homepal.runasp.net/",
+      "googleWebClientId": "815260218319-25gl1soin1gf2cavndjoqmtt501dkn1s.apps.googleusercontent.com"
     }
   }
 }
