@@ -186,8 +186,8 @@ The Figma file defines these components:
 
 ```tsx
 // ✅ Preferred — NativeWind utility classes
-<View className="rounded-radius-medium border-surface-border bg-surface-surface p-spacing-16 border">
-  <Text className="font-cairo text-text-primary text-lg font-bold">Title</Text>
+<View className="rounded-radius-medium border border-surface-border bg-surface-surface p-spacing-16">
+  <Text className="font-cairo text-lg font-bold text-text-primary">Title</Text>
 </View>
 ```
 

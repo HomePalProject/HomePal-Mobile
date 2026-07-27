@@ -17,7 +17,7 @@ export default function RootLayout() {
     <HomePalThemeProvider>
       <NavigationThemeProvider value={NAV_THEME[colorScheme ?? 'light']}>
         <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-        <Stack />
+        <Stack screenOptions={{ headerShown: false }} />
         <PortalHost />
       </NavigationThemeProvider>
     </HomePalThemeProvider>

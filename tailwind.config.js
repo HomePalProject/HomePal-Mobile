@@ -46,6 +46,7 @@ module.exports = {
           warning: colors.brand.warning,
           error: colors.brand.error,
           info: colors.brand.info,
+          'amber-300': colors.brand.amber300,
         },
         surface: {
           background: colors.surface.background,

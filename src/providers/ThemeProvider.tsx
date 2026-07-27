@@ -24,7 +24,6 @@ export function ThemeProvider({ children, initialMode = 'light' }: ThemeProvider
     theme: currentTheme,
     mode,
     setMode: (newMode: ThemeMode) => {
-    
       setMode(newMode);
     },
   };
