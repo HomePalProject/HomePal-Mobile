@@ -1,0 +1,203 @@
+import React, { useState } from 'react';
+import { View, ScrollView, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import { Text } from '@/src/components/ui/text';
+import { Button } from '@/src/components/ui/button';
+import { TextField } from '@/src/components/ui/text-field';
+import { Icon } from '@/src/components/ui/icon';
+import { Home, AlertCircle } from 'lucide-react-native';
+import { useAppDispatch, useAppSelector } from '@/src/store';
+import { loginUser, loginWithGoogle, clearError } from '@/src/store/slices/authSlice';
+import { loginFormSchema } from '@/src/utils/validation';
+import { toast } from '@/src/providers/ToastProvider';
+import { performGoogleSignIn } from '@/src/utils/googleAuth';
+
+export const SignInScreen: React.FC = () => {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { isLoading, error: authError } = useAppSelector((state) => state.auth);
+
+  const [emailOrUsername, setEmailOrUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState<Record<string, string | undefined>>({});
+
+  const handleSignIn = async () => {
+    const validation = loginFormSchema.safeParse({ emailOrUsername, password });
+    if (!validation.success) {
+      const fieldErrors: Record<string, string> = {};
+      validation.error.issues.forEach((err: any) => {
+        if (err.path[0]) fieldErrors[err.path[0].toString()] = err.message;
+      });
+      setErrors(fieldErrors);
+      toast.error('Validation Error', 'Please check your inputs and try again.');
+      return;
+    }
+
+    setErrors({});
+    if (authError) dispatch(clearError());
+
+    try {
+      await dispatch(loginUser({ emailOrUsername: emailOrUsername.trim(), password })).unwrap();
+      toast.success('Welcome back!', 'You have signed in successfully.');
+    } catch (err: any) {
+      toast.error('Sign In Failed', err.message || 'Invalid email or password.');
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    if (authError) dispatch(clearError());
+    try {
+      const idToken = await performGoogleSignIn();
+      if (!idToken) return;
+
+      await dispatch(loginWithGoogle({ idToken })).unwrap();
+      toast.success('Welcome back!', 'You have signed in with Google successfully.');
+      router.replace('/(tabs)' as any);
+    } catch (err: any) {
+      toast.error('Google Sign-In Notice', err.message || 'Could not authenticate with Google.');
+    }
+  };
+
+  return (
+    <SafeAreaView className="flex-1 bg-surface-background">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        className="flex-1">
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between' }}
+          className="px-6 py-4"
+          showsVerticalScrollIndicator={false}>
+          <View className="flex-col gap-6">
+            {/* Header & Logo */}
+            <View className="flex-row items-center gap-2 py-2">
+              <View className="h-8 w-8 items-center justify-center rounded-lg bg-brand-primary">
+                <Icon as={Home} size={18} className="text-white" />
+              </View>
+              <Text className="font-cairo text-[20px] font-bold text-brand-primary">HomePal</Text>
+            </View>
+
+            {/* Heading */}
+            <View className="flex-col gap-1">
+              <Text className="font-cairo text-[28px] font-bold leading-[36px] text-text-primary">
+                Welcome back
+              </Text>
+              <Text className="font-cairo text-[15px] leading-[22px] text-text-secondary">
+                Sign in to keep your household on track.
+              </Text>
+            </View>
+
+            {/* Segmented Auth Toggle */}
+            <View className="flex-row rounded-[12px] bg-surface-surface-variant p-1">
+              <View className="flex-1 items-center justify-center rounded-[8px] border border-surface-border bg-surface-surface py-2.5">
+                <Text className="font-cairo text-[14px] font-bold text-text-primary">Sign in</Text>
+              </View>
+              <Pressable
+                onPress={() => {
+                  if (authError) dispatch(clearError());
+                  router.replace('/(auth)/register');
+                }}
+                className="flex-1 items-center justify-center rounded-[8px] py-2.5">
+                <Text className="font-cairo text-[14px] font-medium text-text-secondary">
+                  Create account
+                </Text>
+              </Pressable>
+            </View>
+
+            {/* Backend Error Banner */}
+            {authError ? (
+              <View className="border-status-error/30 bg-status-error/10 flex-row items-center gap-2.5 rounded-[12px] border p-3.5">
+                <Icon as={AlertCircle} size={20} className="shrink-0 text-status-error" />
+                <Text className="flex-1 font-cairo text-[13px] font-medium leading-[18px] text-status-error">
+                  {authError}
+                </Text>
+              </View>
+            ) : null}
+
+            {/* Form */}
+            <View className="mt-2 flex-col gap-4">
+              <TextField
+                label="Email Address or Username"
+                placeholder="e.g. sara@example.com"
+                value={emailOrUsername}
+                onChangeText={(val) => {
+                  setEmailOrUsername(val);
+                  if (errors.emailOrUsername) setErrors({ ...errors, emailOrUsername: undefined });
+                  if (authError) dispatch(clearError());
+                }}
+                error={errors.emailOrUsername}
+                autoCapitalize="none"
+                keyboardType="email-address"
+              />
+
+              <View className="flex-col gap-2">
+                <TextField
+                  label="Password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChangeText={(val) => {
+                    setPassword(val);
+                    if (errors.password) setErrors({ ...errors, password: undefined });
+                    if (authError) dispatch(clearError());
+                  }}
+                  error={errors.password}
+                  secureTextEntry
+                />
+                <Pressable
+                  onPress={() => router.push('/(auth)/forgot-password')}
+                  className="self-end">
+                  <Text className="font-cairo text-[13px] font-semibold text-brand-primary">
+                    Forgot password?
+                  </Text>
+                </Pressable>
+              </View>
+
+              {/* Primary CTA */}
+              <Button
+                onPress={handleSignIn}
+                disabled={isLoading}
+                className="mt-2 h-[56px] w-full rounded-full bg-brand-primary">
+                <Text className="font-cairo text-[16px] font-bold text-white">
+                  {isLoading ? 'Signing in...' : 'Sign in'}
+                </Text>
+              </Button>
+            </View>
+
+            {/* Divider */}
+            <View className="my-2 flex-row items-center gap-3">
+              <View className="h-[1px] flex-1 bg-surface-border" />
+              <Text className="font-cairo text-[13px] text-text-disabled">or continue with</Text>
+              <View className="h-[1px] flex-1 bg-surface-border" />
+            </View>
+
+            {/* Social Auth Button */}
+            <Button
+              variant="outline"
+              onPress={handleGoogleSignIn}
+              disabled={isLoading}
+              className="h-[52px] w-full flex-row items-center justify-center gap-3 rounded-[12px] border border-surface-border bg-surface-surface">
+              <Text className="font-cairo text-[15px] font-semibold text-text-primary">
+                Continue with Google
+              </Text>
+            </Button>
+          </View>
+          {/* Footer */}
+          <View className="mt-8 flex-row items-center justify-center pb-4">
+            <Text className="font-cairo text-[14px] text-text-secondary">New to HomePal? </Text>
+            <Pressable
+              onPress={() => {
+                if (authError) dispatch(clearError());
+                router.replace('/(auth)/register');
+              }}>
+              <Text className="font-cairo text-[14px] font-bold text-brand-primary">
+                Create account
+              </Text>
+            </Pressable>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+};
+
+export default SignInScreen;
