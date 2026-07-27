@@ -1,0 +1,122 @@
+/**
+ * Universal API Response Envelope matching HomePal API specifications.
+ */
+export interface ApiResponse<T = any> {
+  success: boolean;
+  status: string; // e.g., "Created", "OK", "Forbidden", "Unauthorized", "BadRequest"
+  message: string;
+  data: T | null;
+  errors: Array<{ message?: string; [key: string]: any }> | null;
+}
+
+/**
+ * Gender enumeration matching backend schema.
+ */
+export enum Gender {
+  Male = 0,
+  Female = 1,
+}
+
+/**
+ * User Profile data returned from authentication and profile endpoints.
+ */
+export interface UserProfile {
+  id: string;
+  fullName: string;
+  gender: Gender | null;
+  username: string;
+  email: string;
+  birthDate: string | null;
+  governorate: string;
+  city: string;
+  isActive?: boolean;
+  isProfileComplete?: boolean;
+  emailConfirmed?: boolean;
+  createdAt?: string;
+  lastLoginAt?: string | null;
+  roles?: string[];
+}
+
+/**
+ * Auth Token & Session payload returned upon successful login / token refresh.
+ */
+export interface AuthResponseData {
+  token: string;
+  refreshToken: string;
+  user?: UserProfile;
+  [key: string]: any;
+}
+
+/**
+ * ASP.NET Core ProblemDetails schema for error responses.
+ */
+export interface ProblemDetails {
+  type?: string | null;
+  title?: string | null;
+  status?: number | string | null;
+  detail?: string | null;
+  instance?: string | null;
+  errors?: Record<string, string[]>;
+  [key: string]: any;
+}
+
+// --- Request Payload Interfaces ---
+
+export interface RegisterRequest {
+  fullName: string;
+  gender?: Gender | null;
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  birthDate?: string | null;
+  governorate?: string;
+  city?: string;
+}
+
+export interface LoginRequest {
+  emailOrUsername: string;
+  password: string;
+}
+
+export interface GoogleLoginRequest {
+  idToken: string;
+}
+
+export interface RefreshTokenRequest {
+  refreshToken: string;
+}
+
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ResetPasswordRequest {
+  email: string;
+  token: string;
+  newPassword: string;
+  confirmNewPassword: string;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+}
+
+export interface ConfirmEmailRequest {
+  userId: string;
+  token: string;
+}
+
+export interface ResendConfirmationEmailRequest {
+  email: string;
+}
+
+export interface UpdateProfileRequest {
+  fullName: string;
+  gender?: Gender | null;
+  birthDate?: string | null;
+  governorate: string;
+  city: string;
+}
