@@ -1,8 +1,9 @@
 import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 import { authStorage } from '@/src/services/storage/auth.storage';
 import { ApiResponse, ProblemDetails } from '@/src/types/api';
+import { env } from '@/src/config/env';
 
-const BASE_URL = 'https://homepal.runasp.net/';
+const BASE_URL = env.API_BASE_URL;
 
 /**
  * Custom error structure thrown by apiClient when API returns failure envelope or HTTP error.

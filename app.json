@@ -40,6 +40,10 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "apiBaseUrl": "https://homepal.runasp.net/",
+      "googleWebClientId": "815260218319-25gl1soin1gf2cavndjoqmtt501dkn1s.apps.googleusercontent.com"
     }
   }
 }
