@@ -15,22 +15,69 @@ const isSecureStoreAvailable = async (): Promise<boolean> => {
   }
 };
 
+/**
+ * Safely converts or extracts a token string from any provided value.
+ * Prevents "Invalid value provided to SecureStore" errors when backend returns objects.
+ */
+const ensureString = (val: any): string | null => {
+  if (val === null || val === undefined) return null;
+  if (typeof val === 'string') return val;
+  if (typeof val === 'object') {
+    if (typeof val.token === 'string') return val.token;
+    if (typeof val.tokenString === 'string') return val.tokenString;
+    if (typeof val.accessToken === 'string') return val.accessToken;
+    if (typeof val.refreshToken === 'string') return val.refreshToken;
+    try {
+      return JSON.stringify(val);
+    } catch {
+      return null;
+    }
+  }
+  return String(val);
+};
+
+/**
+ * Safely extracts raw JWT string if stored value was serialized as a JSON object.
+ */
+const extractTokenString = (val: string | null): string | null => {
+  if (!val) return null;
+  if (val.startsWith('{') && val.endsWith('}')) {
+    try {
+      const obj = JSON.parse(val);
+      if (typeof obj.token === 'string') return obj.token;
+      if (typeof obj.tokenString === 'string') return obj.tokenString;
+      if (typeof obj.accessToken === 'string') return obj.accessToken;
+      if (typeof obj.refreshToken === 'string') return obj.refreshToken;
+    } catch {
+      // ignore parse error if it's not a JSON token object
+    }
+  }
+  return val;
+};
+
 export const authStorage = {
   /**
    * Save access token and refresh token securely.
    */
-  setTokens: async (token: string, refreshToken: string): Promise<void> => {
+  setTokens: async (token: any, refreshToken?: any): Promise<void> => {
     try {
+      const tokenStr = ensureString(token);
+      const refreshTokenStr = ensureString(refreshToken);
+
       const available = await isSecureStoreAvailable();
       if (available) {
-        await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, token);
-        if (refreshToken) {
-          await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refreshToken);
+        if (tokenStr) {
+          await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, tokenStr);
+        }
+        if (refreshTokenStr) {
+          await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refreshTokenStr);
         }
       } else if (typeof localStorage !== 'undefined') {
-        localStorage.setItem(ACCESS_TOKEN_KEY, token);
-        if (refreshToken) {
-          localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+        if (tokenStr) {
+          localStorage.setItem(ACCESS_TOKEN_KEY, tokenStr);
+        }
+        if (refreshTokenStr) {
+          localStorage.setItem(REFRESH_TOKEN_KEY, refreshTokenStr);
         }
       }
     } catch (error) {
@@ -44,11 +91,13 @@ export const authStorage = {
   getAccessToken: async (): Promise<string | null> => {
     try {
       const available = await isSecureStoreAvailable();
+      let token: string | null = null;
       if (available) {
-        return await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
+        token = await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
       } else if (typeof localStorage !== 'undefined') {
-        return localStorage.getItem(ACCESS_TOKEN_KEY);
+        token = localStorage.getItem(ACCESS_TOKEN_KEY);
       }
+      return extractTokenString(token);
     } catch (error) {
       console.error('Error getting access token:', error);
     }
@@ -61,11 +110,13 @@ export const authStorage = {
   getRefreshToken: async (): Promise<string | null> => {
     try {
       const available = await isSecureStoreAvailable();
+      let token: string | null = null;
       if (available) {
-        return await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
+        token = await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
       } else if (typeof localStorage !== 'undefined') {
-        return localStorage.getItem(REFRESH_TOKEN_KEY);
+        token = localStorage.getItem(REFRESH_TOKEN_KEY);
       }
+      return extractTokenString(token);
     } catch (error) {
       console.error('Error getting refresh token:', error);
     }
@@ -95,9 +146,10 @@ export const authStorage = {
   /**
    * Save user profile data for offline restoration.
    */
-  setUserProfile: async (user: UserProfile): Promise<void> => {
+  setUserProfile: async (user: any): Promise<void> => {
     try {
-      const serialized = JSON.stringify(user);
+      if (!user) return;
+      const serialized = typeof user === 'string' ? user : JSON.stringify(user);
       const available = await isSecureStoreAvailable();
       if (available) {
         await SecureStore.setItemAsync(USER_PROFILE_KEY, serialized);

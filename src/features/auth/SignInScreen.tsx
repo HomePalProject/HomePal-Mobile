@@ -6,17 +6,21 @@ import { Text } from '@/src/components/ui/text';
 import { Button } from '@/src/components/ui/button';
 import { TextField } from '@/src/components/ui/text-field';
 import { Icon } from '@/src/components/ui/icon';
-import { Home, AlertCircle } from 'lucide-react-native';
+import { Home } from 'lucide-react-native';
 import { useAppDispatch, useAppSelector } from '@/src/store';
-import { loginUser, loginWithGoogle, clearError } from '@/src/store/slices/authSlice';
+import { loginUser, clearError } from '@/src/store/slices/authSlice';
 import { loginFormSchema } from '@/src/utils/validation';
 import { toast } from '@/src/providers/ToastProvider';
-import { performGoogleSignIn } from '@/src/utils/googleAuth';
+import { useGoogleAuth } from '@/src/hooks/useGoogleAuth';
+import { ErrorBanner } from '@/src/components/common/ErrorBanner';
+import { AnimatedPressable } from '@/src/components/ui/animated-pressable';
+import * as Haptics from 'expo-haptics';
 
 export const SignInScreen: React.FC = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { isLoading, error: authError } = useAppSelector((state) => state.auth);
+  const { handleGoogleSignIn, isGoogleLoading } = useGoogleAuth();
 
   const [emailOrUsername, setEmailOrUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -30,6 +34,7 @@ export const SignInScreen: React.FC = () => {
         if (err.path[0]) fieldErrors[err.path[0].toString()] = err.message;
       });
       setErrors(fieldErrors);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       toast.error('Validation Error', 'Please check your inputs and try again.');
       return;
     }
@@ -39,23 +44,11 @@ export const SignInScreen: React.FC = () => {
 
     try {
       await dispatch(loginUser({ emailOrUsername: emailOrUsername.trim(), password })).unwrap();
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       toast.success('Welcome back!', 'You have signed in successfully.');
     } catch (err: any) {
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       toast.error('Sign In Failed', err.message || 'Invalid email or password.');
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    if (authError) dispatch(clearError());
-    try {
-      const idToken = await performGoogleSignIn();
-      if (!idToken) return;
-
-      await dispatch(loginWithGoogle({ idToken })).unwrap();
-      toast.success('Welcome back!', 'You have signed in with Google successfully.');
-      router.replace('/(tabs)' as any);
-    } catch (err: any) {
-      toast.error('Google Sign-In Notice', err.message || 'Could not authenticate with Google.');
     }
   };
 
@@ -67,7 +60,8 @@ export const SignInScreen: React.FC = () => {
         <ScrollView
           contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between' }}
           className="px-6 py-4"
-          showsVerticalScrollIndicator={false}>
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled">
           <View className="flex-col gap-6">
             {/* Header & Logo */}
             <View className="flex-row items-center gap-2 py-2">
@@ -92,27 +86,21 @@ export const SignInScreen: React.FC = () => {
               <View className="flex-1 items-center justify-center rounded-[8px] border border-surface-border bg-surface-surface py-2.5">
                 <Text className="font-cairo text-[14px] font-bold text-text-primary">Sign in</Text>
               </View>
-              <Pressable
+              <AnimatedPressable
                 onPress={() => {
                   if (authError) dispatch(clearError());
                   router.replace('/(auth)/register');
                 }}
+                hapticStyle="light"
                 className="flex-1 items-center justify-center rounded-[8px] py-2.5">
                 <Text className="font-cairo text-[14px] font-medium text-text-secondary">
                   Create account
                 </Text>
-              </Pressable>
+              </AnimatedPressable>
             </View>
 
             {/* Backend Error Banner */}
-            {authError ? (
-              <View className="border-status-error/30 bg-status-error/10 flex-row items-center gap-2.5 rounded-[12px] border p-3.5">
-                <Icon as={AlertCircle} size={20} className="shrink-0 text-status-error" />
-                <Text className="flex-1 font-cairo text-[13px] font-medium leading-[18px] text-status-error">
-                  {authError}
-                </Text>
-              </View>
-            ) : null}
+            {authError ? <ErrorBanner message={authError} /> : null}
 
             {/* Form */}
             <View className="mt-2 flex-col gap-4">
@@ -155,7 +143,9 @@ export const SignInScreen: React.FC = () => {
               {/* Primary CTA */}
               <Button
                 onPress={handleSignIn}
-                disabled={isLoading}
+                disabled={isLoading || isGoogleLoading}
+                isLoading={isLoading}
+                hapticStyle="medium"
                 className="mt-2 h-[56px] w-full rounded-full bg-brand-primary">
                 <Text className="font-cairo text-[16px] font-bold text-white">
                   {isLoading ? 'Signing in...' : 'Sign in'}
@@ -174,7 +164,9 @@ export const SignInScreen: React.FC = () => {
             <Button
               variant="outline"
               onPress={handleGoogleSignIn}
-              disabled={isLoading}
+              disabled={isLoading || isGoogleLoading}
+              isLoading={isGoogleLoading}
+              hapticStyle="light"
               className="h-[52px] w-full flex-row items-center justify-center gap-3 rounded-[12px] border border-surface-border bg-surface-surface">
               <Text className="font-cairo text-[15px] font-semibold text-text-primary">
                 Continue with Google

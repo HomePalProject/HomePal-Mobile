@@ -1,9 +1,8 @@
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import { toast } from '@/src/providers/ToastProvider';
+import { env } from '@/src/config/env';
 
-// export const GOOGLE_CLIENT_ID = '815260218319-v67vfp1rvf86c2c7lh6atsbhlcd7i3kr.apps.googleusercontent.com';
-export const GOOGLE_CLIENT_ID =
-  '815260218319-25gl1soin1gf2cavndjoqmtt501dkn1s.apps.googleusercontent.com';
+export const GOOGLE_CLIENT_ID = env.GOOGLE_WEB_CLIENT_ID;
 
 GoogleSignin.configure({
   webClientId: GOOGLE_CLIENT_ID,
@@ -13,7 +12,7 @@ export async function performGoogleSignIn(): Promise<string | null> {
   try {
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
     const userInfo = await GoogleSignin.signIn();
-    const idToken = (userInfo as any).data?.idToken || (userInfo as any).idToken;
+    const idToken = userInfo.data?.idToken || (userInfo as any).idToken;
 
     if (!idToken) {
       throw new Error('No Google ID token returned from device auth flow.');

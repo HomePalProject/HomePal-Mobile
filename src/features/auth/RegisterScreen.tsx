@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, ScrollView, Pressable, Alert } from 'react-native';
+import { View, ScrollView, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Text } from '@/src/components/ui/text';
@@ -7,17 +7,20 @@ import { Button } from '@/src/components/ui/button';
 import { TextField } from '@/src/components/ui/text-field';
 import { Checkbox } from '@/src/components/ui/checkbox';
 import { Icon } from '@/src/components/ui/icon';
-import { Home, AlertCircle } from 'lucide-react-native';
+import { Home } from 'lucide-react-native';
 import { useAppDispatch, useAppSelector } from '@/src/store';
-import { clearError, saveTempRegistration, loginWithGoogle } from '@/src/store/slices/authSlice';
+import { clearError, saveTempRegistration } from '@/src/store/slices/authSlice';
 import { registerFormSchema } from '@/src/utils/validation';
-import { toast } from '@/src/providers/ToastProvider';
-import { performGoogleSignIn } from '@/src/utils/googleAuth';
+import { useGoogleAuth } from '@/src/hooks/useGoogleAuth';
+import { ErrorBanner } from '@/src/components/common/ErrorBanner';
+import { AnimatedPressable } from '@/src/components/ui/animated-pressable';
+import * as Haptics from 'expo-haptics';
 
 export const RegisterScreen: React.FC = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { isLoading, error: authError } = useAppSelector((state) => state.auth);
+  const { handleGoogleSignIn, isGoogleLoading } = useGoogleAuth();
 
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
@@ -35,7 +38,7 @@ export const RegisterScreen: React.FC = () => {
     terms?: string;
   }>({});
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     // 1. Zod schema validation
     const result = registerFormSchema.safeParse({
       fullName: fullName.trim(),
@@ -55,6 +58,7 @@ export const RegisterScreen: React.FC = () => {
         }
       });
       setErrors(newErrors);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       return;
     }
 
@@ -72,204 +76,196 @@ export const RegisterScreen: React.FC = () => {
       })
     );
 
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     router.push('/(onboarding)/step1');
-  };
-
-  const handleGoogleSignIn = async () => {
-    if (authError) dispatch(clearError());
-    try {
-      const idToken = await performGoogleSignIn();
-      if (!idToken) return;
-
-      await dispatch(loginWithGoogle({ idToken })).unwrap();
-      toast.success('Welcome!', 'You have signed in with Google successfully.');
-      router.replace('/(tabs)' as any);
-    } catch (err: any) {
-      toast.error('Google Sign-In Notice', err.message || 'Could not authenticate with Google.');
-    }
   };
 
   return (
     <SafeAreaView className="flex-1 bg-surface-background">
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between' }}
-        className="px-6 py-4"
-        showsVerticalScrollIndicator={false}>
-        <View className="flex-col gap-6">
-          {/* Header & Logo */}
-          <View className="flex-row items-center gap-2 py-2">
-            <View className="h-8 w-8 items-center justify-center rounded-lg bg-brand-primary">
-              <Icon as={Home} size={18} className="text-white" />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        className="flex-1">
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between' }}
+          className="px-6 py-4"
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled">
+          <View className="flex-col gap-6">
+            {/* Header & Logo */}
+            <View className="flex-row items-center gap-2 py-2">
+              <View className="h-8 w-8 items-center justify-center rounded-lg bg-brand-primary">
+                <Icon as={Home} size={18} className="text-white" />
+              </View>
+              <Text className="font-cairo text-[20px] font-bold text-brand-primary">HomePal</Text>
             </View>
-            <Text className="font-cairo text-[20px] font-bold text-brand-primary">HomePal</Text>
+
+            {/* Heading */}
+            <View className="flex-col gap-1">
+              <Text className="font-cairo text-[28px] font-bold leading-[36px] text-text-primary">
+                Join HomePal
+              </Text>
+              <Text className="font-cairo text-[15px] leading-[22px] text-text-secondary">
+                Manage your household efficiently.
+              </Text>
+            </View>
+
+            {/* Segmented Auth Toggle */}
+            <View className="flex-row rounded-[12px] bg-surface-surface-variant p-1">
+              <AnimatedPressable
+                onPress={() => {
+                  if (authError) dispatch(clearError());
+                  router.replace('/(auth)/login');
+                }}
+                hapticStyle="light"
+                className="flex-1 items-center justify-center rounded-[8px] py-2.5">
+                <Text className="font-cairo text-[14px] font-medium text-text-secondary">
+                  Sign in
+                </Text>
+              </AnimatedPressable>
+              <View className="flex-1 items-center justify-center rounded-[8px] bg-surface-surface py-2.5 shadow-sm">
+                <Text className="font-cairo text-[14px] font-bold text-text-primary">
+                  Create account
+                </Text>
+              </View>
+            </View>
+
+            {/* Backend Error Banner */}
+            {authError ? <ErrorBanner message={authError} /> : null}
+
+            {/* Form */}
+            <View className="mt-2 flex-col gap-4">
+              <TextField
+                label="Full Name"
+                placeholder="e.g. Sara Ahmed"
+                value={fullName}
+                onChangeText={(val) => {
+                  setFullName(val);
+                  if (errors.fullName) setErrors({ ...errors, fullName: undefined });
+                  if (authError) dispatch(clearError());
+                }}
+                error={errors.fullName}
+              />
+
+              <TextField
+                label="Username"
+                placeholder="e.g. sara_ahmed"
+                value={username}
+                onChangeText={(val) => {
+                  setUsername(val);
+                  if (errors.username) setErrors({ ...errors, username: undefined });
+                  if (authError) dispatch(clearError());
+                }}
+                error={errors.username}
+                autoCapitalize="none"
+              />
+
+              <TextField
+                label="Email Address"
+                placeholder="e.g. sara@example.com"
+                value={email}
+                onChangeText={(val) => {
+                  setEmail(val);
+                  if (errors.email) setErrors({ ...errors, email: undefined });
+                  if (authError) dispatch(clearError());
+                }}
+                error={errors.email}
+                autoCapitalize="none"
+                keyboardType="email-address"
+              />
+
+              <TextField
+                label="Password"
+                placeholder="Create a password (min 8 chars)"
+                value={password}
+                onChangeText={(val) => {
+                  setPassword(val);
+                  if (errors.password) setErrors({ ...errors, password: undefined });
+                  if (authError) dispatch(clearError());
+                }}
+                error={errors.password}
+                secureTextEntry
+              />
+
+              <TextField
+                label="Confirm Password"
+                placeholder="Repeat your password"
+                value={confirmPassword}
+                onChangeText={(val) => {
+                  setConfirmPassword(val);
+                  if (errors.confirmPassword) setErrors({ ...errors, confirmPassword: undefined });
+                  if (authError) dispatch(clearError());
+                }}
+                error={errors.confirmPassword}
+                secureTextEntry
+              />
+
+              {/* Checkbox */}
+              <View className="mt-1">
+                <Checkbox
+                  checked={agreedToTerms}
+                  onCheckedChange={(checked) => {
+                    setAgreedToTerms(checked);
+                    if (errors.terms) setErrors({ ...errors, terms: undefined });
+                  }}
+                  error={errors.terms}>
+                  <Text className="font-cairo text-[14px] text-text-secondary">
+                    I agree to the{' '}
+                    <Text className="font-cairo text-[14px] font-bold text-brand-primary">
+                      Terms and Conditions
+                    </Text>
+                  </Text>
+                </Checkbox>
+              </View>
+
+              {/* Primary CTA */}
+              <Button
+                onPress={handleRegister}
+                disabled={isLoading || isGoogleLoading}
+                isLoading={isLoading}
+                hapticStyle="medium"
+                className="mt-4 h-[56px] w-full rounded-full bg-brand-primary shadow-sm">
+                <Text className="font-cairo text-[16px] font-bold text-white">Continue</Text>
+              </Button>
+
+              {/* Divider */}
+              <View className="my-2 flex-row items-center gap-4">
+                <View className="h-[1px] flex-1 bg-surface-border" />
+                <Text className="font-cairo text-[13px] text-text-disabled">or continue with</Text>
+                <View className="h-[1px] flex-1 bg-surface-border" />
+              </View>
+
+              {/* Social Auth Button */}
+              <Button
+                variant="outline"
+                onPress={handleGoogleSignIn}
+                disabled={isLoading || isGoogleLoading}
+                isLoading={isGoogleLoading}
+                hapticStyle="light"
+                className="h-[52px] w-full flex-row items-center justify-center gap-3 rounded-[12px] border border-surface-border bg-surface-surface">
+                <Text className="font-cairo text-[15px] font-semibold text-text-primary">
+                  Continue with Google
+                </Text>
+              </Button>
+            </View>
           </View>
 
-          {/* Heading */}
-          <View className="flex-col gap-1">
-            <Text className="font-cairo text-[28px] font-bold leading-[36px] text-text-primary">
-              Join HomePal
+          {/* Footer */}
+          <View className="mt-8 flex-row items-center justify-center pb-4">
+            <Text className="font-cairo text-[14px] text-text-secondary">
+              Already have an account?{' '}
             </Text>
-            <Text className="font-cairo text-[15px] leading-[22px] text-text-secondary">
-              Manage your household efficiently.
-            </Text>
-          </View>
-
-          {/* Segmented Auth Toggle */}
-          <View className="flex-row rounded-[12px] bg-surface-surface-variant p-1">
             <Pressable
               onPress={() => {
                 if (authError) dispatch(clearError());
                 router.replace('/(auth)/login');
-              }}
-              className="flex-1 items-center justify-center rounded-[8px] py-2.5">
-              <Text className="font-cairo text-[14px] font-medium text-text-secondary">
-                Sign in
-              </Text>
+              }}>
+              <Text className="font-cairo text-[14px] font-bold text-brand-primary">Sign in</Text>
             </Pressable>
-            <View className="flex-1 items-center justify-center rounded-[8px] bg-surface-surface py-2.5 shadow-sm">
-              <Text className="font-cairo text-[14px] font-bold text-text-primary">
-                Create account
-              </Text>
-            </View>
           </View>
-
-          {/* Backend Error Banner */}
-          {authError ? (
-            <View className="border-status-error/30 bg-status-error/10 flex-row items-center gap-2.5 rounded-[12px] border p-3.5">
-              <Icon as={AlertCircle} size={20} className="shrink-0 text-status-error" />
-              <Text className="flex-1 font-cairo text-[13px] font-medium leading-[18px] text-status-error">
-                {authError}
-              </Text>
-            </View>
-          ) : null}
-
-          {/* Form */}
-          <View className="mt-2 flex-col gap-4">
-            <TextField
-              label="Full Name"
-              placeholder="e.g. Sara Ahmed"
-              value={fullName}
-              onChangeText={(val) => {
-                setFullName(val);
-                if (errors.fullName) setErrors({ ...errors, fullName: undefined });
-                if (authError) dispatch(clearError());
-              }}
-              error={errors.fullName}
-            />
-
-            <TextField
-              label="Username"
-              placeholder="e.g. sara_ahmed"
-              value={username}
-              onChangeText={(val) => {
-                setUsername(val);
-                if (errors.username) setErrors({ ...errors, username: undefined });
-                if (authError) dispatch(clearError());
-              }}
-              error={errors.username}
-              autoCapitalize="none"
-            />
-
-            <TextField
-              label="Email Address"
-              placeholder="e.g. sara@example.com"
-              value={email}
-              onChangeText={(val) => {
-                setEmail(val);
-                if (errors.email) setErrors({ ...errors, email: undefined });
-                if (authError) dispatch(clearError());
-              }}
-              error={errors.email}
-              autoCapitalize="none"
-              keyboardType="email-address"
-            />
-
-            <TextField
-              label="Password"
-              placeholder="Create a password (min 8 chars)"
-              value={password}
-              onChangeText={(val) => {
-                setPassword(val);
-                if (errors.password) setErrors({ ...errors, password: undefined });
-                if (authError) dispatch(clearError());
-              }}
-              error={errors.password}
-              secureTextEntry
-            />
-
-            <TextField
-              label="Confirm Password"
-              placeholder="Repeat your password"
-              value={confirmPassword}
-              onChangeText={(val) => {
-                setConfirmPassword(val);
-                if (errors.confirmPassword) setErrors({ ...errors, confirmPassword: undefined });
-                if (authError) dispatch(clearError());
-              }}
-              error={errors.confirmPassword}
-              secureTextEntry
-            />
-
-            {/* Checkbox */}
-            <View className="mt-1">
-              <Checkbox
-                checked={agreedToTerms}
-                onCheckedChange={(checked) => {
-                  setAgreedToTerms(checked);
-                  if (errors.terms) setErrors({ ...errors, terms: undefined });
-                }}
-                error={errors.terms}>
-                <Text className="font-cairo text-[14px] text-text-secondary">
-                  I agree to the{' '}
-                  <Text className="font-cairo text-[14px] font-bold text-brand-primary">
-                    Terms and Conditions
-                  </Text>
-                </Text>
-              </Checkbox>
-            </View>
-
-            {/* Primary CTA */}
-            <Button
-              onPress={handleRegister}
-              disabled={isLoading}
-              className="mt-4 h-[56px] w-full rounded-full bg-brand-primary shadow-sm">
-              <Text className="font-cairo text-[16px] font-bold text-white">Continue</Text>
-            </Button>
-
-            {/* Divider */}
-            <View className="my-2 flex-row items-center gap-4">
-              <View className="h-[1px] flex-1 bg-surface-border" />
-              <Text className="font-cairo text-[13px] text-text-disabled">or continue with</Text>
-              <View className="h-[1px] flex-1 bg-surface-border" />
-            </View>
-
-            {/* Social Auth Button */}
-            <Button
-              variant="outline"
-              onPress={handleGoogleSignIn}
-              disabled={isLoading}
-              className="h-[52px] w-full flex-row items-center justify-center gap-3 rounded-[12px] border border-surface-border bg-surface-surface">
-              <Text className="font-cairo text-[15px] font-semibold text-text-primary">
-                Continue with Google
-              </Text>
-            </Button>
-          </View>
-        </View>
-
-        {/* Footer */}
-        <View className="mt-8 flex-row items-center justify-center pb-4">
-          <Text className="font-cairo text-[14px] text-text-secondary">
-            Already have an account?{' '}
-          </Text>
-          <Pressable
-            onPress={() => {
-              if (authError) dispatch(clearError());
-              router.replace('/(auth)/login');
-            }}>
-            <Text className="font-cairo text-[14px] font-bold text-brand-primary">Sign in</Text>
-          </Pressable>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
+
+export default RegisterScreen;
