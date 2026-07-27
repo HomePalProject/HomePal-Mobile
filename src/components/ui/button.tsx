@@ -1,7 +1,8 @@
 import { TextClassContext } from '@/src/components/ui/text';
 import { cn } from '@/src/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { Platform, Pressable } from 'react-native';
+import { Platform, Pressable, ActivityIndicator } from 'react-native';
+import { AnimatedPressable } from '@/src/components/ui/animated-pressable';
 
 const buttonVariants = cva(
   cn(
@@ -13,13 +14,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-brand-primary active:opacity-85',
-        destructive: 'bg-status-error active:opacity-85',
-        outline:
-          'border border-surface-border bg-surface-surface active:bg-surface-surface-variant',
-        secondary: 'bg-surface-surface-variant active:opacity-85',
-        ghost: 'bg-transparent active:bg-surface-surface-variant',
-        link: 'bg-transparent active:opacity-75',
+        default: 'bg-brand-primary',
+        destructive: 'bg-status-error',
+        outline: 'border border-surface-border bg-surface-surface',
+        secondary: 'bg-surface-surface-variant',
+        ghost: 'bg-transparent',
+        link: 'bg-transparent',
       },
       size: {
         default: cn('h-14 px-6 py-3 sm:h-12', Platform.select({ web: 'has-[>svg]:px-4' })),
@@ -69,16 +69,64 @@ const buttonTextVariants = cva(
 
 type ButtonProps = React.ComponentProps<typeof Pressable> &
   React.RefAttributes<typeof Pressable> &
-  VariantProps<typeof buttonVariants>;
+  VariantProps<typeof buttonVariants> & {
+    isLoading?: boolean;
+    hapticStyle?: 'light' | 'medium' | 'heavy' | 'none';
+  };
 
-function Button({ className, variant, size, ...props }: ButtonProps) {
+function Button({
+  className,
+  variant,
+  size,
+  isLoading = false,
+  hapticStyle = 'light',
+  children,
+  ...props
+}: ButtonProps) {
   return (
     <TextClassContext.Provider value={buttonTextVariants({ variant, size })}>
-      <Pressable
-        className={cn(props.disabled && 'opacity-50', buttonVariants({ variant, size }), className)}
+      <AnimatedPressable
+        className={cn(
+          (props.disabled || isLoading) && 'opacity-50',
+          buttonVariants({ variant, size }),
+          className
+        )}
         role="button"
-        {...props}
-      />
+        disabled={props.disabled || isLoading}
+        hapticStyle={hapticStyle}
+        {...props}>
+        {typeof children === 'function' ? (
+          (state: any) => (
+            <>
+              {isLoading && (
+                <ActivityIndicator
+                  size="small"
+                  color={
+                    variant === 'outline' || variant === 'ghost' || variant === 'secondary'
+                      ? '#356859'
+                      : '#ffffff'
+                  }
+                />
+              )}
+              {children(state)}
+            </>
+          )
+        ) : (
+          <>
+            {isLoading && (
+              <ActivityIndicator
+                size="small"
+                color={
+                  variant === 'outline' || variant === 'ghost' || variant === 'secondary'
+                    ? '#356859'
+                    : '#ffffff'
+                }
+              />
+            )}
+            {children}
+          </>
+        )}
+      </AnimatedPressable>
     </TextClassContext.Provider>
   );
 }
