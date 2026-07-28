@@ -10,6 +10,7 @@ export interface Colors {
     readonly error: string;
     readonly errorContainer: string;
     readonly info: string;
+    readonly amber300: string;
   };
   readonly surface: {
     readonly background: string;
