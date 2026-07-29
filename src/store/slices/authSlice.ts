@@ -64,8 +64,11 @@ export const loginUser = createAsyncThunk(
   async (payload: LoginRequest, { rejectWithValue }) => {
     try {
       const response = await authService.login(payload);
+      console.log('[authSlice] login raw response:', response);
       if (response.success && response.data) {
-        const { token, refreshToken, user } = response.data;
+        const token = response.data.tokens?.accessToken || response.data.token;
+        const refreshToken = response.data.tokens?.refreshToken || response.data.refreshToken;
+        const user = response.data.user;
         await authStorage.setTokens(token, refreshToken);
 
         let userProfile = user;
@@ -78,7 +81,7 @@ export const loginUser = createAsyncThunk(
           await authStorage.setUserProfile(userProfile);
         }
 
-        return { user: userProfile || null, token };
+        return { user: userProfile || null, token: token || null };
       }
       return rejectWithValue(response.message || 'Login failed');
     } catch (error: any) {
@@ -97,7 +100,9 @@ export const loginWithGoogle = createAsyncThunk(
     try {
       const response = await authService.loginWithGoogle(payload);
       if (response.success && response.data) {
-        const { token, refreshToken, user } = response.data;
+        const token = response.data.tokens?.accessToken || response.data.token;
+        const refreshToken = response.data.tokens?.refreshToken || response.data.refreshToken;
+        const user = response.data.user;
         await authStorage.setTokens(token, refreshToken);
 
         let userProfile = user;
@@ -110,7 +115,7 @@ export const loginWithGoogle = createAsyncThunk(
           await authStorage.setUserProfile(userProfile);
         }
 
-        return { user: userProfile || null, token };
+        return { user: userProfile || null, token: token || null };
       }
       return rejectWithValue(response.message || 'Google Sign-In failed');
     } catch (error: any) {

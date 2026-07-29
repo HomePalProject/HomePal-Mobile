@@ -65,23 +65,44 @@ const processQueue = (error: any, token: string | null = null) => {
 apiClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     const token = await authStorage.getAccessToken();
+    console.log(`[HTTP Request] ${config.method?.toUpperCase()} ${config.url}`, {
+      hasToken: !!token,
+      tokenPreview: token ? `${token.substring(0, 15)}...` : 'None',
+    });
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    console.error('[HTTP Request Interceptor Error]', error);
+    return Promise.reject(error);
+  }
 );
 
 // --- Response Interceptor ---
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
     const resData = response.data as ApiResponse;
+    console.log(
+      `[HTTP Response Success] ${response.config.method?.toUpperCase()} ${response.config.url}`,
+      {
+        status: response.status,
+        successEnvelope: resData?.success,
+      }
+    );
 
     // Handle universal API envelope where success === false
     if (resData && typeof resData.success === 'boolean' && !resData.success) {
       const errorMessage = resData.message || 'An error occurred while processing your request.';
       const status = resData.status || response.status;
+      console.warn(
+        `[HTTP Response Success Envelope Error] ${response.config.method?.toUpperCase()} ${response.config.url}`,
+        {
+          status,
+          message: errorMessage,
+        }
+      );
       throw new ApiError(errorMessage, status, resData.errors, resData.data);
     }
 
@@ -89,6 +110,14 @@ apiClient.interceptors.response.use(
   },
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    console.warn(
+      `[HTTP Response Error] ${error.config?.method?.toUpperCase()} ${error.config?.url}`,
+      {
+        status: error.response?.status,
+        message: error.message,
+        data: error.response?.data,
+      }
+    );
 
     // 1. Handle 401 Unauthorized -> Attempt Token Refresh
     if (
@@ -98,7 +127,9 @@ apiClient.interceptors.response.use(
       !originalRequest.url?.includes('/api/Auth/login') &&
       !originalRequest.url?.includes('/api/Auth/refresh')
     ) {
+      console.log('[HTTP Auth] 401 Unauthorized detected. Attempting token refresh...');
       if (isRefreshing) {
+        console.log('[HTTP Auth] Token refresh is already in progress, queuing request.');
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
@@ -116,20 +147,32 @@ apiClient.interceptors.response.use(
 
       try {
         const refreshToken = await authStorage.getRefreshToken();
+        console.log('[HTTP Auth] Stored refresh token details:', {
+          hasRefreshToken: !!refreshToken,
+          refreshTokenPreview: refreshToken ? `${refreshToken.substring(0, 15)}...` : 'None',
+        });
         if (!refreshToken) {
           throw new Error('No refresh token available');
         }
 
         // Call refresh endpoint directly using clean axios instance to bypass interceptors
+        console.log('[HTTP Auth] Calling refresh token endpoint...');
         const refreshResponse = await axios.post<ApiResponse>(`${BASE_URL}api/Auth/refresh`, {
           refreshToken,
         });
 
         const refreshData = refreshResponse.data;
-        if (refreshData && refreshData.success && refreshData.data?.token) {
-          const newToken = refreshData.data.token;
-          const newRefreshToken = refreshData.data.refreshToken || refreshToken;
+        const newToken = refreshData?.data?.tokens?.accessToken || refreshData?.data?.token;
+        const newRefreshToken =
+          refreshData?.data?.tokens?.refreshToken ||
+          refreshData?.data?.refreshToken ||
+          refreshToken;
 
+        console.log('[HTTP Auth] Refresh token endpoint response:', {
+          success: refreshData?.success,
+          hasNewToken: !!newToken,
+        });
+        if (refreshData && refreshData.success && newToken) {
           await authStorage.setTokens(newToken, newRefreshToken);
           apiClient.defaults.headers.common.Authorization = `Bearer ${newToken}`;
 
@@ -138,14 +181,17 @@ apiClient.interceptors.response.use(
           }
 
           processQueue(null, newToken);
+          console.log('[HTTP Auth] Token refreshed successfully. Retrying original request.');
           return apiClient(originalRequest);
         } else {
           throw new Error('Refresh token request rejected');
         }
-      } catch (refreshError) {
+      } catch (refreshError: any) {
+        console.error('[HTTP Auth] Token refresh failed:', refreshError.message);
         processQueue(refreshError, null);
         await authStorage.clearTokens();
         if (onUnauthorizedCallback) {
+          console.log('[HTTP Auth] Dispatching unauthorized/logout callback.');
           onUnauthorizedCallback();
         }
         return Promise.reject(new ApiError('Session expired. Please sign in again.', 401));

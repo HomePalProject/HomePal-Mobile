@@ -60,25 +60,42 @@ export const authStorage = {
    * Save access token and refresh token securely.
    */
   setTokens: async (token: any, refreshToken?: any): Promise<void> => {
+    console.log('[authStorage] setTokens called with:', {
+      tokenType: typeof token,
+      hasToken: !!token,
+      hasRefreshToken: !!refreshToken,
+    });
     try {
       const tokenStr = ensureString(token);
       const refreshTokenStr = ensureString(refreshToken);
+      console.log('[authStorage] setTokens processed strings:', {
+        tokenStrLength: tokenStr?.length,
+        refreshTokenStrLength: refreshTokenStr?.length,
+        tokenStrPreview: tokenStr ? `${tokenStr.substring(0, 15)}...` : 'None',
+      });
 
       const available = await isSecureStoreAvailable();
+      console.log('[authStorage] setTokens storage availability:', { available });
       if (available) {
         if (tokenStr) {
           await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, tokenStr);
+          console.log('[authStorage] Saved access token to SecureStore');
         }
         if (refreshTokenStr) {
           await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refreshTokenStr);
+          console.log('[authStorage] Saved refresh token to SecureStore');
         }
       } else if (typeof localStorage !== 'undefined') {
         if (tokenStr) {
           localStorage.setItem(ACCESS_TOKEN_KEY, tokenStr);
+          console.log('[authStorage] Saved access token to localStorage');
         }
         if (refreshTokenStr) {
           localStorage.setItem(REFRESH_TOKEN_KEY, refreshTokenStr);
+          console.log('[authStorage] Saved refresh token to localStorage');
         }
+      } else {
+        console.warn('[authStorage] No storage mechanism available to save tokens!');
       }
     } catch (error) {
       console.error('Error saving auth tokens:', error);
@@ -97,7 +114,14 @@ export const authStorage = {
       } else if (typeof localStorage !== 'undefined') {
         token = localStorage.getItem(ACCESS_TOKEN_KEY);
       }
-      return extractTokenString(token);
+      const finalToken = extractTokenString(token);
+      console.log('[authStorage] getAccessToken retrieved:', {
+        hasToken: !!finalToken,
+        tokenLength: finalToken?.length,
+        rawLength: token?.length,
+        tokenPreview: finalToken ? `${finalToken.substring(0, 15)}...` : 'None',
+      });
+      return finalToken;
     } catch (error) {
       console.error('Error getting access token:', error);
     }
@@ -116,7 +140,14 @@ export const authStorage = {
       } else if (typeof localStorage !== 'undefined') {
         token = localStorage.getItem(REFRESH_TOKEN_KEY);
       }
-      return extractTokenString(token);
+      const finalToken = extractTokenString(token);
+      console.log('[authStorage] getRefreshToken retrieved:', {
+        hasRefreshToken: !!finalToken,
+        refreshTokenLength: finalToken?.length,
+        rawLength: token?.length,
+        refreshTokenPreview: finalToken ? `${finalToken.substring(0, 15)}...` : 'None',
+      });
+      return finalToken;
     } catch (error) {
       console.error('Error getting refresh token:', error);
     }

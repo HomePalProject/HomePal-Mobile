@@ -20,6 +20,8 @@ export default function EditProfileScreen() {
   const [city, setCity] = useState(profile.city);
   const [profileImageUri, setProfileImageUri] = useState<string | null>(profile.profileImageUri);
   const [modalVisible, setModalVisible] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -54,16 +56,40 @@ export default function EditProfileScreen() {
     setModalVisible(true);
   };
 
-  const handleSave = () => {
-    profile.updateProfile({
-      fullName,
-      gender,
-      birthDate: birthDate || null,
-      governorate,
-      city,
-      profileImageUri,
-    });
-    router.back();
+  const handleSave = async () => {
+    if (!fullName.trim()) {
+      setErrorMsg('Full Name is required');
+      return;
+    }
+    if (!governorate.trim()) {
+      setErrorMsg('Governorate is required');
+      return;
+    }
+    if (!city.trim()) {
+      setErrorMsg('City is required');
+      return;
+    }
+
+    setIsSaving(true);
+    setErrorMsg(null);
+
+    try {
+      await profile.saveProfile({
+        fullName: fullName.trim(),
+        gender,
+        birthDate: birthDate || null,
+        governorate: governorate.trim(),
+        city: city.trim(),
+      });
+
+      // Update local profile image URI state if any
+      profile.updateProfile({ profileImageUri });
+      router.back();
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Failed to save changes. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const imageSource = profileImageUri ? { uri: profileImageUri } : nouraAvatarLarge;
@@ -227,17 +253,29 @@ export default function EditProfileScreen() {
             </View>
           </Pressable>
 
+          {errorMsg && (
+            <Text className="mt-spacing-8 text-center font-cairo text-[13px] font-bold text-brand-error">
+              {errorMsg}
+            </Text>
+          )}
+
           <View className="gap-y-spacing-12 mt-spacing-24">
             <Pressable
-              className="active:bg-brand-primaryPressed mb-3 h-14 items-center justify-center rounded-radius-full bg-brand-primary shadow-md"
+              disabled={isSaving}
+              className={`active:bg-brand-primaryPressed mb-3 h-14 items-center justify-center rounded-radius-full bg-brand-primary shadow-md ${
+                isSaving ? 'opacity-70' : ''
+              }`}
               onPress={handleSave}>
               <Text className="text-bodyLarge font-cairo font-bold text-text-inverse">
-                Save Changes
+                {isSaving ? 'Saving Changes...' : 'Save Changes'}
               </Text>
             </Pressable>
 
             <Pressable
-              className="h-14 items-center justify-center rounded-radius-full bg-brand-accent-container shadow-sm active:bg-brand-accent-container/80"
+              disabled={isSaving}
+              className={`h-14 items-center justify-center rounded-radius-full bg-brand-accent-container shadow-sm active:bg-brand-accent-container/80 ${
+                isSaving ? 'opacity-50' : ''
+              }`}
               onPress={() => router.back()}>
               <Text className="text-bodyLarge font-cairo font-bold text-text-primary">Cancel</Text>
             </Pressable>
