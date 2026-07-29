@@ -24,14 +24,12 @@ export const authService = {
     return response.data;
   },
 
-  /**
-   * Authenticate with email or username and password.
-   */
   login: async (payload: LoginRequest): Promise<ApiResponse<AuthResponseData>> => {
     const response = await apiClient.post<ApiResponse<AuthResponseData>>(
       '/api/Auth/login',
       payload
     );
+    console.log('[authService] Raw login response data:', response.data);
     return response.data;
   },
 

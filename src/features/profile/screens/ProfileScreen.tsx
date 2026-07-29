@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, Switch, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, Pressable, Switch, Image, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, Href } from 'expo-router';
 import Svg, { Circle, Defs, LinearGradient, RadialGradient, Stop } from 'react-native-svg';
@@ -7,15 +7,28 @@ import { SvgIcon } from '../../../components/ui/SvgIcon';
 import { ImpactCard } from '../components/ImpactCard';
 import { ProfileListItem } from '../components/ProfileListItem';
 import { useProfileStore } from '../../../store/useProfileStore';
+import { useAppDispatch } from '../../../store';
+import { logoutUser } from '../../../store/slices/authSlice';
 
 const nouraAvatar = require('../../../assets/images/avatar-noura.png');
 
 export default function ProfileScreen() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
+  const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+  const dispatch = useAppDispatch();
 
-  const { firstName, lastName, email, profileImageUri, family } = useProfileStore();
-  const name = `${firstName} ${lastName}`;
+  const { fullName, email, profileImageUri, family, fetchProfile } = useProfileStore();
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const handleLogout = () => {
+    setLogoutModalVisible(true);
+  };
+
+  const name = fullName;
   const imageSource = profileImageUri ? { uri: profileImageUri } : nouraAvatar;
 
   return (
@@ -30,7 +43,7 @@ export default function ProfileScreen() {
             <View className="absolute right-2 top-2 h-2.5 w-2.5 rounded-radius-full border border-surface-surface bg-brand-accent" />
           </Pressable>
           <Pressable
-            className="bg-brand-primaryContainer h-10 w-10 items-center justify-center overflow-hidden rounded-radius-full border border-brand-primary/20"
+            className="bg-brand-primaryContainer border-brand-primary/20 h-10 w-10 items-center justify-center overflow-hidden rounded-radius-full border"
             onPress={() => router.push('/edit-profile' as Href)}>
             <Image source={imageSource} className="h-full w-full" />
           </Pressable>
@@ -39,7 +52,7 @@ export default function ProfileScreen() {
 
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 48 }}>
         <View className="px-spacing-16 pb-spacing-24 pt-spacing-16">
-          <View className="relative min-h-[300px] items-center justify-center overflow-hidden rounded-radius-large border border-surface-border/80 bg-surface-surface p-spacing-24 shadow-md">
+          <View className="border-surface-border/80 relative min-h-[300px] items-center justify-center overflow-hidden rounded-radius-large border bg-surface-surface p-spacing-24 shadow-md">
             <View className="absolute -right-16 -top-16 h-48 w-48 opacity-80">
               <Svg width="100%" height="100%" viewBox="0 0 200 200">
                 <Defs>
@@ -249,7 +262,7 @@ export default function ProfileScreen() {
         <View className="gap-spacing-16 px-spacing-16">
           <Pressable
             className="items-center rounded-radius-full bg-brand-error p-spacing-16 shadow-sm active:bg-brand-error/90"
-            onPress={() => console.log('Confirm logout modal')}>
+            onPress={handleLogout}>
             <Text className="text-body font-cairo font-bold text-text-inverse">Logout</Text>
           </Pressable>
           <Text className="text-caption text-center font-cairo text-text-secondary">
@@ -257,6 +270,44 @@ export default function ProfileScreen() {
           </Text>
         </View>
       </ScrollView>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={logoutModalVisible}
+        onRequestClose={() => setLogoutModalVisible(false)}>
+        <Pressable
+          className="flex-1 items-center justify-center bg-black/50 px-spacing-24"
+          onPress={() => setLogoutModalVisible(false)}>
+          <Pressable
+            className="w-full max-w-[320px] rounded-radius-large border border-surface-border bg-surface-surface p-spacing-24 shadow-xl"
+            onPress={(e) => e.stopPropagation()}>
+            <Text className="text-bodyLarge mb-spacing-8 text-center font-cairo font-bold text-text-primary">
+              Confirm Logout
+            </Text>
+            <Text className="text-bodySmall mb-spacing-24 text-center font-cairo leading-[20px] text-text-secondary">
+              Are you sure you want to log out of HomePal?
+            </Text>
+
+            <View className="gap-y-spacing-12">
+              <Pressable
+                onPress={() => {
+                  setLogoutModalVisible(false);
+                  dispatch(logoutUser());
+                }}
+                className="active:bg-brand-primaryPressed h-12 flex-row items-center justify-center rounded-radius-medium bg-brand-error shadow-sm">
+                <Text className="text-body font-cairo font-bold text-text-inverse">Log Out</Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => setLogoutModalVisible(false)}
+                className="bg-surface-surfaceVariant/60 active:bg-surface-border/40 h-12 flex-row items-center justify-center rounded-radius-medium border border-surface-border">
+                <Text className="text-body font-cairo font-bold text-text-secondary">Cancel</Text>
+              </Pressable>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }

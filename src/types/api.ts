@@ -41,8 +41,14 @@ export interface UserProfile {
  * Auth Token & Session payload returned upon successful login / token refresh.
  */
 export interface AuthResponseData {
-  token: string;
-  refreshToken: string;
+  token?: string;
+  refreshToken?: string;
+  tokens?: {
+    accessToken: string;
+    refreshToken: string;
+    accessTokenExpiresAt?: string;
+    refreshTokenExpiresAt?: string;
+  };
   user?: UserProfile;
   [key: string]: any;
 }
