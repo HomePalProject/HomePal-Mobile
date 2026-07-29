@@ -5,16 +5,19 @@ import { router } from 'expo-router';
 import { SvgIcon } from '../../../components/ui/SvgIcon';
 import * as ImagePicker from 'expo-image-picker';
 import { useProfileStore } from '../../../store/useProfileStore';
+import { DatePicker } from '../../../components/ui';
+import { Gender } from '../../../types/api';
 
 const nouraAvatarLarge = require('../../../assets/images/avatar-noura-large.png');
 
 export default function EditProfileScreen() {
   const profile = useProfileStore();
 
-  const [firstName, setFirstName] = useState(profile.firstName);
-  const [lastName, setLastName] = useState(profile.lastName);
-  const [email, setEmail] = useState(profile.email);
-  const [phoneNumber, setPhoneNumber] = useState(profile.phoneNumber);
+  const [fullName, setFullName] = useState(profile.fullName);
+  const [gender, setGender] = useState<Gender | null>(profile.gender);
+  const [birthDate, setBirthDate] = useState<string>(profile.birthDate || '');
+  const [governorate, setGovernorate] = useState(profile.governorate);
+  const [city, setCity] = useState(profile.city);
   const [profileImageUri, setProfileImageUri] = useState<string | null>(profile.profileImageUri);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -53,10 +56,11 @@ export default function EditProfileScreen() {
 
   const handleSave = () => {
     profile.updateProfile({
-      firstName,
-      lastName,
-      email,
-      phoneNumber,
+      fullName,
+      gender,
+      birthDate: birthDate || null,
+      governorate,
+      city,
       profileImageUri,
     });
     router.back();
@@ -77,7 +81,7 @@ export default function EditProfileScreen() {
           Account Settings
         </Text>
 
-        <View className="bg-brand-primaryContainer h-10 w-10 items-center justify-center overflow-hidden rounded-radius-full border border-brand-primary/20">
+        <View className="bg-brand-primaryContainer border-brand-primary/20 h-10 w-10 items-center justify-center overflow-hidden rounded-radius-full border">
           <Image source={imageSource} className="h-full w-full" />
         </View>
       </View>
@@ -109,17 +113,80 @@ export default function EditProfileScreen() {
         </View>
 
         <View className="gap-y-spacing-24 px-spacing-16 pt-spacing-24">
+          <View className="w-full">
+            <Text className="text-caption mb-spacing-8 ml-spacing-8 font-cairo font-bold text-text-secondary">
+              Full Name
+            </Text>
+            <View className="border-surface-border/40 h-12 justify-center rounded-radius-medium border bg-surface-surface px-spacing-16 shadow-sm">
+              <TextInput
+                value={fullName}
+                onChangeText={setFullName}
+                className="text-body h-full w-full font-cairo text-text-primary"
+                placeholder="Full Name"
+                placeholderTextColor="#A8A29B"
+              />
+            </View>
+          </View>
+
+          <View className="w-full">
+            <Text className="text-caption mb-spacing-8 ml-spacing-8 font-cairo font-bold text-text-secondary">
+              Gender
+            </Text>
+            <View className="gap-x-spacing-12 flex-row">
+              <Pressable
+                onPress={() => setGender(Gender.Male)}
+                className={`h-12 flex-1 flex-row items-center justify-center rounded-radius-medium border ${
+                  gender === Gender.Male
+                    ? 'bg-brand-primaryContainer/30 border-brand-primary'
+                    : 'border-surface-border/40 bg-surface-surface'
+                } shadow-sm active:opacity-90`}>
+                <Text
+                  className={`text-body font-cairo ${
+                    gender === Gender.Male ? 'font-bold text-brand-primary' : 'text-text-secondary'
+                  }`}>
+                  Male
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => setGender(Gender.Female)}
+                className={`h-12 flex-1 flex-row items-center justify-center rounded-radius-medium border ${
+                  gender === Gender.Female
+                    ? 'bg-brand-primaryContainer/30 border-brand-primary'
+                    : 'border-surface-border/40 bg-surface-surface'
+                } shadow-sm active:opacity-90`}>
+                <Text
+                  className={`text-body font-cairo ${
+                    gender === Gender.Female
+                      ? 'font-bold text-brand-primary'
+                      : 'text-text-secondary'
+                  }`}>
+                  Female
+                </Text>
+              </Pressable>
+            </View>
+          </View>
+
+          <View className="w-full">
+            <DatePicker
+              label="Birth Date"
+              value={birthDate}
+              onChange={setBirthDate}
+              placeholder="Select birth date"
+            />
+          </View>
+
           <View className="w-full flex-row justify-between">
             <View className="w-[48%]">
               <Text className="text-caption mb-spacing-8 ml-spacing-8 font-cairo font-bold text-text-secondary">
-                First Name
+                Governorate
               </Text>
-              <View className="h-12 justify-center rounded-radius-medium border border-surface-border/40 bg-surface-surface px-spacing-16 shadow-sm">
+              <View className="border-surface-border/40 h-12 justify-center rounded-radius-medium border bg-surface-surface px-spacing-16 shadow-sm">
                 <TextInput
-                  value={firstName}
-                  onChangeText={setFirstName}
+                  value={governorate}
+                  onChangeText={setGovernorate}
                   className="text-body h-full w-full font-cairo text-text-primary"
-                  placeholder="First Name"
+                  placeholder="Governorate"
                   placeholderTextColor="#A8A29B"
                 />
               </View>
@@ -127,56 +194,21 @@ export default function EditProfileScreen() {
 
             <View className="w-[48%]">
               <Text className="text-caption mb-spacing-8 ml-spacing-8 font-cairo font-bold text-text-secondary">
-                Last Name
+                City
               </Text>
-              <View className="h-12 justify-center rounded-radius-medium border border-surface-border/40 bg-surface-surface px-spacing-16 shadow-sm">
+              <View className="border-surface-border/40 h-12 justify-center rounded-radius-medium border bg-surface-surface px-spacing-16 shadow-sm">
                 <TextInput
-                  value={lastName}
-                  onChangeText={setLastName}
+                  value={city}
+                  onChangeText={setCity}
                   className="text-body h-full w-full font-cairo text-text-primary"
-                  placeholder="Last Name"
+                  placeholder="City"
                   placeholderTextColor="#A8A29B"
                 />
               </View>
             </View>
           </View>
 
-          <View className="w-full">
-            <Text className="text-caption mb-spacing-8 ml-spacing-8 font-cairo font-bold text-text-secondary">
-              Email Address
-            </Text>
-            <View className="gap-spacing-12 h-12 flex-row items-center rounded-radius-medium border border-surface-border/40 bg-surface-surface px-spacing-16 shadow-sm">
-              <SvgIcon name="input-mail" width={18} height={14} fill="#6D6862" />
-              <TextInput
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                className="text-body h-full flex-1 font-cairo text-text-primary"
-                placeholder="Email Address"
-                placeholderTextColor="#A8A29B"
-              />
-            </View>
-          </View>
-
-          <View className="w-full">
-            <Text className="text-caption mb-spacing-8 ml-spacing-8 font-cairo font-bold text-text-secondary">
-              Phone Number
-            </Text>
-            <View className="gap-spacing-12 h-12 flex-row items-center rounded-radius-medium border border-surface-border/40 bg-surface-surface px-spacing-16 shadow-sm">
-              <SvgIcon name="input-phone" width={16} height={16} fill="#6D6862" />
-              <TextInput
-                value={phoneNumber}
-                onChangeText={setPhoneNumber}
-                keyboardType="phone-pad"
-                className="text-body h-full flex-1 font-cairo text-text-primary"
-                placeholder="Phone Number"
-                placeholderTextColor="#A8A29B"
-              />
-            </View>
-          </View>
-
-          <Pressable className="active:bg-surface-surfaceVariant/40 mt-spacing-8 flex-row items-center justify-between rounded-radius-large border border-surface-border/40 bg-surface-surface p-spacing-16 shadow-sm">
+          <Pressable className="active:bg-surface-surfaceVariant/40 border-surface-border/40 mt-spacing-8 flex-row items-center justify-between rounded-radius-large border bg-surface-surface p-spacing-16 shadow-sm">
             <View className="flex-row items-center gap-spacing-16">
               <View className="bg-brand-primaryContainer h-10 w-10 items-center justify-center rounded-radius-full">
                 <SvgIcon name="security-shield" width={18} height={20} fill="#356859" />
@@ -244,7 +276,7 @@ export default function EditProfileScreen() {
                   setModalVisible(false);
                   pickImage();
                 }}
-                className="bg-brand-primaryContainer h-12 flex-row items-center justify-center rounded-radius-medium border border-brand-primary/20 active:opacity-90">
+                className="bg-brand-primaryContainer border-brand-primary/20 h-12 flex-row items-center justify-center rounded-radius-medium border active:opacity-90">
                 <Text className="text-body font-cairo font-bold text-brand-primary">
                   Choose from Library
                 </Text>
@@ -252,7 +284,7 @@ export default function EditProfileScreen() {
 
               <Pressable
                 onPress={() => setModalVisible(false)}
-                className="bg-surface-surfaceVariant mt-spacing-8 h-12 flex-row items-center justify-center rounded-radius-medium active:bg-surface-border/40">
+                className="bg-surface-surfaceVariant active:bg-surface-border/40 mt-spacing-8 h-12 flex-row items-center justify-center rounded-radius-medium">
                 <Text className="text-body font-cairo font-bold text-text-secondary">Cancel</Text>
               </Pressable>
             </View>

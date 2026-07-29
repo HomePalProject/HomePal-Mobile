@@ -4,10 +4,18 @@ import { router, Href, Stack } from 'expo-router';
 import { useProfileStore } from '../../../store/useProfileStore';
 
 export default function HomeScreen() {
-  const { firstName, lastName, family } = useProfileStore();
+  const { fullName, family } = useProfileStore();
+
+  const nameParts = fullName.trim().split(/\s+/);
+  const firstName = nameParts[0] || '';
+  const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
+  const firstInitial = firstName ? firstName[0].toUpperCase() : '';
+  const lastInitial = lastName ? lastName[0].toUpperCase() : '';
+
   const user = {
     firstName,
-    lastName,
+    firstInitial,
+    lastInitial,
     family,
   };
 
@@ -27,8 +35,8 @@ export default function HomeScreen() {
 
           <View className="bg-brand-primaryContainer h-12 w-12 items-center justify-center rounded-radius-full">
             <Text className="text-body font-cairo font-bold text-brand-primary">
-              {user.firstName[0]}
-              {user.lastName[0]}
+              {user.firstInitial}
+              {user.lastInitial}
             </Text>
           </View>
         </Pressable>

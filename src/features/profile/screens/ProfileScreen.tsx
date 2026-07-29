@@ -14,8 +14,8 @@ export default function ProfileScreen() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
 
-  const { firstName, lastName, email, profileImageUri, family } = useProfileStore();
-  const name = `${firstName} ${lastName}`;
+  const { fullName, email, profileImageUri, family } = useProfileStore();
+  const name = fullName;
   const imageSource = profileImageUri ? { uri: profileImageUri } : nouraAvatar;
 
   return (
@@ -30,7 +30,7 @@ export default function ProfileScreen() {
             <View className="absolute right-2 top-2 h-2.5 w-2.5 rounded-radius-full border border-surface-surface bg-brand-accent" />
           </Pressable>
           <Pressable
-            className="bg-brand-primaryContainer h-10 w-10 items-center justify-center overflow-hidden rounded-radius-full border border-brand-primary/20"
+            className="bg-brand-primaryContainer border-brand-primary/20 h-10 w-10 items-center justify-center overflow-hidden rounded-radius-full border"
             onPress={() => router.push('/edit-profile' as Href)}>
             <Image source={imageSource} className="h-full w-full" />
           </Pressable>
@@ -39,7 +39,7 @@ export default function ProfileScreen() {
 
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 48 }}>
         <View className="px-spacing-16 pb-spacing-24 pt-spacing-16">
-          <View className="relative min-h-[300px] items-center justify-center overflow-hidden rounded-radius-large border border-surface-border/80 bg-surface-surface p-spacing-24 shadow-md">
+          <View className="border-surface-border/80 relative min-h-[300px] items-center justify-center overflow-hidden rounded-radius-large border bg-surface-surface p-spacing-24 shadow-md">
             <View className="absolute -right-16 -top-16 h-48 w-48 opacity-80">
               <Svg width="100%" height="100%" viewBox="0 0 200 200">
                 <Defs>
