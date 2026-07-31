@@ -10,8 +10,6 @@ import { useProfileStore } from '../../../store/useProfileStore';
 import { useAppDispatch } from '../../../store';
 import { logoutUser } from '../../../store/slices/authSlice';
 
-const nouraAvatar = require('../../../assets/images/avatar-noura.png');
-
 export default function ProfileScreen() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [darkModeEnabled, setDarkModeEnabled] = useState(false);
@@ -29,7 +27,6 @@ export default function ProfileScreen() {
   };
 
   const name = fullName;
-  const imageSource = profileImageUri ? { uri: profileImageUri } : nouraAvatar;
 
   return (
     <SafeAreaView className="flex-1 bg-surface-background">
@@ -45,7 +42,13 @@ export default function ProfileScreen() {
           <Pressable
             className="bg-brand-primaryContainer border-brand-primary/20 h-10 w-10 items-center justify-center overflow-hidden rounded-radius-full border"
             onPress={() => router.push('/edit-profile' as Href)}>
-            <Image source={imageSource} className="h-full w-full" />
+            {profileImageUri ? (
+              <Image source={{ uri: profileImageUri }} className="h-full w-full" />
+            ) : (
+              <Text className="text-body font-cairo text-lg font-bold text-brand-primary">
+                {fullName ? fullName.charAt(0).toUpperCase() : 'U'}
+              </Text>
+            )}
           </Pressable>
         </View>
       </View>
@@ -107,8 +110,14 @@ export default function ProfileScreen() {
                   />
                 </Svg>
               </View>
-              <View className="h-[80px] w-[80px] overflow-hidden rounded-radius-full border-2 border-surface-surface bg-surface-surface">
-                <Image source={imageSource} className="h-full w-full" />
+              <View className="bg-brand-primaryContainer h-[80px] w-[80px] items-center justify-center overflow-hidden rounded-radius-full border-2 border-surface-surface">
+                {profileImageUri ? (
+                  <Image source={{ uri: profileImageUri }} className="h-full w-full" />
+                ) : (
+                  <Text className="text-body font-cairo text-2xl font-bold text-brand-primary">
+                    {fullName ? fullName.charAt(0).toUpperCase() : 'U'}
+                  </Text>
+                )}
               </View>
               <View className="absolute bottom-0 right-0 h-8 w-8 items-center justify-center rounded-radius-full border border-surface-border bg-brand-primary shadow">
                 <Pressable onPress={() => router.push('/edit-profile' as Href)}>
@@ -120,7 +129,7 @@ export default function ProfileScreen() {
             <Text className="text-h3 mb-spacing-4 font-cairo font-bold text-text-primary">
               {name}
             </Text>
-            <Text className="text-bodySmall mb-spacing-12 font-cairo text-text-primary">
+            <Text className="text-bodySmall mb-spacing-16 font-cairo text-text-primary">
               {email}
             </Text>
 
@@ -145,7 +154,7 @@ export default function ProfileScreen() {
           <Text className="text-bodyLarge mb-spacing-16 pl-spacing-4 font-cairo font-bold text-text-primary">
             Your Impact
           </Text>
-          <View className="gap-y-spacing-12 flex-row flex-wrap justify-between">
+          <View className="flex-row flex-wrap justify-between gap-y-spacing-16">
             <ImpactCard
               value="42"
               label="Pantry Items"
@@ -289,7 +298,7 @@ export default function ProfileScreen() {
               Are you sure you want to log out of HomePal?
             </Text>
 
-            <View className="gap-y-spacing-12">
+            <View className="gap-y-spacing-16">
               <Pressable
                 onPress={() => {
                   setLogoutModalVisible(false);
