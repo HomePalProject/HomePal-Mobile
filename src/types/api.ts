@@ -35,6 +35,8 @@ export interface UserProfile {
   createdAt?: string;
   lastLoginAt?: string | null;
   roles?: string[];
+  profileImageUrl?: string | null;
+  profileImage?: string | null;
 }
 
 /**

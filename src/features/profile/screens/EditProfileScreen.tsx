@@ -8,8 +8,6 @@ import { useProfileStore } from '../../../store/useProfileStore';
 import { DatePicker } from '../../../components/ui';
 import { Gender } from '../../../types/api';
 
-const nouraAvatarLarge = require('../../../assets/images/avatar-noura-large.png');
-
 export default function EditProfileScreen() {
   const profile = useProfileStore();
 
@@ -20,6 +18,7 @@ export default function EditProfileScreen() {
   const [city, setCity] = useState(profile.city);
   const [profileImageUri, setProfileImageUri] = useState<string | null>(profile.profileImageUri);
   const [modalVisible, setModalVisible] = useState(false);
+  const [permissionModalVisible, setPermissionModalVisible] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -38,7 +37,7 @@ export default function EditProfileScreen() {
   const takePhoto = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
-      alert('You need to grant camera permission to take a photo');
+      setPermissionModalVisible(true);
       return;
     }
     const result = await ImagePicker.launchCameraAsync({
@@ -74,6 +73,7 @@ export default function EditProfileScreen() {
     setErrorMsg(null);
 
     try {
+      // 1. Save general profile information
       await profile.saveProfile({
         fullName: fullName.trim(),
         gender,
@@ -82,17 +82,25 @@ export default function EditProfileScreen() {
         city: city.trim(),
       });
 
-      // Update local profile image URI state if any
-      profile.updateProfile({ profileImageUri });
+      // 2. Handle image changes (upload or delete)
+      if (profileImageUri !== profile.profileImageUri) {
+        if (!profileImageUri) {
+          console.log('[EditProfileScreen] Deleting profile picture...');
+          await profile.deleteProfileImage();
+        } else {
+          console.log('[EditProfileScreen] Uploading new profile picture...', profileImageUri);
+          await profile.uploadProfileImage(profileImageUri);
+        }
+      }
+
       router.back();
     } catch (err: any) {
+      console.error('[EditProfileScreen] Error saving profile:', err);
       setErrorMsg(err.message || 'Failed to save changes. Please try again.');
     } finally {
       setIsSaving(false);
     }
   };
-
-  const imageSource = profileImageUri ? { uri: profileImageUri } : nouraAvatarLarge;
 
   return (
     <SafeAreaView className="flex-1 bg-surface-background">
@@ -108,7 +116,13 @@ export default function EditProfileScreen() {
         </Text>
 
         <View className="bg-brand-primaryContainer border-brand-primary/20 h-10 w-10 items-center justify-center overflow-hidden rounded-radius-full border">
-          <Image source={imageSource} className="h-full w-full" />
+          {profileImageUri ? (
+            <Image source={{ uri: profileImageUri }} className="h-full w-full" />
+          ) : (
+            <Text className="text-body font-cairo font-bold text-brand-primary">
+              {fullName ? fullName.charAt(0).toUpperCase() : 'U'}
+            </Text>
+          )}
         </View>
       </View>
 
@@ -118,9 +132,15 @@ export default function EditProfileScreen() {
             <SvgIcon name="profile-glow-edit" width={390} height={228} />
           </View>
 
-          <View className="bg-surface-surfaceVariant relative z-[1] h-32 w-32 items-center justify-center rounded-radius-full border-4 border-surface-surface shadow-md">
-            <View className="h-full w-full overflow-hidden rounded-radius-full">
-              <Image source={imageSource} className="h-full w-full" />
+          <View className="bg-brand-primaryContainer relative z-[1] h-32 w-32 items-center justify-center rounded-radius-full border-4 border-surface-surface shadow-md">
+            <View className="h-full w-full items-center justify-center overflow-hidden rounded-radius-full">
+              {profileImageUri ? (
+                <Image source={{ uri: profileImageUri }} className="h-full w-full" />
+              ) : (
+                <Text className="text-display font-cairo text-4xl font-bold text-brand-primary">
+                  {fullName ? fullName.charAt(0).toUpperCase() : 'U'}
+                </Text>
+              )}
             </View>
             <Pressable
               onPress={handleImageSelection}
@@ -158,7 +178,7 @@ export default function EditProfileScreen() {
             <Text className="text-caption mb-spacing-8 ml-spacing-8 font-cairo font-bold text-text-secondary">
               Gender
             </Text>
-            <View className="gap-x-spacing-12 flex-row">
+            <View className="flex-row gap-x-spacing-16">
               <Pressable
                 onPress={() => setGender(Gender.Male)}
                 className={`h-12 flex-1 flex-row items-center justify-center rounded-radius-medium border ${
@@ -259,10 +279,10 @@ export default function EditProfileScreen() {
             </Text>
           )}
 
-          <View className="gap-y-spacing-12 mt-spacing-24">
+          <View className="mt-spacing-24 gap-y-spacing-16">
             <Pressable
               disabled={isSaving}
-              className={`active:bg-brand-primaryPressed mb-3 h-14 items-center justify-center rounded-radius-full bg-brand-primary shadow-md ${
+              className={`active:bg-brand-primaryPressed h-14 items-center justify-center rounded-radius-full bg-brand-primary shadow-md ${
                 isSaving ? 'opacity-70' : ''
               }`}
               onPress={handleSave}>
@@ -299,7 +319,7 @@ export default function EditProfileScreen() {
               Choose an option to update your photo
             </Text>
 
-            <View className="gap-y-spacing-12">
+            <View className="gap-y-spacing-16">
               <Pressable
                 onPress={() => {
                   setModalVisible(false);
@@ -320,12 +340,53 @@ export default function EditProfileScreen() {
                 </Text>
               </Pressable>
 
+              {profileImageUri && (
+                <Pressable
+                  onPress={() => {
+                    setModalVisible(false);
+                    setProfileImageUri(null);
+                  }}
+                  className="h-12 flex-row items-center justify-center rounded-radius-medium border border-brand-error/20 bg-brand-error/10 active:opacity-90">
+                  <Text className="text-body font-cairo font-bold text-brand-error">
+                    Remove Current Photo
+                  </Text>
+                </Pressable>
+              )}
+
               <Pressable
                 onPress={() => setModalVisible(false)}
-                className="bg-surface-surfaceVariant active:bg-surface-border/40 mt-spacing-8 h-12 flex-row items-center justify-center rounded-radius-medium">
+                className="bg-surface-surfaceVariant active:bg-surface-border/40 h-12 flex-row items-center justify-center rounded-radius-medium">
                 <Text className="text-body font-cairo font-bold text-text-secondary">Cancel</Text>
               </Pressable>
             </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={permissionModalVisible}
+        onRequestClose={() => setPermissionModalVisible(false)}>
+        <Pressable
+          className="flex-1 items-center justify-center bg-black/50 px-spacing-24"
+          onPress={() => setPermissionModalVisible(false)}>
+          <Pressable
+            className="w-full max-w-[320px] rounded-radius-large border border-surface-border bg-surface-surface p-spacing-24 shadow-xl"
+            onPress={(e) => e.stopPropagation()}>
+            <Text className="text-bodyLarge mb-spacing-8 text-center font-cairo font-bold text-text-primary">
+              Camera Permission Required
+            </Text>
+            <Text className="text-bodySmall mb-spacing-24 text-center font-cairo leading-[20px] text-text-secondary">
+              You need to grant camera permission to take a photo. Please enable camera access in
+              your device settings.
+            </Text>
+
+            <Pressable
+              onPress={() => setPermissionModalVisible(false)}
+              className="h-12 flex-row items-center justify-center rounded-radius-medium bg-brand-primary shadow-sm active:bg-brand-primary-pressed">
+              <Text className="text-body font-cairo font-bold text-text-inverse">OK</Text>
+            </Pressable>
           </Pressable>
         </Pressable>
       </Modal>

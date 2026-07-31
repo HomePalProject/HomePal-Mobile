@@ -123,4 +123,58 @@ export const authService = {
     const response = await apiClient.put<ApiResponse<UserProfile>>('/api/Auth/profile', payload);
     return response.data;
   },
+
+  /**
+   * Upload user profile image (POST).
+   */
+  uploadProfileImage: async (uri: string): Promise<ApiResponse<any>> => {
+    const formData = new FormData();
+    const filename = uri.split('/').pop() || 'profile.jpg';
+    const match = /\.(\w+)$/.exec(filename);
+    const type = match ? `image/${match[1]}` : 'image/jpeg';
+
+    formData.append('Image', {
+      uri,
+      name: filename,
+      type,
+    } as any);
+
+    const response = await apiClient.post<ApiResponse<any>>('/api/Auth/profile/image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  /**
+   * Update user profile image (PUT).
+   */
+  updateProfileImage: async (uri: string): Promise<ApiResponse<any>> => {
+    const formData = new FormData();
+    const filename = uri.split('/').pop() || 'profile.jpg';
+    const match = /\.(\w+)$/.exec(filename);
+    const type = match ? `image/${match[1]}` : 'image/jpeg';
+
+    formData.append('Image', {
+      uri,
+      name: filename,
+      type,
+    } as any);
+
+    const response = await apiClient.put<ApiResponse<any>>('/api/Auth/profile/image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  /**
+   * Delete user profile image (DELETE).
+   */
+  deleteProfileImage: async (): Promise<ApiResponse<any>> => {
+    const response = await apiClient.delete<ApiResponse<any>>('/api/Auth/profile/image');
+    return response.data;
+  },
 };
