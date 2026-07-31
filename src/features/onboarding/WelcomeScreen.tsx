@@ -1,11 +1,9 @@
 import React from 'react';
-import { View, Pressable } from 'react-native';
+import { View, Pressable, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Text } from '@/src/components/ui/text';
 import { Button } from '@/src/components/ui/button';
-import { Icon } from '@/src/components/ui/icon';
-import { Home, Sparkles, Heart, ShieldCheck } from 'lucide-react-native';
 
 export const WelcomeScreen: React.FC = () => {
   const router = useRouter();
@@ -20,29 +18,14 @@ export const WelcomeScreen: React.FC = () => {
           </Text>
         </View>
 
-        {/* Hero Image Container Placeholder */}
+        {/* Hero Image Container */}
         <View className="my-4 items-center justify-center">
-          <View className="h-[280px] w-full items-center justify-center overflow-hidden rounded-[32px] bg-brand-primary-container p-6 shadow-sm">
-            {/* Decorative stylized illustration representing home management */}
-            <View className="h-[120px] w-[120px] items-center justify-center rounded-full bg-brand-primary shadow-md">
-              <Icon as={Home} size={64} className="text-white" />
-            </View>
-            <View className="absolute left-8 top-8 flex-row items-center gap-1.5 rounded-full border border-surface-border bg-surface-surface px-3 py-1.5 shadow-sm">
-              <Icon as={Sparkles} size={14} className="text-brand-accent" />
-              <Text className="font-cairo text-[12px] font-semibold text-text-primary">
-                AI Meal Plans
-              </Text>
-            </View>
-            <View className="absolute bottom-8 right-8 flex-row items-center gap-1.5 rounded-full border border-surface-border bg-surface-surface px-3 py-1.5 shadow-sm">
-              <Icon as={ShieldCheck} size={14} className="text-brand-primary" />
-              <Text className="font-cairo text-[12px] font-semibold text-text-primary">
-                Budget Safe
-              </Text>
-            </View>
-            <View className="absolute bottom-10 left-10 flex-row items-center gap-1.5 rounded-full border border-surface-border bg-surface-surface px-2.5 py-1 shadow-sm">
-              <Icon as={Heart} size={12} className="text-brand-error" />
-              <Text className="font-cairo text-[11px] font-semibold text-text-primary">Family</Text>
-            </View>
+          <View className="h-[268px] w-full overflow-hidden rounded-[32px] border border-surface-border shadow-sm">
+            <Image
+              source={require('../../../assets/images/welcome-hero.png')}
+              className="h-full w-full"
+              resizeMode="cover"
+            />
           </View>
         </View>
 
