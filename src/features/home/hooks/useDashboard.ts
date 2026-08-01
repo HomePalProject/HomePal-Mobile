@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useProfileStore } from '@/src/store/useProfileStore';
-import { useRouter } from 'expo-router';
+import { useRouter, Href } from 'expo-router';
 
 export function useDashboard() {
   const router = useRouter();
   const { fullName, profileImageUri, fetchProfile, isLoading } = useProfileStore();
   const [hasHousehold, setHasHousehold] = useState(false);
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
+  // useEffect(() => {
+  //   fetchProfile();
+  // }, []);
 
   const handleCreateHousehold = () => {
     console.log('[Dashboard] Navigating to Create Household screen...');
+    router.push('/(households)/create' as Href);
   };
 
   const handleViewInvitations = () => {
