@@ -15,10 +15,10 @@ export function ProTipCard({ title = 'Pro Tip', description, className }: ProTip
   return (
     <View
       className={cn(
-        'gap-spacing-12 flex-row items-start rounded-radius-large border border-surface-border bg-brand-accent-container/10 p-spacing-16 shadow-sm',
+        'gap-spacing-12 flex-row items-start rounded-radius-large border p-spacing-16',
         className
       )}>
-      <View className="rounded-radius-full bg-brand-accent/10 p-spacing-8">
+      <View className="rounded-radius-full p-spacing-8">
         <Icon as={Lightbulb} size={18} className="text-brand-accent" />
       </View>
       <View className="flex-1 gap-spacing-4">
