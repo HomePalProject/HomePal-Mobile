@@ -3,6 +3,7 @@ import { toast } from '@/src/providers/ToastProvider';
 import { memberService } from '@/src/services/api/member.service';
 import { useProfileStore } from '@/src/store/useProfileStore';
 import { HouseholdMemberResponse } from '@/src/types/api';
+import { ApiError } from '@/src/services/api/client';
 
 export type HouseholdMemberRole = 'Manager' | 'Member';
 export type HouseholdMemberType = 'Registered' | 'Offline';
@@ -24,6 +25,20 @@ export interface AddOfflineMemberPayload {
   gender: string;
   dob: string;
 }
+
+const formatIsoDate = (dob?: string): string | null => {
+  if (!dob) return null;
+  if (dob.includes('/')) {
+    const parts = dob.split('/');
+    if (parts.length === 3) {
+      const month = parts[0].padStart(2, '0');
+      const day = parts[1].padStart(2, '0');
+      const year = parts[2];
+      return `${year}-${month}-${day}`;
+    }
+  }
+  return dob;
+};
 
 export function useHouseholdMembers() {
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
@@ -100,28 +115,34 @@ export function useHouseholdMembers() {
     setIsAddFormOpen((prev) => !prev);
   };
 
-  const handleAddOfflineMember = (payload: AddOfflineMemberPayload) => {
+  const handleAddOfflineMember = async (payload: AddOfflineMemberPayload) => {
     if (!payload.fullName.trim()) {
       toast.error('Validation Error', 'Full Name is required');
       return false;
     }
 
-    const newMember: DetailedMember = {
-      id: Date.now().toString(),
-      fullName: payload.fullName.trim(),
-      initial: payload.fullName.trim()[0]?.toUpperCase() || 'M',
-      avatarUri: null,
-      role: 'Member',
-      type: 'Offline',
-      isCurrentUser: false,
-      gender: payload.gender,
-      dob: payload.dob,
-    };
+    try {
+      const genderVal = payload.gender === 'Male' || payload.gender === '1' ? 1 : 2;
+      const formattedDob = formatIsoDate(payload.dob);
 
-    setMembers((prev) => [...prev, newMember]);
-    setIsAddFormOpen(false);
-    toast.success('Member Added!', `Added ${newMember.fullName} as an Offline Member.`);
-    return true;
+      await memberService.addOfflineMember({
+        fullName: payload.fullName.trim(),
+        gender: genderVal,
+        dateOfBirth: formattedDob,
+      });
+
+      toast.success('Member Added!', `Added ${payload.fullName.trim()} as an Offline Member.`);
+      setIsAddFormOpen(false);
+      fetchMembers();
+      return true;
+    } catch (error: any) {
+      const message =
+        error instanceof ApiError
+          ? error.message
+          : error?.message || 'Failed to add offline member.';
+      toast.error('Error', message);
+      return false;
+    }
   };
 
   const handlePreferences = (memberId: string) => {
@@ -130,23 +151,57 @@ export function useHouseholdMembers() {
 
   const handleEdit = (memberId: string) => {
     console.log(`[useHouseholdMembers] Edit member ${memberId}`);
+    toast.info('Edit Member', 'Member edit interface is coming soon.');
   };
 
-  const handlePromote = (memberId: string) => {
-    setMembers((prev) =>
-      prev.map((m) => (m.id === memberId ? { ...m, role: 'Manager' as HouseholdMemberRole } : m))
-    );
-    toast.success('Member Promoted', 'Member has been promoted to Manager.');
+  const handlePromote = async (memberId: string) => {
+    const targetMember = members.find((m) => m.id === memberId);
+    if (!targetMember) return;
+
+    try {
+      const genderVal = targetMember.gender === 'Male' || targetMember.gender === '1' ? 1 : 2;
+      await memberService.updateMember(memberId, {
+        fullName: targetMember.fullName,
+        gender: genderVal,
+        dateOfBirth: formatIsoDate(targetMember.dob),
+        role: 'Manager',
+      });
+
+      toast.success('Member Promoted!', `${targetMember.fullName} has been promoted to Manager.`);
+      fetchMembers();
+    } catch (error: any) {
+      const message =
+        error instanceof ApiError ? error.message : error?.message || 'Failed to promote member.';
+      toast.error('Error', message);
+    }
   };
 
-  const handleLeave = (memberId: string) => {
-    console.log(`[useHouseholdMembers] Leave household — member ${memberId}`);
-    toast.error('Leave Household', 'You left the household.');
+  const handleLeave = async (memberId: string) => {
+    try {
+      await memberService.removeMember(memberId);
+      toast.info('Left Household', 'You have left the household.');
+      fetchMembers();
+    } catch (error: any) {
+      const message =
+        error instanceof ApiError ? error.message : error?.message || 'Failed to leave household.';
+      toast.error('Error', message);
+    }
   };
 
-  const handleRemove = (memberId: string) => {
-    setMembers((prev) => prev.filter((m) => m.id !== memberId));
-    toast.success('Member Removed', 'The member has been removed from the household.');
+  const handleRemove = async (memberId: string) => {
+    const targetMember = members.find((m) => m.id === memberId);
+    try {
+      await memberService.removeMember(memberId);
+      toast.success(
+        'Member Removed',
+        `${targetMember?.fullName || 'Member'} has been removed from the household.`
+      );
+      fetchMembers();
+    } catch (error: any) {
+      const message =
+        error instanceof ApiError ? error.message : error?.message || 'Failed to remove member.';
+      toast.error('Error', message);
+    }
   };
 
   return {

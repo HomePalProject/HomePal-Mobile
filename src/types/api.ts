@@ -178,3 +178,16 @@ export interface HouseholdMemberResponse {
   joinedAt?: string;
   [key: string]: any;
 }
+
+export interface AddOfflineMemberRequest {
+  fullName: string;
+  gender: Gender | number;
+  dateOfBirth?: string | null;
+}
+
+export interface UpdateMemberRequest {
+  fullName: string;
+  gender: Gender | number;
+  dateOfBirth?: string | null;
+  role?: string | null;
+}

@@ -1,5 +1,10 @@
 import { apiClient } from './client';
-import { ApiResponse, HouseholdMemberResponse } from '@/src/types/api';
+import {
+  ApiResponse,
+  HouseholdMemberResponse,
+  AddOfflineMemberRequest,
+  UpdateMemberRequest,
+} from '@/src/types/api';
 
 export const memberService = {
   /**
@@ -37,5 +42,65 @@ export const memberService = {
       console.warn('[memberService] Error fetching household members:', error?.message || error);
       return [];
     }
+  },
+
+  /**
+   * POST /api/households/members/offline
+   * Adds an offline member to the active household.
+   */
+  async addOfflineMember(payload: AddOfflineMemberRequest): Promise<HouseholdMemberResponse> {
+    const response = await apiClient.post<
+      ApiResponse<HouseholdMemberResponse> | HouseholdMemberResponse
+    >('/api/households/members/offline', payload);
+
+    console.log('[memberService] addOfflineMember raw response:', response.data);
+
+    if (
+      response.data &&
+      typeof response.data === 'object' &&
+      'data' in response.data &&
+      response.data.data
+    ) {
+      return response.data.data;
+    }
+    return response.data as HouseholdMemberResponse;
+  },
+
+  /**
+   * PUT /api/households/members/{memberId}
+   * Updates an existing household member's profile/role details.
+   */
+  async updateMember(
+    memberId: string,
+    payload: UpdateMemberRequest
+  ): Promise<HouseholdMemberResponse> {
+    const response = await apiClient.put<
+      ApiResponse<HouseholdMemberResponse> | HouseholdMemberResponse
+    >(`/api/households/members/${memberId}`, payload);
+
+    console.log('[memberService] updateMember raw response:', response.data);
+
+    if (
+      response.data &&
+      typeof response.data === 'object' &&
+      'data' in response.data &&
+      response.data.data
+    ) {
+      return response.data.data;
+    }
+    return response.data as HouseholdMemberResponse;
+  },
+
+  /**
+   * DELETE /api/households/members/{memberId}
+   * Removes or leaves a member from the active household.
+   */
+  async removeMember(memberId: string): Promise<boolean> {
+    const response = await apiClient.delete<ApiResponse<any> | any>(
+      `/api/households/members/${memberId}`
+    );
+
+    console.log('[memberService] removeMember raw response:', response.data);
+    return true;
   },
 };
