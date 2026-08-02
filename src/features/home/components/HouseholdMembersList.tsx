@@ -3,8 +3,8 @@
  * Dumb UI component for the detailed Household Members management section.
  * All logic is managed by useHouseholdMembers.ts.
  */
-import React, { useState } from 'react';
-import { View, Pressable, Image, TextInput, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Pressable, Image, TextInput, ScrollView, ActivityIndicator } from 'react-native';
 import {
   Users,
   CheckCircle,
@@ -33,6 +33,9 @@ export interface HouseholdMembersListProps {
   onPromote: (id: string) => void;
   onLeave: (id: string) => void;
   onRemove: (id: string) => void;
+  editingMemberId?: string | null;
+  onCancelEdit?: () => void;
+  onSaveEdit?: (id: string, payload: { fullName: string; gender: string; dob: string }) => void;
 }
 
 // ─── Date Picker Modal Component ─────────────────────────────────────────────
@@ -49,27 +52,37 @@ function CustomDatePicker({
   onClose,
   onConfirmDate,
 }: CustomDatePickerProps) {
-  // Parse initial date string "MM/DD/YYYY"
-  const parseInitialDate = () => {
-    if (initialDateStr && initialDateStr.includes('/')) {
-      const parts = initialDateStr.split('/');
-      if (parts.length === 3) {
-        const m = parseInt(parts[0], 10) - 1;
-        const d = parseInt(parts[1], 10);
-        const y = parseInt(parts[2], 10);
-        if (!isNaN(m) && !isNaN(d) && !isNaN(y)) {
-          return { y, m, d };
-        }
+  const parseDateStr = (str: string) => {
+    if (!str) return new Date();
+    const parts = str.split('/');
+    if (parts.length === 3) {
+      const month = parseInt(parts[0], 10) - 1;
+      const day = parseInt(parts[1], 10);
+      const year = parseInt(parts[2], 10);
+      if (!isNaN(month) && !isNaN(day) && !isNaN(year)) {
+        return new Date(year, month, day);
       }
     }
-    return { y: 2003, m: 5, d: 19 };
+    return new Date();
   };
 
-  const initialParsed = parseInitialDate();
-  const [currentYear, setCurrentYear] = useState(initialParsed.y);
-  const [currentMonth, setCurrentMonth] = useState(initialParsed.m); // 0-indexed (June = 5)
-  const [selectedDay, setSelectedDay] = useState(initialParsed.d);
+  const initialDate = parseDateStr(initialDateStr);
+  const [currentYear, setCurrentYear] = useState(initialDate.getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(initialDate.getMonth());
+  const [selectedDay, setSelectedDay] = useState(initialDate.getDate());
   const [viewMode, setViewMode] = useState<'calendar' | 'year' | 'month'>('calendar');
+
+  useEffect(() => {
+    if (visible) {
+      const d = parseDateStr(initialDateStr);
+      setCurrentYear(d.getFullYear());
+      setCurrentMonth(d.getMonth());
+      setSelectedDay(d.getDate());
+      setViewMode('calendar');
+    }
+  }, [visible, initialDateStr]);
+
+  if (!visible) return null;
 
   const months = [
     'January',
@@ -86,28 +99,20 @@ function CustomDatePicker({
     'December',
   ];
 
-  const shortMonths = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
+  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  // Years range 1950 to 2026
-  const years = Array.from({ length: 77 }, (_, i) => 2026 - i);
+  const getDaysInMonth = (year: number, month: number) => {
+    return new Date(year, month + 1, 0).getDate();
+  };
 
-  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-  const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
+  const getFirstDayOfMonth = (year: number, month: number) => {
+    return new Date(year, month, 1).getDay();
+  };
 
-  const handlePrevMonth = () => {
+  const totalDays = getDaysInMonth(currentYear, currentMonth);
+  const startDayOffset = getFirstDayOfMonth(currentYear, currentMonth);
+
+  const prevMonth = () => {
     if (currentMonth === 0) {
       setCurrentMonth(11);
       setCurrentYear((y) => y - 1);
@@ -116,7 +121,7 @@ function CustomDatePicker({
     }
   };
 
-  const handleNextMonth = () => {
+  const nextMonth = () => {
     if (currentMonth === 11) {
       setCurrentMonth(0);
       setCurrentYear((y) => y + 1);
@@ -128,74 +133,89 @@ function CustomDatePicker({
   const handleApplySet = () => {
     const formattedMonth = String(currentMonth + 1).padStart(2, '0');
     const formattedDay = String(selectedDay).padStart(2, '0');
-    const result = `${formattedMonth}/${formattedDay}/${currentYear}`;
-    onConfirmDate(result);
+    const resultStr = `${formattedMonth}/${formattedDay}/${currentYear}`;
+    onConfirmDate(resultStr);
     onClose();
   };
 
-  if (!visible) return null;
+  const currentYearNum = new Date().getFullYear();
+  const yearList = Array.from({ length: 80 }, (_, i) => currentYearNum - i);
 
   return (
-    <View className="mt-2 w-full rounded-2xl border border-surface-border bg-white p-4 shadow-sm">
-      {/* Header Month / Year controls */}
+    <View
+      className="mt-2 w-full rounded-2xl border border-surface-border bg-surface-surface p-4 shadow-md"
+      style={{ elevation: 4 }}>
+      {/* Top Header Controls: Month/Year Dropdowns & Prev/Next Nav */}
       <View className="flex-row items-center justify-between border-b border-surface-border pb-3">
-        <Pressable
-          onPress={() => setViewMode(viewMode === 'calendar' ? 'year' : 'calendar')}
-          className="active:bg-surface-surfaceVariant flex-row items-center gap-1.5 rounded-lg px-2 py-1">
-          <Text className="font-cairo text-[17px] font-bold text-brand-primary">
-            {months[currentMonth]} {currentYear}
-          </Text>
-          <ChevronDown size={18} color="#1b5042" />
-        </Pressable>
+        {/* Left: View mode toggles */}
+        <View className="flex-row items-center gap-2">
+          <Pressable
+            onPress={() => setViewMode((m) => (m === 'month' ? 'calendar' : 'month'))}
+            className="flex-row items-center gap-1 rounded-lg border border-surface-border bg-[#FAF7F2] px-2.5 py-1.5 active:opacity-80">
+            <Text className="font-cairo text-[14px] font-bold text-brand-primary">
+              {months[currentMonth]}
+            </Text>
+            <ChevronDown size={14} color="#1b5042" />
+          </Pressable>
 
+          <Pressable
+            onPress={() => setViewMode((m) => (m === 'year' ? 'calendar' : 'year'))}
+            className="flex-row items-center gap-1 rounded-lg border border-surface-border bg-[#FAF7F2] px-2.5 py-1.5 active:opacity-80">
+            <Text className="font-cairo text-[14px] font-bold text-brand-primary">
+              {currentYear}
+            </Text>
+            <ChevronDown size={14} color="#1b5042" />
+          </Pressable>
+        </View>
+
+        {/* Right: Month Prev/Next Arrows */}
         {viewMode === 'calendar' && (
           <View className="flex-row items-center gap-1">
             <Pressable
-              onPress={handlePrevMonth}
-              className="active:bg-surface-surfaceVariant rounded-lg p-1.5">
+              onPress={prevMonth}
+              className="active:bg-surface-surfaceVariant rounded-full p-1.5">
               <ChevronLeft size={20} color="#1e1b17" />
             </Pressable>
             <Pressable
-              onPress={handleNextMonth}
-              className="active:bg-surface-surfaceVariant rounded-lg p-1.5">
+              onPress={nextMonth}
+              className="active:bg-surface-surfaceVariant rounded-full p-1.5">
               <ChevronRight size={20} color="#1e1b17" />
             </Pressable>
           </View>
         )}
       </View>
 
-      {/* VIEW 1: Calendar View */}
+      {/* Main View Area */}
       {viewMode === 'calendar' && (
-        <>
-          {/* Days Header */}
-          <View className="flex-row justify-between pb-2 pt-3">
-            {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((dayStr) => (
-              <View key={dayStr} className="w-10 items-center">
-                <Text className="font-cairo text-[13px] font-semibold text-text-secondary">
-                  {dayStr}
-                </Text>
+        <View className="mt-3">
+          {/* Day Names Header */}
+          <View className="mb-2 flex-row justify-between">
+            {daysOfWeek.map((day) => (
+              <View key={day} className="w-[38px] items-center justify-center">
+                <Text className="font-cairo text-[12px] font-bold text-text-secondary">{day}</Text>
               </View>
             ))}
           </View>
 
-          {/* Days Grid */}
+          {/* Calendar Days Grid */}
           <View className="flex-row flex-wrap justify-start">
-            {/* Blank offset days */}
-            {Array.from({ length: firstDayOfWeek }).map((_, i) => (
-              <View key={`empty-${i}`} className="h-[40px] w-[41px]" />
+            {/* Blank slots before start of month */}
+            {Array.from({ length: startDayOffset }).map((_, i) => (
+              <View key={`empty-${i}`} className="my-1 h-[38px] w-[38px]" />
             ))}
 
-            {/* Actual Month Days */}
-            {Array.from({ length: daysInMonth }).map((_, i) => {
+            {/* Days of current month */}
+            {Array.from({ length: totalDays }).map((_, i) => {
               const dayNum = i + 1;
               const isSelected = dayNum === selectedDay;
+
               return (
                 <Pressable
-                  key={`day-${dayNum}`}
+                  key={dayNum}
                   onPress={() => setSelectedDay(dayNum)}
-                  className="m-[1px] h-[38px] w-[39px] items-center justify-center rounded-xl active:opacity-70"
+                  className="my-1 h-[38px] w-[38px] items-center justify-center rounded-full active:opacity-80"
                   style={{
-                    backgroundColor: isSelected ? '#356859' : undefined,
+                    backgroundColor: isSelected ? '#356859' : 'transparent',
                   }}>
                   <Text
                     className="font-cairo text-[14px]"
@@ -209,109 +229,69 @@ function CustomDatePicker({
               );
             })}
           </View>
-        </>
+        </View>
       )}
 
-      {/* VIEW 2: Quick Year & Month Selector Grid */}
-      {viewMode !== 'calendar' && (
-        <View style={{ height: 260 }} className="pt-2">
-          {/* Selector Tabs: Year vs Month */}
-          <View className="bg-surface-surfaceVariant mb-3 flex-row rounded-xl p-1">
-            <Pressable
-              onPress={() => setViewMode('year')}
-              className="flex-1 items-center rounded-lg py-1.5 active:opacity-80"
-              style={{
-                backgroundColor: viewMode === 'year' ? '#ffffff' : 'transparent',
-              }}>
-              <Text
-                className="font-cairo text-[13px]"
+      {/* Year Grid List */}
+      {viewMode === 'year' && (
+        <ScrollView style={{ maxHeight: 200 }} className="mt-3">
+          <View className="flex-row flex-wrap justify-between gap-2">
+            {yearList.map((y) => (
+              <Pressable
+                key={y}
+                onPress={() => {
+                  setCurrentYear(y);
+                  setViewMode('calendar');
+                }}
+                className="w-[70px] items-center justify-center rounded-xl border py-2 active:opacity-80"
                 style={{
-                  color: viewMode === 'year' ? '#356859' : '#6D6862',
-                  fontWeight: viewMode === 'year' ? '700' : '400',
+                  backgroundColor: y === currentYear ? '#356859' : '#FAF7F2',
+                  borderColor: y === currentYear ? '#356859' : '#E4E0DA',
                 }}>
-                Select Year ({currentYear})
-              </Text>
-            </Pressable>
-            <Pressable
-              onPress={() => setViewMode('month')}
-              className="flex-1 items-center rounded-lg py-1.5 active:opacity-80"
-              style={{
-                backgroundColor: viewMode === 'month' ? '#ffffff' : 'transparent',
-              }}>
-              <Text
-                className="font-cairo text-[13px]"
-                style={{
-                  color: viewMode === 'month' ? '#356859' : '#6D6862',
-                  fontWeight: viewMode === 'month' ? '700' : '400',
-                }}>
-                Select Month ({shortMonths[currentMonth]})
-              </Text>
-            </Pressable>
-          </View>
-
-          {/* Year Grid List */}
-          {viewMode === 'year' && (
-            <ScrollView showsVerticalScrollIndicator={true} className="flex-1">
-              <View className="flex-row flex-wrap justify-center gap-2 pb-2">
-                {years.map((y) => (
-                  <Pressable
-                    key={y}
-                    onPress={() => {
-                      setCurrentYear(y);
-                      setViewMode('month');
-                    }}
-                    className="w-[70px] items-center justify-center rounded-xl border py-2 active:opacity-80"
-                    style={{
-                      backgroundColor: y === currentYear ? '#356859' : '#FAF7F2',
-                      borderColor: y === currentYear ? '#356859' : '#E4E0DA',
-                    }}>
-                    <Text
-                      className="font-cairo text-[14px]"
-                      style={{
-                        color: y === currentYear ? '#ffffff' : '#1e1b17',
-                        fontWeight: y === currentYear ? '700' : '400',
-                      }}>
-                      {y}
-                    </Text>
-                  </Pressable>
-                ))}
-              </View>
-            </ScrollView>
-          )}
-
-          {/* Month Grid List */}
-          {viewMode === 'month' && (
-            <View className="flex-1 flex-row flex-wrap items-center justify-center gap-2.5">
-              {months.map((mName, idx) => (
-                <Pressable
-                  key={mName}
-                  onPress={() => {
-                    setCurrentMonth(idx);
-                    setViewMode('calendar');
-                  }}
-                  className="w-[90px] items-center justify-center rounded-xl border py-2.5 active:opacity-80"
+                <Text
+                  className="font-cairo text-[13px]"
                   style={{
-                    backgroundColor: idx === currentMonth ? '#356859' : '#FAF7F2',
-                    borderColor: idx === currentMonth ? '#356859' : '#E4E0DA',
+                    color: y === currentYear ? '#ffffff' : '#1e1b17',
+                    fontWeight: y === currentYear ? '700' : '400',
                   }}>
-                  <Text
-                    className="font-cairo text-[13px]"
-                    style={{
-                      color: idx === currentMonth ? '#ffffff' : '#1e1b17',
-                      fontWeight: idx === currentMonth ? '700' : '400',
-                    }}>
-                    {mName}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          )}
+                  {y}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        </ScrollView>
+      )}
+
+      {/* Month Grid List */}
+      {viewMode === 'month' && (
+        <View className="mt-3 flex-row flex-wrap items-center justify-center gap-2.5">
+          {months.map((mName, idx) => (
+            <Pressable
+              key={mName}
+              onPress={() => {
+                setCurrentMonth(idx);
+                setViewMode('calendar');
+              }}
+              className="w-[90px] items-center justify-center rounded-xl border py-2.5 active:opacity-80"
+              style={{
+                backgroundColor: idx === currentMonth ? '#356859' : '#FAF7F2',
+                borderColor: idx === currentMonth ? '#356859' : '#E4E0DA',
+              }}>
+              <Text
+                className="font-cairo text-[13px]"
+                style={{
+                  color: idx === currentMonth ? '#ffffff' : '#1e1b17',
+                  fontWeight: idx === currentMonth ? '700' : '400',
+                }}>
+                {mName}
+              </Text>
+            </Pressable>
+          ))}
         </View>
       )}
 
       {/* Bottom Actions Bar */}
       <View className="mt-3 flex-row items-center justify-between border-t border-surface-border pt-3">
-        {/* Left: Quick Actions (Today) */}
         <View className="flex-row gap-3">
           <Pressable
             onPress={() => {
@@ -326,7 +306,6 @@ function CustomDatePicker({
           </Pressable>
         </View>
 
-        {/* Right: Confirmation Controls (Close & Set Date) */}
         <View className="flex-row items-center gap-2">
           <Pressable
             onPress={onClose}
@@ -414,7 +393,7 @@ function AddOfflineMemberForm({ onSubmit }: AddOfflineMemberFormProps) {
           </Pressable>
         </View>
 
-        {/* DOB Input (Editable Type OR Calendar Icon Select) */}
+        {/* DOB Input */}
         <View className="flex-1" style={{ gap: 6 }}>
           <Text className="text-on-surface font-cairo text-[14px] font-bold">DOB</Text>
           <View className="flex-row items-center justify-between rounded-xl border border-surface-border bg-[#FAF7F2] px-3 py-1.5">
@@ -468,13 +447,19 @@ function AddOfflineMemberForm({ onSubmit }: AddOfflineMemberFormProps) {
         onConfirmDate={(newDate) => setDob(newDate)}
       />
 
-      {/* Add Member Button */}
+      {/* Action Button: Save Member */}
       <Pressable
         onPress={handleSubmit}
-        className="mt-1 h-12 w-full items-center justify-center rounded-2xl active:opacity-90"
-        style={{ backgroundColor: '#FDBA5A' }}>
-        <Text style={{ fontFamily: 'Cairo', fontSize: 16, fontWeight: '700', color: '#734a00' }}>
-          Add Member
+        className="mt-2 flex-row items-center justify-center rounded-xl bg-brand-primary py-3 active:opacity-90"
+        style={{
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.1,
+          shadowRadius: 2,
+          elevation: 2,
+        }}>
+        <Text style={{ fontFamily: 'Cairo', fontSize: 14, fontWeight: '700', color: '#ffffff' }}>
+          Save Member
         </Text>
       </Pressable>
     </View>
@@ -484,8 +469,11 @@ function AddOfflineMemberForm({ onSubmit }: AddOfflineMemberFormProps) {
 // ─── Member Card ─────────────────────────────────────────────────────────────
 interface MemberCardProps {
   member: DetailedMember;
+  isEditing?: boolean;
   onPreferences: (id: string) => void;
   onEdit: (id: string) => void;
+  onCancelEdit?: () => void;
+  onSaveEdit?: (id: string, payload: { fullName: string; gender: string; dob: string }) => void;
   onPromote: (id: string) => void;
   onLeave: (id: string) => void;
   onRemove: (id: string) => void;
@@ -493,8 +481,11 @@ interface MemberCardProps {
 
 function MemberCard({
   member,
+  isEditing = false,
   onPreferences,
   onEdit,
+  onCancelEdit,
+  onSaveEdit,
   onPromote,
   onLeave,
   onRemove,
@@ -503,6 +494,168 @@ function MemberCard({
   const isCurrentUser = member.isCurrentUser;
   const isRegistered = member.type === 'Registered';
 
+  const [editName, setEditName] = useState(member.fullName);
+  const [editGender, setEditGender] = useState(member.gender || 'Male');
+  const [editDob, setEditDob] = useState(member.dob || '');
+
+  const [isGenderPickerOpen, setIsGenderPickerOpen] = useState(false);
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (isEditing) {
+      setEditName(member.fullName);
+      setEditGender(member.gender || 'Male');
+      setEditDob(member.dob || '');
+    }
+  }, [isEditing, member]);
+
+  // ── Inline Edit Mode UI ──
+  if (isEditing) {
+    return (
+      <View
+        className="bg-surface-surfaceVariant/40 border-brand-primary/40 rounded-2xl border p-4"
+        style={{ gap: 14 }}>
+        <Text className="text-on-surface font-cairo text-[15px] font-bold">
+          Edit Member: {member.fullName}
+        </Text>
+
+        {/* Field 1: Full Name */}
+        <View style={{ gap: 6 }}>
+          <Text className="text-on-surface font-cairo text-[14px] font-bold">Full Name</Text>
+          <TextInput
+            value={editName}
+            onChangeText={setEditName}
+            placeholder="Enter full name"
+            placeholderTextColor="#A8A29B"
+            style={{
+              fontFamily: 'Cairo',
+              fontSize: 15,
+              color: '#1e1b17',
+              backgroundColor: '#FAF7F2',
+              borderRadius: 12,
+              borderWidth: 1,
+              borderColor: '#E4E0DA',
+              paddingHorizontal: 14,
+              paddingVertical: 10,
+            }}
+          />
+        </View>
+
+        {/* Field 2 & 3: Gender & DOB side by side */}
+        <View className="flex-row gap-3">
+          {/* Gender Select */}
+          <View className="flex-1" style={{ gap: 6 }}>
+            <Text className="text-on-surface font-cairo text-[14px] font-bold">Gender</Text>
+            <Pressable
+              onPress={() => {
+                setIsGenderPickerOpen((prev) => {
+                  if (!prev) setIsDatePickerOpen(false);
+                  return !prev;
+                });
+              }}
+              className="flex-row items-center justify-between rounded-xl border border-surface-border bg-[#FAF7F2] px-3.5 py-2.5 active:opacity-80">
+              <Text className="text-on-surface font-cairo text-[14px]">{editGender}</Text>
+              <ChevronDown size={18} color="#1e1b17" />
+            </Pressable>
+          </View>
+
+          {/* DOB Input */}
+          <View className="flex-1" style={{ gap: 6 }}>
+            <Text className="text-on-surface font-cairo text-[14px] font-bold">DOB</Text>
+            <View className="flex-row items-center justify-between rounded-xl border border-surface-border bg-[#FAF7F2] px-3 py-1.5">
+              <TextInput
+                value={editDob}
+                onChangeText={setEditDob}
+                placeholder="MM/DD/YYYY"
+                placeholderTextColor="#A8A29B"
+                keyboardType="numbers-and-punctuation"
+                style={{
+                  flex: 1,
+                  fontFamily: 'Cairo',
+                  fontSize: 14,
+                  color: '#1e1b17',
+                  paddingVertical: 2,
+                }}
+              />
+              <Pressable
+                onPress={() => {
+                  setIsDatePickerOpen((prev) => {
+                    if (!prev) setIsGenderPickerOpen(false);
+                    return !prev;
+                  });
+                }}
+                className="active:bg-surface-surfaceVariant rounded-lg p-1.5"
+                accessibilityRole="button"
+                accessibilityLabel="Open Calendar">
+                <Calendar size={18} color="#1b5042" />
+              </Pressable>
+            </View>
+          </View>
+        </View>
+
+        {/* Inline Gender Picker Options Accordion */}
+        {isGenderPickerOpen && (
+          <View className="mt-1 w-full rounded-xl border border-surface-border bg-white p-1 shadow-sm">
+            {['Male', 'Female', 'Other'].map((option) => (
+              <Pressable
+                key={option}
+                onPress={() => {
+                  setEditGender(option);
+                  setIsGenderPickerOpen(false);
+                }}
+                className="active:bg-surface-surfaceVariant rounded-lg px-4 py-2.5">
+                <Text className="text-on-surface font-cairo text-[14px] font-semibold">
+                  {option}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
+        )}
+
+        {/* Inline Custom Date Picker Accordion */}
+        <CustomDatePicker
+          visible={isDatePickerOpen}
+          initialDateStr={editDob}
+          onClose={() => setIsDatePickerOpen(false)}
+          onConfirmDate={(newDate) => setEditDob(newDate)}
+        />
+
+        {/* Action Controls: Cancel & Save Changes */}
+        <View className="mt-2 flex-row items-center justify-end gap-3 border-t border-surface-border pt-3">
+          <Pressable
+            onPress={onCancelEdit}
+            disabled={isSubmitting}
+            className="rounded-xl border border-surface-border bg-white px-4 py-2.5 active:opacity-80">
+            <Text className="font-cairo text-[14px] font-bold text-text-secondary">Cancel</Text>
+          </Pressable>
+
+          <Pressable
+            onPress={async () => {
+              if (onSaveEdit) {
+                setIsSubmitting(true);
+                await onSaveEdit(member.id, {
+                  fullName: editName,
+                  gender: editGender,
+                  dob: editDob,
+                });
+                setIsSubmitting(false);
+              }
+            }}
+            disabled={isSubmitting}
+            className="flex-row items-center gap-2 rounded-xl bg-brand-primary px-5 py-2.5 shadow-sm active:opacity-90">
+            {isSubmitting ? (
+              <ActivityIndicator size="small" color="#ffffff" />
+            ) : (
+              <Text className="font-cairo text-[14px] font-bold text-white">Save Changes</Text>
+            )}
+          </Pressable>
+        </View>
+      </View>
+    );
+  }
+
+  // ── Standard Read Mode UI ──
   return (
     <View
       className="bg-surface-surfaceVariant/40 rounded-2xl border border-surface-border"
@@ -564,7 +717,6 @@ function MemberCard({
       <View className="flex-row flex-wrap items-center gap-2">
         {/* Role Badge */}
         {isManager ? (
-          // Manager — solid dark green
           <View
             style={{
               borderRadius: 999,
@@ -577,7 +729,6 @@ function MemberCard({
             </Text>
           </View>
         ) : (
-          // Member — solid amber
           <View
             style={{
               borderRadius: 999,
@@ -594,7 +745,6 @@ function MemberCard({
 
         {/* Type Badge */}
         {isRegistered ? (
-          // Registered User — light green with check icon
           <View
             className="flex-row items-center gap-1"
             style={{
@@ -610,7 +760,6 @@ function MemberCard({
             </Text>
           </View>
         ) : (
-          // Offline Member — outline grey with circle icon
           <View
             className="flex-row items-center gap-1"
             style={{
@@ -654,7 +803,6 @@ function MemberCard({
 
         {/* Conditional: Leave (only if current user is NOT Manager), Remove, or Promote */}
         {isCurrentUser && !isManager ? (
-          // Regular Member (non-manager) — can Leave household
           <Pressable
             onPress={() => onLeave(member.id)}
             className="rounded-full active:opacity-70"
@@ -665,7 +813,6 @@ function MemberCard({
           </Pressable>
         ) : !isCurrentUser ? (
           <>
-            {/* Promote (if target member is not already a manager) */}
             {!isManager && (
               <Pressable
                 onPress={() => onPromote(member.id)}
@@ -682,7 +829,7 @@ function MemberCard({
                 </Text>
               </Pressable>
             )}
-            {/* Remove — destructive red */}
+
             <Pressable
               onPress={() => onRemove(member.id)}
               className="rounded-full active:opacity-70"
@@ -709,6 +856,9 @@ export function HouseholdMembersList({
   onPromote,
   onLeave,
   onRemove,
+  editingMemberId,
+  onCancelEdit,
+  onSaveEdit,
 }: HouseholdMembersListProps) {
   const [internalFormOpen, setInternalFormOpen] = useState(false);
   const showForm = onToggleAddForm ? isAddFormOpen : internalFormOpen;
@@ -724,7 +874,6 @@ export function HouseholdMembersList({
             Household Members
           </Text>
         </View>
-        {/* + Offline Member button — solid primary */}
         <Pressable
           onPress={toggleForm}
           className="rounded-full active:opacity-80"
@@ -748,8 +897,11 @@ export function HouseholdMembersList({
           <MemberCard
             key={member.id}
             member={member}
+            isEditing={member.id === editingMemberId}
             onPreferences={onPreferences}
             onEdit={onEdit}
+            onCancelEdit={onCancelEdit}
+            onSaveEdit={onSaveEdit}
             onPromote={onPromote}
             onLeave={onLeave}
             onRemove={onRemove}

@@ -35,6 +35,9 @@ export interface ActiveStateViewProps {
   onPromote: (id: string) => void;
   onLeave: (id: string) => void;
   onRemove: (id: string) => void;
+  editingMemberId?: string | null;
+  onCancelEdit?: () => void;
+  onSaveEdit?: (id: string, payload: { fullName: string; gender: string; dob: string }) => void;
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -154,6 +157,9 @@ export function ActiveStateView({
   onAddOfflineMember,
   onPreferences,
   onEditMember,
+  editingMemberId,
+  onCancelEdit,
+  onSaveEdit,
   onPromote,
   onLeave,
   onRemove,
@@ -265,6 +271,9 @@ export function ActiveStateView({
           onPromote={onPromote}
           onLeave={onLeave}
           onRemove={onRemove}
+          editingMemberId={editingMemberId}
+          onCancelEdit={onCancelEdit}
+          onSaveEdit={onSaveEdit}
         />
       </ScrollView>
 

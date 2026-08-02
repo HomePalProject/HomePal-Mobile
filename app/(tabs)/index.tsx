@@ -31,10 +31,13 @@ export default function DashboardScreen() {
   const {
     members: detailedMembers,
     isAddFormOpen,
+    editingMemberId,
     onToggleAddForm,
     onAddOfflineMember,
     onPreferences,
     onEdit,
+    onCancelEdit,
+    onSaveEdit,
     onPromote,
     onLeave,
     onRemove,
@@ -85,6 +88,9 @@ export default function DashboardScreen() {
           onAddOfflineMember={onAddOfflineMember}
           onPreferences={onPreferences}
           onEditMember={onEdit}
+          editingMemberId={editingMemberId}
+          onCancelEdit={onCancelEdit}
+          onSaveEdit={onSaveEdit}
           onPromote={onPromote}
           onLeave={onLeave}
           onRemove={onRemove}

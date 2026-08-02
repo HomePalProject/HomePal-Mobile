@@ -26,6 +26,12 @@ export interface AddOfflineMemberPayload {
   dob: string;
 }
 
+export interface SaveEditMemberPayload {
+  fullName: string;
+  gender: string;
+  dob: string;
+}
+
 const formatIsoDate = (dob?: string): string | null => {
   if (!dob) return null;
   if (dob.includes('/')) {
@@ -44,6 +50,7 @@ export function useHouseholdMembers() {
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
   const [isLoadingMembers, setIsLoadingMembers] = useState(true);
   const [members, setMembers] = useState<DetailedMember[]>([]);
+  const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
 
   const { fullName: currentFullName } = useProfileStore();
 
@@ -69,7 +76,14 @@ export function useHouseholdMembers() {
         role: roleStr,
         type: typeStr,
         isCurrentUser: !!isSelf,
-        gender: res.gender !== null && res.gender !== undefined ? String(res.gender) : undefined,
+        gender:
+          res.gender !== null && res.gender !== undefined
+            ? String(res.gender) === '1'
+              ? 'Male'
+              : String(res.gender) === '2'
+                ? 'Female'
+                : String(res.gender)
+            : undefined,
         dob: res.dateOfBirth || undefined,
       };
     },
@@ -150,8 +164,43 @@ export function useHouseholdMembers() {
   };
 
   const handleEdit = (memberId: string) => {
-    console.log(`[useHouseholdMembers] Edit member ${memberId}`);
-    toast.info('Edit Member', 'Member edit interface is coming soon.');
+    setEditingMemberId((prev) => (prev === memberId ? null : memberId));
+  };
+
+  const handleCancelEdit = () => {
+    setEditingMemberId(null);
+  };
+
+  const handleSaveEdit = async (memberId: string, payload: SaveEditMemberPayload) => {
+    if (!payload.fullName.trim()) {
+      toast.error('Validation Error', 'Full Name is required');
+      return false;
+    }
+
+    const targetMember = members.find((m) => m.id === memberId);
+    if (!targetMember) return false;
+
+    try {
+      const genderVal = payload.gender === 'Male' || payload.gender === '1' ? 1 : 2;
+      const formattedDob = formatIsoDate(payload.dob);
+
+      await memberService.updateMember(memberId, {
+        fullName: payload.fullName.trim(),
+        gender: genderVal,
+        dateOfBirth: formattedDob,
+        role: targetMember.role,
+      });
+
+      toast.success('Member Updated!', `Updated details for ${payload.fullName.trim()}.`);
+      setEditingMemberId(null);
+      fetchMembers();
+      return true;
+    } catch (error: any) {
+      const message =
+        error instanceof ApiError ? error.message : error?.message || 'Failed to update member.';
+      toast.error('Error', message);
+      return false;
+    }
   };
 
   const handlePromote = async (memberId: string) => {
@@ -208,10 +257,13 @@ export function useHouseholdMembers() {
     members,
     isLoadingMembers,
     isAddFormOpen,
+    editingMemberId,
     onToggleAddForm: handleToggleAddForm,
     onAddOfflineMember: handleAddOfflineMember,
     onPreferences: handlePreferences,
     onEdit: handleEdit,
+    onCancelEdit: handleCancelEdit,
+    onSaveEdit: handleSaveEdit,
     onPromote: handlePromote,
     onLeave: handleLeave,
     onRemove: handleRemove,
