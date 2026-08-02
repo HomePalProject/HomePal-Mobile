@@ -198,3 +198,25 @@ export interface UpdateMemberRequest {
   dateOfBirth?: string | null;
   role?: string | null;
 }
+
+export interface PreferenceResponse {
+  id: string;
+  name: string;
+  description: string | null;
+  categoryId: string;
+  categoryName: string;
+  createdAt: string;
+  updatedAt: string | null;
+}
+
+export interface PreferenceCategoryResponse {
+  id: string;
+  name: string;
+  description: string | null;
+  createdAt: string;
+  updatedAt: string | null;
+}
+
+export interface AssignPreferencesRequest {
+  preferenceIds: string[];
+}

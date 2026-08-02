@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { router } from 'expo-router';
 import { toast } from '@/src/providers/ToastProvider';
 import { memberService } from '@/src/services/api/member.service';
 import { useProfileStore } from '@/src/store/useProfileStore';
@@ -178,7 +179,7 @@ export function useHouseholdMembers() {
   };
 
   const handlePreferences = (memberId: string) => {
-    console.log(`[useHouseholdMembers] Preferences for member ${memberId}`);
+    router.push({ pathname: '/(households)/member-preferences', params: { memberId } });
   };
 
   const handleEdit = (memberId: string) => {
