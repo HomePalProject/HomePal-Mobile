@@ -6,6 +6,7 @@
 import React from 'react';
 import { View, ScrollView, Pressable, Image } from 'react-native';
 import { Home, MapPin, Users, Send, Inbox, Plus, LucideIcon } from 'lucide-react-native';
+import { useRouter, Href } from 'expo-router';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { cn } from '@/src/utils';
@@ -45,12 +46,14 @@ interface StatCardProps {
   iconColorClass: string;
   label: string;
   value: number;
+  onPress?: () => void;
 }
 
-function StatCard({ icon, iconBgClass, iconColorClass, label, value }: StatCardProps) {
+function StatCard({ icon, iconBgClass, iconColorClass, label, value, onPress }: StatCardProps) {
   return (
-    <View
-      className="w-36 flex-shrink-0 rounded-2xl bg-white p-4"
+    <Pressable
+      onPress={onPress}
+      className="w-36 flex-shrink-0 rounded-2xl bg-white p-4 active:opacity-75"
       style={{
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -68,7 +71,7 @@ function StatCard({ icon, iconBgClass, iconColorClass, label, value }: StatCardP
       <Text className="text-on-surface font-cairo text-[20px] font-semibold leading-[28px]">
         {value}
       </Text>
-    </View>
+    </Pressable>
   );
 }
 
@@ -144,6 +147,7 @@ export function ActiveStateView({
   location,
   stats,
   onInviteMember,
+  onManageMembers,
   detailedMembers,
   isAddFormOpen,
   onToggleAddForm,
@@ -154,6 +158,8 @@ export function ActiveStateView({
   onLeave,
   onRemove,
 }: ActiveStateViewProps) {
+  const router = useRouter();
+
   return (
     <View className="flex-1">
       <ScrollView
@@ -229,6 +235,7 @@ export function ActiveStateView({
             iconColorClass="text-status-info"
             label="Total Members"
             value={stats.totalMembers}
+            onPress={onManageMembers}
           />
           <StatCard
             icon={Send}
@@ -236,6 +243,7 @@ export function ActiveStateView({
             iconColorClass="text-status-warning"
             label="Sent Invitations"
             value={stats.sentInvitations}
+            onPress={onInviteMember}
           />
           <StatCard
             icon={Inbox}

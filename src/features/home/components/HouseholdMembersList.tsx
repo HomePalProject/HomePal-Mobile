@@ -4,7 +4,7 @@
  * All logic is managed by useHouseholdMembers.ts.
  */
 import React, { useState } from 'react';
-import { View, Pressable, Image, TextInput, Modal, ScrollView } from 'react-native';
+import { View, Pressable, Image, TextInput, ScrollView } from 'react-native';
 import {
   Users,
   CheckCircle,
@@ -40,18 +40,36 @@ interface CustomDatePickerProps {
   visible: boolean;
   initialDateStr: string; // e.g. "06/19/2003"
   onClose: () => void;
-  onSelectDate: (dateStr: string) => void;
+  onConfirmDate: (dateStr: string) => void;
 }
 
 function CustomDatePicker({
   visible,
   initialDateStr,
   onClose,
-  onSelectDate,
+  onConfirmDate,
 }: CustomDatePickerProps) {
-  const [currentYear, setCurrentYear] = useState(2003);
-  const [currentMonth, setCurrentMonth] = useState(5); // 0-indexed (June = 5)
-  const [selectedDay, setSelectedDay] = useState(19);
+  // Parse initial date string "MM/DD/YYYY"
+  const parseInitialDate = () => {
+    if (initialDateStr && initialDateStr.includes('/')) {
+      const parts = initialDateStr.split('/');
+      if (parts.length === 3) {
+        const m = parseInt(parts[0], 10) - 1;
+        const d = parseInt(parts[1], 10);
+        const y = parseInt(parts[2], 10);
+        if (!isNaN(m) && !isNaN(d) && !isNaN(y)) {
+          return { y, m, d };
+        }
+      }
+    }
+    return { y: 2003, m: 5, d: 19 };
+  };
+
+  const initialParsed = parseInitialDate();
+  const [currentYear, setCurrentYear] = useState(initialParsed.y);
+  const [currentMonth, setCurrentMonth] = useState(initialParsed.m); // 0-indexed (June = 5)
+  const [selectedDay, setSelectedDay] = useState(initialParsed.d);
+  const [viewMode, setViewMode] = useState<'calendar' | 'year' | 'month'>('calendar');
 
   const months = [
     'January',
@@ -67,6 +85,24 @@ function CustomDatePicker({
     'November',
     'December',
   ];
+
+  const shortMonths = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+
+  // Years range 1950 to 2026
+  const years = Array.from({ length: 77 }, (_, i) => 2026 - i);
 
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
@@ -89,44 +125,52 @@ function CustomDatePicker({
     }
   };
 
-  const handleConfirmDate = (day: number) => {
-    setSelectedDay(day);
+  const handleApplySet = () => {
     const formattedMonth = String(currentMonth + 1).padStart(2, '0');
-    const formattedDay = String(day).padStart(2, '0');
+    const formattedDay = String(selectedDay).padStart(2, '0');
     const result = `${formattedMonth}/${formattedDay}/${currentYear}`;
-    onSelectDate(result);
+    onConfirmDate(result);
     onClose();
   };
 
+  if (!visible) return null;
+
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable className="flex-1 items-center justify-center bg-black/40 px-6" onPress={onClose}>
+    <View className="mt-2 w-full rounded-2xl border border-surface-border bg-white p-4 shadow-sm">
+      {/* Header Month / Year controls */}
+      <View className="flex-row items-center justify-between border-b border-surface-border pb-3">
         <Pressable
-          className="w-full max-w-[320px] rounded-xl border border-surface-border bg-white p-4 shadow-xl"
-          onPress={(e) => e.stopPropagation()}>
-          {/* Header Month / Year controls */}
-          <View className="flex-row items-center justify-between border-b border-surface-border pb-3">
-            <View className="flex-row items-center gap-1">
-              <Text className="text-on-surface font-cairo text-[16px] font-bold">
-                {months[currentMonth]} {currentYear}
-              </Text>
-              <ChevronDown size={18} color="#1e1b17" />
-            </View>
+          onPress={() => setViewMode(viewMode === 'calendar' ? 'year' : 'calendar')}
+          className="active:bg-surface-surfaceVariant flex-row items-center gap-1.5 rounded-lg px-2 py-1">
+          <Text className="font-cairo text-[17px] font-bold text-brand-primary">
+            {months[currentMonth]} {currentYear}
+          </Text>
+          <ChevronDown size={18} color="#1b5042" />
+        </Pressable>
 
-            <View className="flex-row items-center gap-2">
-              <Pressable onPress={handlePrevMonth} className="p-1 active:opacity-60">
-                <ChevronLeft size={20} color="#6D6862" />
-              </Pressable>
-              <Pressable onPress={handleNextMonth} className="p-1 active:opacity-60">
-                <ChevronRight size={20} color="#6D6862" />
-              </Pressable>
-            </View>
+        {viewMode === 'calendar' && (
+          <View className="flex-row items-center gap-1">
+            <Pressable
+              onPress={handlePrevMonth}
+              className="active:bg-surface-surfaceVariant rounded-lg p-1.5">
+              <ChevronLeft size={20} color="#1e1b17" />
+            </Pressable>
+            <Pressable
+              onPress={handleNextMonth}
+              className="active:bg-surface-surfaceVariant rounded-lg p-1.5">
+              <ChevronRight size={20} color="#1e1b17" />
+            </Pressable>
           </View>
+        )}
+      </View>
 
+      {/* VIEW 1: Calendar View */}
+      {viewMode === 'calendar' && (
+        <>
           {/* Days Header */}
           <View className="flex-row justify-between pb-2 pt-3">
             {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map((dayStr) => (
-              <View key={dayStr} className="w-9 items-center">
+              <View key={dayStr} className="w-10 items-center">
                 <Text className="font-cairo text-[13px] font-semibold text-text-secondary">
                   {dayStr}
                 </Text>
@@ -135,10 +179,10 @@ function CustomDatePicker({
           </View>
 
           {/* Days Grid */}
-          <View className="flex-row flex-wrap">
+          <View className="flex-row flex-wrap justify-start">
             {/* Blank offset days */}
             {Array.from({ length: firstDayOfWeek }).map((_, i) => (
-              <View key={`empty-${i}`} className="h-[38px] w-[38px]" />
+              <View key={`empty-${i}`} className="h-[40px] w-[41px]" />
             ))}
 
             {/* Actual Month Days */}
@@ -148,40 +192,155 @@ function CustomDatePicker({
               return (
                 <Pressable
                   key={`day-${dayNum}`}
-                  onPress={() => handleConfirmDate(dayNum)}
-                  className={`m-[1px] h-[38px] w-[38px] items-center justify-center rounded-lg ${
-                    isSelected ? 'bg-[#007AFF]' : 'active:bg-surface-surfaceVariant'
-                  }`}>
+                  onPress={() => setSelectedDay(dayNum)}
+                  className="m-[1px] h-[38px] w-[39px] items-center justify-center rounded-xl active:opacity-70"
+                  style={{
+                    backgroundColor: isSelected ? '#356859' : undefined,
+                  }}>
                   <Text
-                    className={`font-cairo text-[14px] ${
-                      isSelected ? 'font-bold text-white' : 'text-on-surface'
-                    }`}>
+                    className="font-cairo text-[14px]"
+                    style={{
+                      color: isSelected ? '#ffffff' : '#1e1b17',
+                      fontWeight: isSelected ? '700' : '500',
+                    }}>
                     {dayNum}
                   </Text>
                 </Pressable>
               );
             })}
           </View>
+        </>
+      )}
 
-          {/* Bottom Actions */}
-          <View className="mt-2 flex-row justify-between border-t border-surface-border pt-4">
-            <Pressable onPress={() => handleConfirmDate(1)} className="p-1">
-              <Text className="font-cairo text-[14px] font-bold text-[#007AFF]">Clear</Text>
+      {/* VIEW 2: Quick Year & Month Selector Grid */}
+      {viewMode !== 'calendar' && (
+        <View style={{ height: 260 }} className="pt-2">
+          {/* Selector Tabs: Year vs Month */}
+          <View className="bg-surface-surfaceVariant mb-3 flex-row rounded-xl p-1">
+            <Pressable
+              onPress={() => setViewMode('year')}
+              className="flex-1 items-center rounded-lg py-1.5 active:opacity-80"
+              style={{
+                backgroundColor: viewMode === 'year' ? '#ffffff' : 'transparent',
+              }}>
+              <Text
+                className="font-cairo text-[13px]"
+                style={{
+                  color: viewMode === 'year' ? '#356859' : '#6D6862',
+                  fontWeight: viewMode === 'year' ? '700' : '400',
+                }}>
+                Select Year ({currentYear})
+              </Text>
             </Pressable>
             <Pressable
-              onPress={() => {
-                const today = new Date();
-                setCurrentYear(today.getFullYear());
-                setCurrentMonth(today.getMonth());
-                handleConfirmDate(today.getDate());
-              }}
-              className="p-1">
-              <Text className="font-cairo text-[14px] font-bold text-[#007AFF]">Today</Text>
+              onPress={() => setViewMode('month')}
+              className="flex-1 items-center rounded-lg py-1.5 active:opacity-80"
+              style={{
+                backgroundColor: viewMode === 'month' ? '#ffffff' : 'transparent',
+              }}>
+              <Text
+                className="font-cairo text-[13px]"
+                style={{
+                  color: viewMode === 'month' ? '#356859' : '#6D6862',
+                  fontWeight: viewMode === 'month' ? '700' : '400',
+                }}>
+                Select Month ({shortMonths[currentMonth]})
+              </Text>
             </Pressable>
           </View>
-        </Pressable>
-      </Pressable>
-    </Modal>
+
+          {/* Year Grid List */}
+          {viewMode === 'year' && (
+            <ScrollView showsVerticalScrollIndicator={true} className="flex-1">
+              <View className="flex-row flex-wrap justify-center gap-2 pb-2">
+                {years.map((y) => (
+                  <Pressable
+                    key={y}
+                    onPress={() => {
+                      setCurrentYear(y);
+                      setViewMode('month');
+                    }}
+                    className="w-[70px] items-center justify-center rounded-xl border py-2 active:opacity-80"
+                    style={{
+                      backgroundColor: y === currentYear ? '#356859' : '#FAF7F2',
+                      borderColor: y === currentYear ? '#356859' : '#E4E0DA',
+                    }}>
+                    <Text
+                      className="font-cairo text-[14px]"
+                      style={{
+                        color: y === currentYear ? '#ffffff' : '#1e1b17',
+                        fontWeight: y === currentYear ? '700' : '400',
+                      }}>
+                      {y}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            </ScrollView>
+          )}
+
+          {/* Month Grid List */}
+          {viewMode === 'month' && (
+            <View className="flex-1 flex-row flex-wrap items-center justify-center gap-2.5">
+              {months.map((mName, idx) => (
+                <Pressable
+                  key={mName}
+                  onPress={() => {
+                    setCurrentMonth(idx);
+                    setViewMode('calendar');
+                  }}
+                  className="w-[90px] items-center justify-center rounded-xl border py-2.5 active:opacity-80"
+                  style={{
+                    backgroundColor: idx === currentMonth ? '#356859' : '#FAF7F2',
+                    borderColor: idx === currentMonth ? '#356859' : '#E4E0DA',
+                  }}>
+                  <Text
+                    className="font-cairo text-[13px]"
+                    style={{
+                      color: idx === currentMonth ? '#ffffff' : '#1e1b17',
+                      fontWeight: idx === currentMonth ? '700' : '400',
+                    }}>
+                    {mName}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          )}
+        </View>
+      )}
+
+      {/* Bottom Actions Bar */}
+      <View className="mt-3 flex-row items-center justify-between border-t border-surface-border pt-3">
+        {/* Left: Quick Actions (Today) */}
+        <View className="flex-row gap-3">
+          <Pressable
+            onPress={() => {
+              const today = new Date();
+              setCurrentYear(today.getFullYear());
+              setCurrentMonth(today.getMonth());
+              setSelectedDay(today.getDate());
+              setViewMode('calendar');
+            }}
+            className="px-2 py-1">
+            <Text className="font-cairo text-[14px] font-bold text-brand-primary">Today</Text>
+          </Pressable>
+        </View>
+
+        {/* Right: Confirmation Controls (Close & Set Date) */}
+        <View className="flex-row items-center gap-2">
+          <Pressable
+            onPress={onClose}
+            className="active:bg-surface-surfaceVariant rounded-xl px-3 py-1.5">
+            <Text className="font-cairo text-[14px] font-semibold text-text-secondary">Close</Text>
+          </Pressable>
+          <Pressable
+            onPress={handleApplySet}
+            className="rounded-xl bg-brand-primary px-4 py-2 shadow-sm active:opacity-90">
+            <Text className="font-cairo text-[14px] font-bold text-white">Set Date</Text>
+          </Pressable>
+        </View>
+      </View>
+    </View>
   );
 }
 
@@ -197,6 +356,20 @@ function AddOfflineMemberForm({ onSubmit }: AddOfflineMemberFormProps) {
 
   const [isGenderPickerOpen, setIsGenderPickerOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+
+  const toggleGenderPicker = () => {
+    setIsGenderPickerOpen((prev) => {
+      if (!prev) setIsDatePickerOpen(false);
+      return !prev;
+    });
+  };
+
+  const toggleDatePicker = () => {
+    setIsDatePickerOpen((prev) => {
+      if (!prev) setIsGenderPickerOpen(false);
+      return !prev;
+    });
+  };
 
   const handleSubmit = () => {
     onSubmit({ fullName, gender, dob });
@@ -234,24 +407,66 @@ function AddOfflineMemberForm({ onSubmit }: AddOfflineMemberFormProps) {
         <View className="flex-1" style={{ gap: 6 }}>
           <Text className="text-on-surface font-cairo text-[14px] font-bold">Gender</Text>
           <Pressable
-            onPress={() => setIsGenderPickerOpen(true)}
+            onPress={toggleGenderPicker}
             className="flex-row items-center justify-between rounded-xl border border-surface-border bg-[#FAF7F2] px-3.5 py-2.5 active:opacity-80">
             <Text className="text-on-surface font-cairo text-[14px]">{gender}</Text>
             <ChevronDown size={18} color="#1e1b17" />
           </Pressable>
         </View>
 
-        {/* DOB Input */}
+        {/* DOB Input (Editable Type OR Calendar Icon Select) */}
         <View className="flex-1" style={{ gap: 6 }}>
           <Text className="text-on-surface font-cairo text-[14px] font-bold">DOB</Text>
-          <Pressable
-            onPress={() => setIsDatePickerOpen(true)}
-            className="flex-row items-center justify-between rounded-xl border border-surface-border bg-[#FAF7F2] px-3.5 py-2.5 active:opacity-80">
-            <Text className="text-on-surface font-cairo text-[14px]">{dob}</Text>
-            <Calendar size={18} color="#1e1b17" />
-          </Pressable>
+          <View className="flex-row items-center justify-between rounded-xl border border-surface-border bg-[#FAF7F2] px-3 py-1.5">
+            <TextInput
+              value={dob}
+              onChangeText={setDob}
+              placeholder="MM/DD/YYYY"
+              placeholderTextColor="#A8A29B"
+              keyboardType="numbers-and-punctuation"
+              style={{
+                flex: 1,
+                fontFamily: 'Cairo',
+                fontSize: 14,
+                color: '#1e1b17',
+                paddingVertical: 2,
+              }}
+            />
+            <Pressable
+              onPress={toggleDatePicker}
+              className="active:bg-surface-surfaceVariant rounded-lg p-1.5"
+              accessibilityRole="button"
+              accessibilityLabel="Open Calendar">
+              <Calendar size={18} color="#1b5042" />
+            </Pressable>
+          </View>
         </View>
       </View>
+
+      {/* Inline Gender Picker Options Accordion */}
+      {isGenderPickerOpen && (
+        <View className="mt-1 w-full rounded-xl border border-surface-border bg-white p-1 shadow-sm">
+          {['Male', 'Female', 'Other'].map((option) => (
+            <Pressable
+              key={option}
+              onPress={() => {
+                setGender(option);
+                setIsGenderPickerOpen(false);
+              }}
+              className="active:bg-surface-surfaceVariant rounded-lg px-4 py-2.5">
+              <Text className="text-on-surface font-cairo text-[14px] font-semibold">{option}</Text>
+            </Pressable>
+          ))}
+        </View>
+      )}
+
+      {/* Inline Custom Date Picker Accordion */}
+      <CustomDatePicker
+        visible={isDatePickerOpen}
+        initialDateStr={dob}
+        onClose={() => setIsDatePickerOpen(false)}
+        onConfirmDate={(newDate) => setDob(newDate)}
+      />
 
       {/* Add Member Button */}
       <Pressable
@@ -262,41 +477,6 @@ function AddOfflineMemberForm({ onSubmit }: AddOfflineMemberFormProps) {
           Add Member
         </Text>
       </Pressable>
-
-      {/* Gender Picker Modal */}
-      <Modal
-        visible={isGenderPickerOpen}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setIsGenderPickerOpen(false)}>
-        <Pressable
-          className="flex-1 items-center justify-center bg-black/30 px-6"
-          onPress={() => setIsGenderPickerOpen(false)}>
-          <View className="w-full max-w-[260px] rounded-xl border border-surface-border bg-white p-2 shadow-md">
-            {['Male', 'Female', 'Other'].map((option) => (
-              <Pressable
-                key={option}
-                onPress={() => {
-                  setGender(option);
-                  setIsGenderPickerOpen(false);
-                }}
-                className="active:bg-surface-surfaceVariant rounded-lg px-4 py-3">
-                <Text className="text-on-surface font-cairo text-[15px] font-semibold">
-                  {option}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
-        </Pressable>
-      </Modal>
-
-      {/* Custom Date Picker Modal */}
-      <CustomDatePicker
-        visible={isDatePickerOpen}
-        initialDateStr={dob}
-        onClose={() => setIsDatePickerOpen(false)}
-        onSelectDate={(newDate) => setDob(newDate)}
-      />
     </View>
   );
 }
@@ -472,9 +652,9 @@ function MemberCard({
           </Text>
         </Pressable>
 
-        {/* Conditional: Leave (if current user Manager), Remove, or Promote */}
-        {isCurrentUser && isManager ? (
-          // Leave — destructive red
+        {/* Conditional: Leave (only if current user is NOT Manager), Remove, or Promote */}
+        {isCurrentUser && !isManager ? (
+          // Regular Member (non-manager) — can Leave household
           <Pressable
             onPress={() => onLeave(member.id)}
             className="rounded-full active:opacity-70"
@@ -483,18 +663,25 @@ function MemberCard({
               Leave
             </Text>
           </Pressable>
-        ) : !isCurrentUser && !isManager ? (
+        ) : !isCurrentUser ? (
           <>
-            {/* Promote — solid primary */}
-            <Pressable
-              onPress={() => onPromote(member.id)}
-              className="rounded-full active:opacity-70"
-              style={{ paddingHorizontal: 14, paddingVertical: 7, backgroundColor: '#FDBA5A' }}>
-              <Text
-                style={{ fontFamily: 'Cairo', fontSize: 12, fontWeight: '700', color: '#734a00' }}>
-                Promote
-              </Text>
-            </Pressable>
+            {/* Promote (if target member is not already a manager) */}
+            {!isManager && (
+              <Pressable
+                onPress={() => onPromote(member.id)}
+                className="rounded-full active:opacity-70"
+                style={{ paddingHorizontal: 14, paddingVertical: 7, backgroundColor: '#FDBA5A' }}>
+                <Text
+                  style={{
+                    fontFamily: 'Cairo',
+                    fontSize: 12,
+                    fontWeight: '700',
+                    color: '#734a00',
+                  }}>
+                  Promote
+                </Text>
+              </Pressable>
+            )}
             {/* Remove — destructive red */}
             <Pressable
               onPress={() => onRemove(member.id)}

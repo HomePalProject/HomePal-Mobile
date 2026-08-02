@@ -128,3 +128,53 @@ export interface UpdateProfileRequest {
   governorate: string;
   city: string;
 }
+
+// --- Household API Schemas ---
+
+export interface CreateHouseholdRequest {
+  name: string;
+  address?: string;
+  governorate?: string;
+  city?: string;
+}
+
+export interface HouseholdDto {
+  id: string;
+  name: string;
+  address?: string;
+  governorate?: string;
+  city?: string;
+  createdAt?: string;
+  [key: string]: any;
+}
+
+export interface HouseholdInvitationResponse {
+  id: string;
+  householdId: string;
+  householdName: string;
+  invitedEmail?: string | null;
+  invitedUserName?: string | null;
+  invitedById: string;
+  invitedByName: string;
+  token: string;
+  status: string;
+  createdAt: string;
+}
+
+export interface SendInvitationRequest {
+  invitedUserNameOrEmail: string;
+}
+
+export interface HouseholdMemberResponse {
+  id: string;
+  householdId: string;
+  userId?: string | null;
+  userName?: string | null;
+  fullName: string;
+  gender?: Gender | number | null;
+  dateOfBirth?: string | null;
+  role: string;
+  isRegistered: boolean;
+  joinedAt?: string;
+  [key: string]: any;
+}

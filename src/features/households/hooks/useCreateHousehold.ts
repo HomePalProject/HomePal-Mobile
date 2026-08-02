@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
 import { toast } from '@/src/providers/ToastProvider';
+import { householdService } from '@/src/services/api/household.service';
+import { CreateHouseholdRequest } from '@/src/types/api';
 
 export interface CreateHouseholdForm {
   name: string;
@@ -51,16 +53,33 @@ export function useCreateHousehold() {
     setIsLoading(true);
 
     try {
-      // Simulate backend API latency (POST /api/Households)
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Build CreateHouseholdRequest payload according to swagger spec
+      const payload: CreateHouseholdRequest = {
+        name: formData.name.trim(),
+        ...(formData.address.trim() && { address: formData.address.trim() }),
+        ...(formData.governorate.trim() && { governorate: formData.governorate.trim() }),
+        ...(formData.city.trim() && { city: formData.city.trim() }),
+      };
 
-      toast.success('Household Registered!', `Successfully registered "${formData.name.trim()}"`);
+      // Real API Call: POST /api/Households
+      const createdHousehold = await householdService.createHousehold(payload);
 
-      // Navigate back to the main tabs dashboard
+      toast.success(
+        'Household Registered!',
+        `Successfully registered "${createdHousehold.name || formData.name.trim()}"`
+      );
+
+      // Navigate back to the main dashboard (State B will load automatically on mount)
       router.back();
-    } catch (error) {
+    } catch (error: any) {
       console.error('[CreateHousehold] Failed to register household:', error);
-      toast.error('Registration Failed', 'An unexpected error occurred. Please try again.');
+      const apiMessage =
+        error?.response?.data?.message ||
+        error?.data?.message ||
+        error?.message ||
+        'An unexpected error occurred. Please try again.';
+
+      toast.error('Registration Failed', apiMessage);
     } finally {
       setIsLoading(false);
     }

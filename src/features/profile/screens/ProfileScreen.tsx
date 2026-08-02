@@ -6,7 +6,10 @@ import Svg, { Circle, Defs, LinearGradient, RadialGradient, Stop } from 'react-n
 import { SvgIcon } from '../../../components/ui/SvgIcon';
 import { ImpactCard } from '../components/ImpactCard';
 import { ProfileListItem } from '../components/ProfileListItem';
+import { Menu } from 'lucide-react-native';
+import { Icon } from '../../../components/ui/icon';
 import { useProfileStore } from '../../../store/useProfileStore';
+import { useDrawerStore } from '../../../store/useDrawerStore';
 import { useAppDispatch } from '../../../store';
 import { logoutUser } from '../../../store/slices/authSlice';
 
@@ -28,12 +31,23 @@ export default function ProfileScreen() {
 
   const name = fullName;
 
+  const { openDrawer } = useDrawerStore();
+
   return (
     <SafeAreaView className="flex-1 bg-surface-background">
       <View className="h-16 flex-row items-center justify-between border-b border-surface-divider bg-surface-surface px-spacing-16 shadow-sm">
-        <Text className="text-bodyLarge font-cairo font-bold text-brand-primary">
-          Profile Overview
-        </Text>
+        <View className="flex-row items-center gap-2">
+          <Pressable
+            onPress={openDrawer}
+            className="rounded-full p-1.5 active:opacity-70"
+            accessibilityRole="button"
+            accessibilityLabel="Open Drawer Menu">
+            <Icon as={Menu} size={24} className="text-brand-primary" />
+          </Pressable>
+          <Text className="text-bodyLarge font-cairo font-bold text-brand-primary">
+            Profile Overview
+          </Text>
+        </View>
         <View className="flex-row items-center gap-spacing-8">
           <Pressable className="bg-surface-surfaceVariant h-10 w-10 items-center justify-center rounded-radius-full">
             <SvgIcon name="bell" width={20} height={20} fill="#356859" />
@@ -41,7 +55,7 @@ export default function ProfileScreen() {
           </Pressable>
           <Pressable
             className="bg-brand-primaryContainer border-brand-primary/20 h-10 w-10 items-center justify-center overflow-hidden rounded-radius-full border"
-            onPress={() => router.push('/edit-profile' as Href)}>
+            onPress={openDrawer}>
             {profileImageUri ? (
               <Image source={{ uri: profileImageUri }} className="h-full w-full" />
             ) : (

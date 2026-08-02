@@ -1,8 +1,6 @@
-/**
- * useActiveDashboard.ts
- * Logic hook for the Active Household Dashboard (State B).
- * Manages mock data for stats and members — will be replaced by API calls.
- */
+import { useState, useEffect, useCallback } from 'react';
+import { HouseholdDto } from '@/src/types/api';
+import { invitationService } from '@/src/services/api/invitation.service';
 
 export type MemberRole = 'Manager' | 'Member';
 
@@ -32,43 +30,57 @@ export interface ActiveDashboardData {
   onInviteMember: () => void;
 }
 
-export function useActiveDashboard(): ActiveDashboardData {
-  // ─── Mock Data (replace with API calls) ───────────────────────────────────
-  const householdName = 'The Hassan Family';
-  const location = 'Cairo, Egypt';
+export function useActiveDashboard(
+  householdData?: HouseholdDto | null,
+  activeMembersCount?: number
+): ActiveDashboardData {
+  // Derive dynamic household name and location from real backend response when available
+  const householdName = householdData?.name || 'My Household';
+  const location =
+    householdData?.city && householdData?.governorate
+      ? `${householdData.city}, ${householdData.governorate}`
+      : householdData?.city || householdData?.governorate || 'Cairo, Egypt';
+
+  const [sentCount, setSentCount] = useState<number>(0);
+  const [receivedCount, setReceivedCount] = useState<number>(0);
+
+  const fetchStats = useCallback(async () => {
+    try {
+      const [sentList, receivedList] = await Promise.all([
+        invitationService.getSentInvitations(),
+        invitationService.getMyInvitations(),
+      ]);
+
+      const pendingSent = (sentList || []).filter(
+        (inv) => inv.status === 'Pending' || inv.status === 'pending'
+      ).length;
+      setSentCount(pendingSent);
+
+      const pendingReceived = (receivedList || []).filter(
+        (inv) => inv.status === 'Pending' || inv.status === 'pending'
+      ).length;
+      setReceivedCount(pendingReceived);
+    } catch (error) {
+      console.warn('[useActiveDashboard] Failed to fetch invitation stats:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
+  const totalMembers =
+    activeMembersCount !== undefined && activeMembersCount > 0
+      ? activeMembersCount
+      : Number(householdData?.membersCount) || 1;
 
   const stats: HouseholdStats = {
-    totalMembers: 4,
-    sentInvitations: 1,
-    receivedInvitations: 0,
+    totalMembers,
+    sentInvitations: sentCount,
+    receivedInvitations: receivedCount,
   };
 
-  const members: HouseholdMember[] = [
-    {
-      id: '1',
-      fullName: 'Nora Hassan',
-      username: '@nora_h',
-      role: 'Manager',
-      avatarUri: null,
-      initial: 'N',
-    },
-    {
-      id: '2',
-      fullName: 'Ahmed Hassan',
-      username: '@ahmed_h',
-      role: 'Member',
-      avatarUri: null,
-      initial: 'A',
-    },
-    {
-      id: '3',
-      fullName: 'Sara Hassan',
-      username: '@sara_h',
-      role: 'Member',
-      avatarUri: null,
-      initial: 'S',
-    },
-  ];
+  const members: HouseholdMember[] = [];
 
   const onManageMembers = () => {
     console.log('[ActiveDashboard] Navigate to Manage Members');

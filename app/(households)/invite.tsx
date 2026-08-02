@@ -12,6 +12,7 @@ export default function InviteRoute() {
     inputValue,
     inputError,
     isSending,
+    cancelingId,
     sentInvitations,
     onInputChange,
     onSendInvite,
@@ -36,6 +37,7 @@ export default function InviteRoute() {
       onInputChange={onInputChange}
       onSendInvite={onSendInvite}
       sentInvitations={sentInvitations}
+      cancelingId={cancelingId}
       onCancelInvite={onCancelInvite}
       onRefresh={onRefresh}
     />

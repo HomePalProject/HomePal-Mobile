@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, Href } from 'expo-router';
 import { useDashboard } from '@/src/features/home/hooks/useDashboard';
@@ -11,10 +11,15 @@ import { ActiveStateView } from '@/src/features/home/components/ActiveStateView'
 import { Text } from '@/src/components/ui/text';
 import { Button } from '@/src/components/ui/button';
 
+import { useDrawerStore } from '@/src/store/useDrawerStore';
+
 export default function DashboardScreen() {
+  const { openDrawer } = useDrawerStore();
   const {
     isLoading,
+    isFetchingHousehold,
     hasHousehold,
+    householdData,
     firstName,
     firstInitial,
     profileImageUri,
@@ -22,8 +27,6 @@ export default function DashboardScreen() {
     onViewInvitations,
     setHasHousehold,
   } = useDashboard();
-
-  const { householdName, location, stats, members, onManageMembers } = useActiveDashboard();
 
   const {
     members: detailedMembers,
@@ -37,18 +40,30 @@ export default function DashboardScreen() {
     onRemove,
   } = useHouseholdMembers();
 
+  const { householdName, location, stats, members, onManageMembers } = useActiveDashboard(
+    householdData,
+    detailedMembers.length
+  );
+
   return (
     <SafeAreaView className="flex-1 bg-surface-background" edges={['top']}>
       {/* Top Header Navigation */}
       <DashboardHeader
         firstInitial={firstInitial}
         profileImageUri={profileImageUri}
-        onAvatarPress={() => router.push('/profile' as Href)}
+        onAvatarPress={openDrawer}
         onNotificationPress={() => console.log('[Dashboard] Notification bell pressed')}
       />
 
       {/* Conditional State Rendering */}
-      {!hasHousehold ? (
+      {isFetchingHousehold ? (
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" color="#356859" />
+          <Text className="mt-3 font-cairo text-[14px] text-text-secondary">
+            Loading dashboard...
+          </Text>
+        </View>
+      ) : !hasHousehold ? (
         // State A: No household yet
         <OrphanStateView
           onCreateHousehold={onCreateHousehold}

@@ -1,11 +1,8 @@
-/**
- * useHouseholdMembers.ts
- * Logic hook for the Household Members management section.
- * Provides mock member data with roles, types, and action handlers.
- * Will be connected to GET /api/households/{id}/members and related endpoints.
- */
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { toast } from '@/src/providers/ToastProvider';
+import { memberService } from '@/src/services/api/member.service';
+import { useProfileStore } from '@/src/store/useProfileStore';
+import { HouseholdMemberResponse } from '@/src/types/api';
 
 export type HouseholdMemberRole = 'Manager' | 'Member';
 export type HouseholdMemberType = 'Registered' | 'Offline';
@@ -30,28 +27,74 @@ export interface AddOfflineMemberPayload {
 
 export function useHouseholdMembers() {
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
-  const [members, setMembers] = useState<DetailedMember[]>([
-    {
-      id: '1',
-      fullName: 'Mariam Essam2',
-      initial: 'M',
-      avatarUri: null,
-      role: 'Manager',
-      type: 'Registered',
-      isCurrentUser: true,
+  const [isLoadingMembers, setIsLoadingMembers] = useState(true);
+  const [members, setMembers] = useState<DetailedMember[]>([]);
+
+  const { fullName: currentFullName } = useProfileStore();
+
+  const mapResponseToDetailedMember = useCallback(
+    (res: HouseholdMemberResponse): DetailedMember => {
+      const isSelf =
+        res.isCurrentUser ||
+        (currentFullName &&
+          res.fullName &&
+          res.fullName.trim().toLowerCase() === currentFullName.trim().toLowerCase());
+
+      const roleStr: HouseholdMemberRole = res.role === 'Manager' ? 'Manager' : 'Member';
+      const typeStr: HouseholdMemberType = res.isRegistered ? 'Registered' : 'Offline';
+
+      const trimmedName = res.fullName ? res.fullName.trim() : 'Member';
+      const initial = trimmedName[0]?.toUpperCase() || 'M';
+
+      return {
+        id: res.id,
+        fullName: trimmedName,
+        initial,
+        avatarUri: null,
+        role: roleStr,
+        type: typeStr,
+        isCurrentUser: !!isSelf,
+        gender: res.gender !== null && res.gender !== undefined ? String(res.gender) : undefined,
+        dob: res.dateOfBirth || undefined,
+      };
     },
-    {
-      id: '2',
-      fullName: 'Hamada',
-      initial: 'H',
-      avatarUri: null,
-      role: 'Member',
-      type: 'Offline',
-      isCurrentUser: false,
-      gender: 'Male',
-      dob: '06/19/2003',
-    },
-  ]);
+    [currentFullName]
+  );
+
+  const fetchMembers = useCallback(async () => {
+    setIsLoadingMembers(true);
+    try {
+      const data = await memberService.getHouseholdMembers();
+      if (data && data.length > 0) {
+        const mapped = data.map((m) => mapResponseToDetailedMember(m));
+        setMembers(mapped);
+      } else {
+        // Fallback default member if list is empty
+        setMembers([
+          {
+            id: '1',
+            fullName: currentFullName || 'Household Member',
+            initial: currentFullName ? currentFullName[0].toUpperCase() : 'M',
+            avatarUri: null,
+            role: 'Manager',
+            type: 'Registered',
+            isCurrentUser: true,
+          },
+        ]);
+      }
+    } catch (error: any) {
+      console.warn(
+        '[useHouseholdMembers] Handled fetch members fallback:',
+        error?.message || error
+      );
+    } finally {
+      setIsLoadingMembers(false);
+    }
+  }, [mapResponseToDetailedMember, currentFullName]);
+
+  useEffect(() => {
+    fetchMembers();
+  }, [fetchMembers]);
 
   const handleToggleAddForm = () => {
     setIsAddFormOpen((prev) => !prev);
@@ -108,6 +151,7 @@ export function useHouseholdMembers() {
 
   return {
     members,
+    isLoadingMembers,
     isAddFormOpen,
     onToggleAddForm: handleToggleAddForm,
     onAddOfflineMember: handleAddOfflineMember,
@@ -116,5 +160,6 @@ export function useHouseholdMembers() {
     onPromote: handlePromote,
     onLeave: handleLeave,
     onRemove: handleRemove,
+    refreshMembers: fetchMembers,
   };
 }

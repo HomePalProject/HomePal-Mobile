@@ -1,4 +1,5 @@
 import { apiClient } from '@/src/services/api/client';
+import { authStorage } from '@/src/services/storage/auth.storage';
 import {
   ApiResponse,
   UserProfile,
@@ -59,7 +60,10 @@ export const authService = {
    * Log out currently authenticated session.
    */
   logout: async (): Promise<ApiResponse<any>> => {
-    const response = await apiClient.post<ApiResponse<any>>('/api/Auth/logout', {});
+    const refreshToken = await authStorage.getRefreshToken();
+    const response = await apiClient.post<ApiResponse<any>>('/api/Auth/logout', {
+      refreshToken: refreshToken || '',
+    });
     return response.data;
   },
 

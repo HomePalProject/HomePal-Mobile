@@ -4,66 +4,52 @@ import { Bell, Menu } from 'lucide-react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { useDrawerStore } from '@/src/store/useDrawerStore';
+import { useProfileStore } from '@/src/store/useProfileStore';
 
-export interface DashboardHeaderProps {
-  firstInitial: string;
-  profileImageUri: string | null;
-  onAvatarPress?: () => void;
+export interface TabHeaderProps {
+  title?: string;
   onNotificationPress?: () => void;
 }
 
-export function DashboardHeader({
-  firstInitial,
-  profileImageUri,
-  onAvatarPress,
-  onNotificationPress,
-}: DashboardHeaderProps) {
+export function TabHeader({ title = 'HomePal', onNotificationPress }: TabHeaderProps) {
   const { openDrawer } = useDrawerStore();
+  const { fullName, profileImageUri } = useProfileStore();
 
-  const handleOpenDrawer = () => {
-    if (onAvatarPress) {
-      onAvatarPress();
-    } else {
-      openDrawer();
-    }
-  };
+  const firstInitial = fullName ? fullName.trim()[0]?.toUpperCase() : 'H';
 
   return (
-    <View className="h-16 flex-row items-center justify-between bg-surface-surface px-6 shadow-sm">
-      {/* Left side: Menu Drawer Icon + Avatar + Brand Name */}
+    <View className="h-16 flex-row items-center justify-between border-b border-surface-divider bg-surface-surface px-6 shadow-sm">
+      {/* Left: Menu Drawer Icon + Avatar + Title */}
       <View className="flex-row items-center gap-3">
-        {/* Menu Icon Button */}
         <Pressable
-          onPress={handleOpenDrawer}
+          onPress={openDrawer}
           className="rounded-full p-1.5 active:opacity-70"
           accessibilityRole="button"
           accessibilityLabel="Open Navigation Drawer">
           <Icon as={Menu} size={24} className="text-brand-primary" />
         </Pressable>
 
-        {/* User Avatar */}
         <Pressable
-          onPress={handleOpenDrawer}
-          className="border-brand-primary/20 h-10 w-10 items-center justify-center overflow-hidden rounded-radius-full border bg-brand-primary-container active:opacity-70">
+          onPress={openDrawer}
+          className="border-brand-primary/20 h-10 w-10 items-center justify-center overflow-hidden rounded-full border bg-brand-primary-container active:opacity-70">
           {profileImageUri ? (
             <Image source={{ uri: profileImageUri }} className="h-full w-full" />
           ) : (
-            <Text className="text-body font-cairo font-bold text-brand-primary">
+            <Text className="font-cairo text-[16px] font-bold text-brand-primary">
               {firstInitial}
             </Text>
           )}
         </Pressable>
-        <Text className="text-bodyLarge font-cairo font-bold text-brand-primary">HomePal</Text>
+        <Text className="font-cairo text-[18px] font-bold text-brand-primary">{title}</Text>
       </View>
 
-      {/* Right side: Notification Bell — plain icon matching reference */}
+      {/* Right: Notification Bell */}
       <Pressable
         onPress={onNotificationPress}
         className="items-center justify-center p-2 active:opacity-60"
         accessibilityRole="button"
         accessibilityLabel="Notifications">
-        <Icon as={Bell} size={26} className="text-brand-primary" />
-        {/* Unread dot indicator */}
+        <Icon as={Bell} size={24} className="text-brand-primary" />
         <View className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-brand-accent" />
       </Pressable>
     </View>

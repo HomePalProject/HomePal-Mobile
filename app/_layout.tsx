@@ -14,13 +14,14 @@ import { ThemeProvider as NavigationThemeProvider } from 'expo-router/react-navi
 import { ThemeProvider as HomePalThemeProvider } from '@/src/providers/ThemeProvider';
 import { ToastProvider } from '@/src/providers/ToastProvider';
 import { PortalHost } from '@rn-primitives/portal';
-import { Stack } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'nativewind';
 import { Provider } from 'react-redux';
 import { store, useAppDispatch } from '@/src/store';
 import { bootstrapAuth } from '@/src/store/slices/authSlice';
 import { useProtectedRoute } from '@/src/hooks/useProtectedRoute';
+import { AppDrawer } from '@/src/components/navigation/AppDrawer';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -67,8 +68,15 @@ export default function RootLayout() {
               screenOptions={{
                 headerShown: false,
                 contentStyle: { backgroundColor: colorScheme === 'dark' ? '#121413' : '#FAF8F3' },
-              }}
-            />
+              }}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="(auth)" />
+              <Stack.Screen name="(households)" />
+              <Stack.Screen name="profile" />
+              <Stack.Screen name="edit-profile" />
+            </Stack>
+            <AppDrawer />
             <PortalHost />
           </NavigationThemeProvider>
         </ToastProvider>

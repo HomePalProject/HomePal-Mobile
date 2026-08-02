@@ -1,8 +1,3 @@
-/**
- * InviteScreen.tsx
- * Dumb UI component for the "Invite to Household" screen.
- * All logic is managed by useInviteMember.ts.
- */
 import React from 'react';
 import { View, ScrollView, Pressable, Image, TextInput, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -27,6 +22,7 @@ export interface InviteScreenProps {
   onSendInvite: () => void;
   // Invitations list
   sentInvitations: SentInvitation[];
+  cancelingId?: string | null;
   onCancelInvite: (id: string) => void;
   onRefresh: () => void;
 }
@@ -35,10 +31,19 @@ export interface InviteScreenProps {
 
 interface InvitationCardProps {
   invitation: SentInvitation;
+  cancelingId?: string | null;
   onCancel: (id: string) => void;
 }
 
-function InvitationCard({ invitation, onCancel }: InvitationCardProps) {
+function InvitationCard({ invitation, cancelingId, onCancel }: InvitationCardProps) {
+  const recipient =
+    invitation.invitedEmail || invitation.invitedUserName || invitation.token || 'User';
+  const isCanceled =
+    invitation.status === 'Canceled' ||
+    invitation.status === 'Cancelled' ||
+    invitation.status === 'Declined';
+  const isCanceling = cancelingId === invitation.id;
+
   return (
     <View
       className="bg-surface-card rounded-2xl border border-surface-border p-4"
@@ -47,24 +52,43 @@ function InvitationCard({ invitation, onCancel }: InvitationCardProps) {
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.04,
         shadowRadius: 6,
-        // elevation: 1,
       }}>
       <Text className="text-on-surface font-cairo text-[14px] font-semibold leading-[20px]">
-        To: {invitation.recipient}
+        To: {recipient}
       </Text>
       <Text className="mt-0.5 font-cairo text-[13px] leading-[18px] text-text-secondary">
         Status: {invitation.status}
       </Text>
-      <Pressable
-        onPress={() => onCancel(invitation.id)}
-        className="mt-3 w-full items-center justify-center rounded-xl py-3 active:opacity-80"
-        style={{ backgroundColor: '#D32F2F' }}
-        accessibilityRole="button"
-        accessibilityLabel={`Cancel invitation to ${invitation.recipient}`}>
-        <Text style={{ fontFamily: 'Cairo', fontSize: 14, fontWeight: '700', color: '#fff' }}>
-          Cancel
-        </Text>
-      </Pressable>
+
+      {/* Conditionally render Action Button vs Muted Canceled Badge */}
+      {isCanceled ? (
+        <View className="mt-3 w-full items-center justify-center rounded-xl border border-gray-200 bg-gray-100 py-2.5">
+          <Text className="font-cairo text-[13px] font-bold text-gray-500">
+            {invitation.status}
+          </Text>
+        </View>
+      ) : (
+        <Pressable
+          onPress={() => onCancel(invitation.id)}
+          disabled={isCanceling}
+          className="mt-3 w-full flex-row items-center justify-center gap-2 rounded-xl py-3 active:opacity-80"
+          style={{ backgroundColor: isCanceling ? '#E57373' : '#D32F2F' }}
+          accessibilityRole="button"
+          accessibilityLabel={`Cancel invitation to ${recipient}`}>
+          {isCanceling ? (
+            <>
+              <ActivityIndicator size="small" color="#fff" />
+              <Text style={{ fontFamily: 'Cairo', fontSize: 14, fontWeight: '700', color: '#fff' }}>
+                Cancelling...
+              </Text>
+            </>
+          ) : (
+            <Text style={{ fontFamily: 'Cairo', fontSize: 14, fontWeight: '700', color: '#fff' }}>
+              Cancel
+            </Text>
+          )}
+        </Pressable>
+      )}
     </View>
   );
 }
@@ -81,6 +105,7 @@ export function InviteScreen({
   onInputChange,
   onSendInvite,
   sentInvitations,
+  cancelingId,
   onCancelInvite,
   onRefresh,
 }: InviteScreenProps) {
@@ -157,7 +182,6 @@ export function InviteScreen({
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.04,
             shadowRadius: 8,
-            // elevation: 2,
           }}>
           {/* Label */}
           <Text className="font-cairo text-[13px] font-semibold text-text-secondary">
@@ -251,7 +275,12 @@ export function InviteScreen({
 
             {/* Invitation Cards */}
             {sentInvitations.map((inv) => (
-              <InvitationCard key={inv.id} invitation={inv} onCancel={onCancelInvite} />
+              <InvitationCard
+                key={inv.id}
+                invitation={inv}
+                cancelingId={cancelingId}
+                onCancel={onCancelInvite}
+              />
             ))}
           </View>
         )}
