@@ -33,6 +33,7 @@ export const bootstrapAuth = createAsyncThunk('auth/bootstrap', async (_, { reje
   try {
     const token = await authStorage.getAccessToken();
     if (!token) {
+      await authStorage.clearTokens();
       return null;
     }
 
@@ -43,16 +44,13 @@ export const bootstrapAuth = createAsyncThunk('auth/bootstrap', async (_, { reje
       return { user: response.data, token };
     }
 
-    // Fallback to offline stored user profile if getMe fails without throwing 401
-    const offlineUser = await authStorage.getUserProfile();
-    if (offlineUser) {
-      return { user: offlineUser, token };
-    }
-
+    // Invalid payload or expired session
+    await authStorage.clearTokens();
     return null;
   } catch (error: any) {
+    console.warn('[authSlice] bootstrapAuth failed/401, clearing tokens:', error?.message || error);
     await authStorage.clearTokens();
-    return rejectWithValue(error.message || 'Failed to restore session');
+    return rejectWithValue(error?.message || 'Failed to restore session');
   }
 });
 

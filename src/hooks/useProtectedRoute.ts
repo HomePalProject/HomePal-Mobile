@@ -22,12 +22,13 @@ export function useProtectedRoute() {
 
     const inAuthGroup = segments[0] === '(auth)';
     const inOnboardingGroup = segments[0] === '(onboarding)';
+    const isAtRoot = !segments || !segments.length || !segments[0];
 
     if (!isAuthenticated && !inAuthGroup && !inOnboardingGroup) {
       // User is not signed in and not on an auth/onboarding screen → redirect to welcome
       router.replace('/(auth)/welcome');
-    } else if (isAuthenticated && inAuthGroup) {
-      // User is signed in but on an auth screen → redirect to main app
+    } else if (isAuthenticated && (inAuthGroup || isAtRoot)) {
+      // User is signed in but on an auth screen or root splash → redirect to main app tabs
       router.replace('/(tabs)' as any);
     }
   }, [isAuthenticated, isBootstrapped, segments, router]);
