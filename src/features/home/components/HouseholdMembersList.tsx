@@ -31,6 +31,7 @@ export interface HouseholdMembersListProps {
   onPreferences: (id: string) => void;
   onEdit: (id: string) => void;
   onPromote: (id: string) => void;
+  onDemote?: (id: string) => void;
   onLeave: (id: string) => void;
   onRemove: (id: string) => void;
   editingMemberId?: string | null;
@@ -475,6 +476,7 @@ interface MemberCardProps {
   onCancelEdit?: () => void;
   onSaveEdit?: (id: string, payload: { fullName: string; gender: string; dob: string }) => void;
   onPromote: (id: string) => void;
+  onDemote?: (id: string) => void;
   onLeave: (id: string) => void;
   onRemove: (id: string) => void;
 }
@@ -487,6 +489,7 @@ function MemberCard({
   onCancelEdit,
   onSaveEdit,
   onPromote,
+  onDemote,
   onLeave,
   onRemove,
 }: MemberCardProps) {
@@ -813,7 +816,22 @@ function MemberCard({
           </Pressable>
         ) : !isCurrentUser ? (
           <>
-            {!isManager && (
+            {isManager ? (
+              <Pressable
+                onPress={() => onDemote && onDemote(member.id)}
+                className="rounded-full active:opacity-70"
+                style={{ paddingHorizontal: 14, paddingVertical: 7, backgroundColor: '#FDBA5A' }}>
+                <Text
+                  style={{
+                    fontFamily: 'Cairo',
+                    fontSize: 12,
+                    fontWeight: '700',
+                    color: '#734a00',
+                  }}>
+                  Demote
+                </Text>
+              </Pressable>
+            ) : (
               <Pressable
                 onPress={() => onPromote(member.id)}
                 className="rounded-full active:opacity-70"
@@ -854,6 +872,7 @@ export function HouseholdMembersList({
   onPreferences,
   onEdit,
   onPromote,
+  onDemote,
   onLeave,
   onRemove,
   editingMemberId,
@@ -903,6 +922,7 @@ export function HouseholdMembersList({
             onCancelEdit={onCancelEdit}
             onSaveEdit={onSaveEdit}
             onPromote={onPromote}
+            onDemote={onDemote}
             onLeave={onLeave}
             onRemove={onRemove}
           />

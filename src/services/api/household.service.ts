@@ -1,5 +1,10 @@
 import { apiClient } from './client';
-import { ApiResponse, CreateHouseholdRequest, HouseholdDto } from '@/src/types/api';
+import {
+  ApiResponse,
+  CreateHouseholdRequest,
+  UpdateHouseholdRequest,
+  HouseholdDto,
+} from '@/src/types/api';
 
 export const householdService = {
   /**
@@ -14,7 +19,6 @@ export const householdService = {
       );
 
       const resData = response.data;
-      // Handle envelope structure or direct object response
       if (resData && typeof resData === 'object' && 'data' in resData && resData.data) {
         return resData.data;
       }
@@ -48,5 +52,34 @@ export const householdService = {
       return resData.data;
     }
     return resData as HouseholdDto;
+  },
+
+  /**
+   * PUT /api/Households
+   * Updates current user's active household.
+   */
+  async updateHousehold(payload: UpdateHouseholdRequest): Promise<HouseholdDto> {
+    const response = await apiClient.put<ApiResponse<HouseholdDto> | HouseholdDto>(
+      '/api/Households',
+      payload
+    );
+
+    console.log('[HouseholdService] updateHousehold raw response:', response.data);
+
+    const resData = response.data;
+    if (resData && typeof resData === 'object' && 'data' in resData && resData.data) {
+      return resData.data;
+    }
+    return resData as HouseholdDto;
+  },
+
+  /**
+   * DELETE /api/Households
+   * Deletes current user's active household.
+   */
+  async deleteHousehold(): Promise<boolean> {
+    const response = await apiClient.delete<ApiResponse<any> | any>('/api/Households');
+    console.log('[HouseholdService] deleteHousehold raw response:', response.data);
+    return true;
   },
 };

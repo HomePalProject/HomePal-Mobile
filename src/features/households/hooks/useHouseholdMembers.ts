@@ -62,7 +62,16 @@ export function useHouseholdMembers() {
           res.fullName &&
           res.fullName.trim().toLowerCase() === currentFullName.trim().toLowerCase());
 
-      const roleStr: HouseholdMemberRole = res.role === 'Manager' ? 'Manager' : 'Member';
+      const rawRole = String(res.role || '')
+        .toLowerCase()
+        .trim();
+      const isManagerRole =
+        rawRole.includes('manager') ||
+        rawRole.includes('admin') ||
+        rawRole.includes('owner') ||
+        rawRole === '1';
+
+      const roleStr: HouseholdMemberRole = isManagerRole ? 'Manager' : 'Member';
       const typeStr: HouseholdMemberType = res.isRegistered ? 'Registered' : 'Offline';
 
       const trimmedName = res.fullName ? res.fullName.trim() : 'Member';
@@ -95,7 +104,16 @@ export function useHouseholdMembers() {
     try {
       const data = await memberService.getHouseholdMembers();
       if (data && data.length > 0) {
-        const mapped = data.map((m) => mapResponseToDetailedMember(m));
+        let mapped = data.map((m) => mapResponseToDetailedMember(m));
+
+        // The user who created/owns the household (isCurrentUser) is always a Manager by default
+        mapped = mapped.map((m) => {
+          if (m.isCurrentUser) {
+            return { ...m, role: 'Manager' as HouseholdMemberRole };
+          }
+          return m;
+        });
+
         setMembers(mapped);
       } else {
         // Fallback default member if list is empty
@@ -225,6 +243,28 @@ export function useHouseholdMembers() {
     }
   };
 
+  const handleDemote = async (memberId: string) => {
+    const targetMember = members.find((m) => m.id === memberId);
+    if (!targetMember) return;
+
+    try {
+      const genderVal = targetMember.gender === 'Male' || targetMember.gender === '1' ? 1 : 2;
+      await memberService.updateMember(memberId, {
+        fullName: targetMember.fullName,
+        gender: genderVal,
+        dateOfBirth: formatIsoDate(targetMember.dob),
+        role: 'Member',
+      });
+
+      toast.success('Member Demoted!', `${targetMember.fullName} has been demoted to Member.`);
+      fetchMembers();
+    } catch (error: any) {
+      const message =
+        error instanceof ApiError ? error.message : error?.message || 'Failed to demote member.';
+      toast.error('Error', message);
+    }
+  };
+
   const handleLeave = async (memberId: string) => {
     try {
       await memberService.removeMember(memberId);
@@ -265,6 +305,7 @@ export function useHouseholdMembers() {
     onCancelEdit: handleCancelEdit,
     onSaveEdit: handleSaveEdit,
     onPromote: handlePromote,
+    onDemote: handleDemote,
     onLeave: handleLeave,
     onRemove: handleRemove,
     refreshMembers: fetchMembers,

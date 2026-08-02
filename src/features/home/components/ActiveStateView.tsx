@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { View, ScrollView, Pressable, Image } from 'react-native';
-import { Home, MapPin, Users, Send, Inbox, Plus, LucideIcon } from 'lucide-react-native';
+import { Home, MapPin, Users, Send, Inbox, Plus, Settings, LucideIcon } from 'lucide-react-native';
 import { useRouter, Href } from 'expo-router';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
@@ -33,6 +33,7 @@ export interface ActiveStateViewProps {
   onPreferences: (id: string) => void;
   onEditMember: (id: string) => void;
   onPromote: (id: string) => void;
+  onDemote?: (id: string) => void;
   onLeave: (id: string) => void;
   onRemove: (id: string) => void;
   editingMemberId?: string | null;
@@ -161,10 +162,14 @@ export function ActiveStateView({
   onCancelEdit,
   onSaveEdit,
   onPromote,
+  onDemote,
   onLeave,
   onRemove,
 }: ActiveStateViewProps) {
   const router = useRouter();
+
+  const currentUserMember = detailedMembers.find((m) => m.isCurrentUser);
+  const isManager = currentUserMember ? currentUserMember.role === 'Manager' : true;
 
   return (
     <View className="flex-1">
@@ -206,12 +211,24 @@ export function ActiveStateView({
             />
 
             <View style={{ padding: 20 }}>
-              {/* PRIMARY RESIDENCE label */}
-              <View className="mb-3 flex-row items-center gap-2">
-                <Icon as={Home} size={18} color="#9cd1bf" />
-                <Text className="font-cairo text-[12px] font-bold uppercase tracking-[0.12em] text-slate-100">
-                  Primary Residence
-                </Text>
+              {/* PRIMARY RESIDENCE label + Settings Button (Managers only) */}
+              <View className="mb-3 flex-row items-center justify-between">
+                <View className="flex-row items-center gap-2">
+                  <Icon as={Home} size={18} color="#9cd1bf" />
+                  <Text className="font-cairo text-[12px] font-bold uppercase tracking-[0.12em] text-slate-100">
+                    Primary Residence
+                  </Text>
+                </View>
+
+                {isManager && (
+                  <Pressable
+                    onPress={() => router.push('/(households)/settings' as Href)}
+                    className="rounded-full bg-white/15 p-2 active:bg-white/30"
+                    accessibilityRole="button"
+                    accessibilityLabel="Household Settings">
+                    <Icon as={Settings} size={18} color="#ffffff" />
+                  </Pressable>
+                )}
               </View>
 
               {/* Household Name — matches reference size */}
@@ -269,6 +286,7 @@ export function ActiveStateView({
           onPreferences={onPreferences}
           onEdit={onEditMember}
           onPromote={onPromote}
+          onDemote={onDemote}
           onLeave={onLeave}
           onRemove={onRemove}
           editingMemberId={editingMemberId}

@@ -133,9 +133,16 @@ export interface UpdateProfileRequest {
 
 export interface CreateHouseholdRequest {
   name: string;
-  address?: string;
-  governorate?: string;
-  city?: string;
+  address?: string | null;
+  governorate?: string | null;
+  city?: string | null;
+}
+
+export interface UpdateHouseholdRequest {
+  name: string;
+  address?: string | null;
+  governorate?: string | null;
+  city?: string | null;
 }
 
 export interface HouseholdDto {

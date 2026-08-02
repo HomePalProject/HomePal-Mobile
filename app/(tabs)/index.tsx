@@ -9,7 +9,6 @@ import { DashboardHeader } from '@/src/features/home/components/DashboardHeader'
 import { OrphanStateView } from '@/src/features/home/components/OrphanStateView';
 import { ActiveStateView } from '@/src/features/home/components/ActiveStateView';
 import { Text } from '@/src/components/ui/text';
-import { Button } from '@/src/components/ui/button';
 
 import { useDrawerStore } from '@/src/store/useDrawerStore';
 
@@ -25,7 +24,6 @@ export default function DashboardScreen() {
     profileImageUri,
     onCreateHousehold,
     onViewInvitations,
-    setHasHousehold,
   } = useDashboard();
 
   const {
@@ -39,6 +37,7 @@ export default function DashboardScreen() {
     onCancelEdit,
     onSaveEdit,
     onPromote,
+    onDemote,
     onLeave,
     onRemove,
   } = useHouseholdMembers();
@@ -92,22 +91,11 @@ export default function DashboardScreen() {
           onCancelEdit={onCancelEdit}
           onSaveEdit={onSaveEdit}
           onPromote={onPromote}
+          onDemote={onDemote}
           onLeave={onLeave}
           onRemove={onRemove}
         />
       )}
-
-      {/* ── Developer Toggle (test only) ── */}
-      <View className="absolute bottom-6 left-6 z-10 shadow-lg">
-        <Button
-          onPress={() => setHasHousehold(!hasHousehold)}
-          size="sm"
-          className="h-9 rounded-full border border-brand-accent/20 bg-brand-accent px-4">
-          <Text className="font-cairo text-[11px] font-bold text-text-primary">
-            {hasHousehold ? 'State A' : 'State B'}
-          </Text>
-        </Button>
-      </View>
     </SafeAreaView>
   );
 }

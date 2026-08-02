@@ -6,6 +6,7 @@ export default function HouseholdsLayout() {
       <Stack.Screen name="create" />
       <Stack.Screen name="invitations" />
       <Stack.Screen name="invite" />
+      <Stack.Screen name="settings" />
     </Stack>
   );
 }
