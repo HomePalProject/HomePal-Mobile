@@ -11,7 +11,7 @@
     }
   ],
   "paths": {
-    "/api/Auth/register": {
+    "/api/auth/register": {
       "post": {
         "tags": ["Auth"],
         "parameters": [
@@ -91,7 +91,7 @@
         }
       }
     },
-    "/api/Auth/login": {
+    "/api/auth/login": {
       "post": {
         "tags": ["Auth"],
         "parameters": [
@@ -151,7 +151,7 @@
         }
       }
     },
-    "/api/Auth/google": {
+    "/api/auth/google": {
       "post": {
         "tags": ["Auth"],
         "parameters": [
@@ -211,7 +211,7 @@
         }
       }
     },
-    "/api/Auth/refresh": {
+    "/api/auth/refresh": {
       "post": {
         "tags": ["Auth"],
         "parameters": [
@@ -271,7 +271,7 @@
         }
       }
     },
-    "/api/Auth/logout": {
+    "/api/auth/logout": {
       "post": {
         "tags": ["Auth"],
         "parameters": [
@@ -331,7 +331,7 @@
         }
       }
     },
-    "/api/Auth/forgot-password": {
+    "/api/auth/forgot-password": {
       "post": {
         "tags": ["Auth"],
         "parameters": [
@@ -371,7 +371,7 @@
         }
       }
     },
-    "/api/Auth/reset-password": {
+    "/api/auth/reset-password": {
       "post": {
         "tags": ["Auth"],
         "parameters": [
@@ -431,7 +431,7 @@
         }
       }
     },
-    "/api/Auth/change-password": {
+    "/api/auth/change-password": {
       "post": {
         "tags": ["Auth"],
         "parameters": [
@@ -491,7 +491,7 @@
         }
       }
     },
-    "/api/Auth/confirm-email": {
+    "/api/auth/confirm-email": {
       "post": {
         "tags": ["Auth"],
         "parameters": [
@@ -551,7 +551,7 @@
         }
       }
     },
-    "/api/Auth/resend-confirmation": {
+    "/api/auth/resend-confirmation": {
       "post": {
         "tags": ["Auth"],
         "parameters": [
@@ -591,7 +591,7 @@
         }
       }
     },
-    "/api/Auth/me": {
+    "/api/auth/me": {
       "get": {
         "tags": ["Auth"],
         "parameters": [
@@ -631,7 +631,7 @@
         }
       }
     },
-    "/api/Auth/profile": {
+    "/api/auth/profile": {
       "put": {
         "tags": ["Auth"],
         "parameters": [
@@ -731,7 +731,7 @@
         }
       }
     },
-    "/api/Auth/profile/image": {
+    "/api/auth/profile/image": {
       "post": {
         "tags": ["Auth"],
         "parameters": [
@@ -1832,7 +1832,7 @@
         }
       }
     },
-    "/api/Households": {
+    "/api/households": {
       "post": {
         "tags": ["Households"],
         "parameters": [
@@ -2099,7 +2099,7 @@
         }
       }
     },
-    "/api/Households/my-household": {
+    "/api/households/my-household": {
       "get": {
         "tags": ["Households"],
         "parameters": [
@@ -2421,7 +2421,7 @@
         }
       }
     },
-    "/api/preference-categories": {
+    "/api/preferences/categories": {
       "get": {
         "tags": ["PreferenceCategories"],
         "parameters": [
@@ -2553,7 +2553,7 @@
         }
       }
     },
-    "/api/preference-categories/search": {
+    "/api/preferences/categories/search": {
       "get": {
         "tags": ["PreferenceCategories"],
         "parameters": [
@@ -2597,7 +2597,7 @@
         }
       }
     },
-    "/api/preference-categories/{categoryId}": {
+    "/api/preferences/categories/{categoryId}": {
       "get": {
         "tags": ["PreferenceCategories"],
         "parameters": [
@@ -3383,14 +3383,16 @@
         "type": "object",
         "properties": {
           "name": {
-            "maxLength": 100,
-            "minLength": 2,
-            "type": "string"
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocalizedItem"
+            }
           },
           "description": {
-            "maxLength": 300,
-            "minLength": 0,
-            "type": ["null", "string"]
+            "type": ["null", "array"],
+            "items": {
+              "$ref": "#/components/schemas/LocalizedItem"
+            }
           },
           "categoryId": {
             "type": "string",
@@ -3748,14 +3750,16 @@
         "type": "object",
         "properties": {
           "name": {
-            "maxLength": 100,
-            "minLength": 2,
-            "type": "string"
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocalizedItem"
+            }
           },
           "description": {
-            "maxLength": 300,
-            "minLength": 0,
-            "type": ["null", "string"]
+            "type": ["null", "array"],
+            "items": {
+              "$ref": "#/components/schemas/LocalizedItem"
+            }
           }
         }
       },
@@ -3920,6 +3924,17 @@
       "IFormFile": {
         "type": "string",
         "format": "binary"
+      },
+      "LocalizedItem": {
+        "type": "object",
+        "properties": {
+          "culture": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        }
       },
       "LoginRequest": {
         "required": ["emailOrUsername", "password"],
@@ -4175,14 +4190,16 @@
         "type": "object",
         "properties": {
           "name": {
-            "maxLength": 100,
-            "minLength": 2,
-            "type": "string"
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocalizedItem"
+            }
           },
           "description": {
-            "maxLength": 300,
-            "minLength": 0,
-            "type": ["null", "string"]
+            "type": ["null", "array"],
+            "items": {
+              "$ref": "#/components/schemas/LocalizedItem"
+            }
           }
         }
       },
@@ -4191,14 +4208,16 @@
         "type": "object",
         "properties": {
           "name": {
-            "maxLength": 100,
-            "minLength": 2,
-            "type": "string"
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LocalizedItem"
+            }
           },
           "description": {
-            "maxLength": 300,
-            "minLength": 0,
-            "type": ["null", "string"]
+            "type": ["null", "array"],
+            "items": {
+              "$ref": "#/components/schemas/LocalizedItem"
+            }
           },
           "categoryId": {
             "type": "string",

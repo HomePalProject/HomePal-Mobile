@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
+import { DeviceEventEmitter } from 'react-native';
 import { router } from 'expo-router';
 import { toast } from '@/src/providers/ToastProvider';
 import { memberService } from '@/src/services/api/member.service';
 import { useProfileStore } from '@/src/store/useProfileStore';
+import { useAppSelector } from '@/src/store';
 import { HouseholdMemberResponse } from '@/src/types/api';
 import { ApiError } from '@/src/services/api/client';
 
-export type HouseholdMemberRole = 'Manager' | 'Member';
+export type HouseholdMemberRole = 'Household Manager' | 'Household Member';
 export type HouseholdMemberType = 'Registered' | 'Offline';
 
 export interface DetailedMember {
@@ -53,12 +55,14 @@ export function useHouseholdMembers() {
   const [members, setMembers] = useState<DetailedMember[]>([]);
   const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
 
-  const { fullName: currentFullName } = useProfileStore();
+  const { user } = useAppSelector((state) => state.auth);
+  const currentFullName = useProfileStore((state) => state.fullName);
 
   const mapResponseToDetailedMember = useCallback(
     (res: HouseholdMemberResponse): DetailedMember => {
       const isSelf =
-        res.isCurrentUser ||
+        (res as any).isCurrentUser ||
+        (user?.id && res.userId === user.id) ||
         (currentFullName &&
           res.fullName &&
           res.fullName.trim().toLowerCase() === currentFullName.trim().toLowerCase());
@@ -72,10 +76,10 @@ export function useHouseholdMembers() {
         rawRole.includes('owner') ||
         rawRole === '1';
 
-      const roleStr: HouseholdMemberRole = isManagerRole ? 'Manager' : 'Member';
+      const roleStr: HouseholdMemberRole = isManagerRole ? 'Household Manager' : 'Household Member';
       const typeStr: HouseholdMemberType = res.isRegistered ? 'Registered' : 'Offline';
 
-      const trimmedName = res.fullName ? res.fullName.trim() : 'Member';
+      const trimmedName = res.fullName ? res.fullName.trim() : 'Household Member';
       const initial = trimmedName[0]?.toUpperCase() || 'M';
 
       return {
@@ -107,28 +111,10 @@ export function useHouseholdMembers() {
       if (data && data.length > 0) {
         let mapped = data.map((m) => mapResponseToDetailedMember(m));
 
-        // The user who created/owns the household (isCurrentUser) is always a Manager by default
-        mapped = mapped.map((m) => {
-          if (m.isCurrentUser) {
-            return { ...m, role: 'Manager' as HouseholdMemberRole };
-          }
-          return m;
-        });
-
         setMembers(mapped);
       } else {
-        // Fallback default member if list is empty
-        setMembers([
-          {
-            id: '1',
-            fullName: currentFullName || 'Household Member',
-            initial: currentFullName ? currentFullName[0].toUpperCase() : 'M',
-            avatarUri: null,
-            role: 'Manager',
-            type: 'Registered',
-            isCurrentUser: true,
-          },
-        ]);
+        // If the API returns no members, set the list to empty (usually means the user has no household)
+        setMembers([]);
       }
     } catch (error: any) {
       console.warn(
@@ -142,6 +128,13 @@ export function useHouseholdMembers() {
 
   useEffect(() => {
     fetchMembers();
+
+    // Listen for dashboard refresh events (e.g., after household creation)
+    const subscription = DeviceEventEmitter.addListener('REFRESH_DASHBOARD', () => {
+      fetchMembers();
+    });
+
+    return () => subscription.remove();
   }, [fetchMembers]);
 
   const handleToggleAddForm = () => {
@@ -232,7 +225,7 @@ export function useHouseholdMembers() {
         fullName: targetMember.fullName,
         gender: genderVal,
         dateOfBirth: formatIsoDate(targetMember.dob),
-        role: 'Manager',
+        role: 'Household Manager',
       });
 
       toast.success('Member Promoted!', `${targetMember.fullName} has been promoted to Manager.`);
@@ -254,7 +247,7 @@ export function useHouseholdMembers() {
         fullName: targetMember.fullName,
         gender: genderVal,
         dateOfBirth: formatIsoDate(targetMember.dob),
-        role: 'Member',
+        role: 'Household Member',
       });
 
       toast.success('Member Demoted!', `${targetMember.fullName} has been demoted to Member.`);
@@ -284,7 +277,7 @@ export function useHouseholdMembers() {
       await memberService.removeMember(memberId);
       toast.success(
         'Member Removed',
-        `${targetMember?.fullName || 'Member'} has been removed from the household.`
+        `${targetMember?.fullName || 'Household Member'} has been removed from the household.`
       );
       fetchMembers();
     } catch (error: any) {

@@ -24,6 +24,7 @@ export default function DashboardScreen() {
     profileImageUri,
     onCreateHousehold,
     onViewInvitations,
+    refreshDashboard,
   } = useDashboard();
 
   const {
@@ -40,12 +41,18 @@ export default function DashboardScreen() {
     onDemote,
     onLeave,
     onRemove,
+    refreshMembers,
   } = useHouseholdMembers();
 
-  const { householdName, location, stats, members, onManageMembers } = useActiveDashboard(
+  const { householdName, location, stats, members } = useActiveDashboard(
     householdData,
     detailedMembers.length
   );
+
+  const handleRefresh = async () => {
+    await refreshDashboard();
+    refreshMembers();
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-surface-background" edges={['top']}>
@@ -54,11 +61,10 @@ export default function DashboardScreen() {
         firstInitial={firstInitial}
         profileImageUri={profileImageUri}
         onAvatarPress={openDrawer}
-        onNotificationPress={() => console.log('[Dashboard] Notification bell pressed')}
       />
 
       {/* Conditional State Rendering */}
-      {isFetchingHousehold ? (
+      {isFetchingHousehold && !householdData && !hasHousehold ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#356859" />
           <Text className="mt-3 font-cairo text-[14px] text-text-secondary">
@@ -70,6 +76,8 @@ export default function DashboardScreen() {
         <OrphanStateView
           onCreateHousehold={onCreateHousehold}
           onViewInvitations={onViewInvitations}
+          onRefresh={handleRefresh}
+          isRefreshing={isFetchingHousehold}
         />
       ) : (
         // State B: Active household dashboard
@@ -79,7 +87,6 @@ export default function DashboardScreen() {
           location={location}
           stats={stats}
           members={members}
-          onManageMembers={onManageMembers}
           onInviteMember={() => router.push('/(households)/invite' as Href)}
           detailedMembers={detailedMembers}
           isAddFormOpen={isAddFormOpen}
@@ -94,6 +101,8 @@ export default function DashboardScreen() {
           onDemote={onDemote}
           onLeave={onLeave}
           onRemove={onRemove}
+          onRefresh={handleRefresh}
+          isRefreshing={isFetchingHousehold}
         />
       )}
     </SafeAreaView>

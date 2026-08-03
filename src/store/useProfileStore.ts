@@ -56,6 +56,9 @@ export interface ProfileState {
   email: string;
   profileImageUri: string | null;
   family: string;
+  roles: string[];
+  hasHousehold: boolean;
+  isManager: boolean;
   isLoading: boolean;
   error: string | null;
   updateProfile: (
@@ -77,14 +80,17 @@ export interface ProfileState {
 }
 
 export const useProfileStore = create<ProfileState>((set) => ({
-  fullName: 'Noura Hassan',
-  gender: Gender.Female,
-  birthDate: '1998-05-15',
-  governorate: 'Cairo',
-  city: 'Maadi',
-  email: 'noura@example.com',
+  fullName: '',
+  gender: null,
+  birthDate: null,
+  governorate: '',
+  city: '',
+  email: '',
   profileImageUri: null,
-  family: 'Hassan Family',
+  family: '',
+  roles: [],
+  hasHousehold: false,
+  isManager: false,
   isLoading: false,
   error: null,
   updateProfile: (updatedFields) =>
@@ -100,14 +106,29 @@ export const useProfileStore = create<ProfileState>((set) => ({
       console.log('[useProfileStore] Profile fetch raw response:', response);
       if (response.success && response.data) {
         const data = response.data;
+        const roles = data.roles || [];
+        const isManager = roles.includes('Household Manager');
+        const isMember = roles.includes('Household Member');
+        const hasHousehold = isManager || isMember;
+
+        let parsedGender = data.gender;
+        if (typeof parsedGender === 'string') {
+          if (parsedGender === 'Male') parsedGender = Gender.Male;
+          else if (parsedGender === 'Female') parsedGender = Gender.Female;
+          else if (!isNaN(parseInt(parsedGender, 10))) parsedGender = parseInt(parsedGender, 10);
+        }
+
         set({
           fullName: data.fullName,
-          gender: data.gender,
+          gender: parsedGender,
           birthDate: data.birthDate,
           governorate: data.governorate,
           city: data.city,
           email: data.email || 'noura@example.com',
           profileImageUri: resolveProfileImageUri(data),
+          roles,
+          hasHousehold,
+          isManager,
           isLoading: false,
         });
         console.log('[useProfileStore] Profile fetched and store populated successfully.');
@@ -116,7 +137,7 @@ export const useProfileStore = create<ProfileState>((set) => ({
         set({ error: response.message || 'Failed to fetch profile', isLoading: false });
       }
     } catch (err: any) {
-      console.error('[useProfileStore] Profile fetch threw error:', err);
+      console.warn('[useProfileStore] Profile fetch threw error:', err);
       set({ error: err.message || 'Failed to fetch profile', isLoading: false });
     }
   },

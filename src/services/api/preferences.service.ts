@@ -142,4 +142,22 @@ export const preferencesService = {
 
     return [];
   },
+
+  /**
+   * DELETE /api/households/members/{memberId}/preferences/{preferenceId}
+   * Removes a specific preference from a household member
+   */
+  async removeMemberPreference(memberId: string, preferenceId: string): Promise<boolean> {
+    try {
+      await apiClient.delete(`/api/households/members/${memberId}/preferences/${preferenceId}`);
+      console.log(`[preferencesService] removeMemberPreference success for ${preferenceId}`);
+      return true;
+    } catch (error: any) {
+      console.warn(
+        '[preferencesService] Error removing member preference:',
+        error?.message || error
+      );
+      return false;
+    }
+  },
 };

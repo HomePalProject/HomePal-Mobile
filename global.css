@@ -42,6 +42,9 @@
     --brand-primary: #356859;
     --brand-primary-pressed: #2a5347;
     --brand-primary-container: #dceee8;
+    --brand-accent: #d99a3d;
+    --brand-accent-container: #f7e7ca;
+    --brand-amber-300: #f3c35b;
     --status-error: #d9534f;
     --status-error-container: #fce8e6;
     --status-success: #43a66f;
@@ -88,6 +91,9 @@
     --brand-primary: #42826f;
     --brand-primary-pressed: #356859;
     --brand-primary-container: #1a332b;
+    --brand-accent: #e6a84d;
+    --brand-accent-container: #4a3410;
+    --brand-amber-300: #b89132;
     --status-error: #ff6b6b;
     --status-error-container: #3d1c1c;
     --status-success: #52c480;

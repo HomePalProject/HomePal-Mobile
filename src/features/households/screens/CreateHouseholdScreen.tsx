@@ -20,7 +20,7 @@ export interface CreateHouseholdScreenProps {
   userInitials: string;
 }
 
-// Inline field component styled to match the reference exactly
+// Inline field component styled for a professional look
 interface FieldProps {
   label: string;
   required?: boolean;
@@ -51,7 +51,7 @@ function FormField({
       {/* Label */}
       <Text
         className={cn(
-          'text-on-surface font-cairo text-[14px] font-semibold leading-[20px] tracking-[0.01em]',
+          'font-cairo text-[14px] font-semibold text-text-primary',
           error && 'text-brand-error'
         )}>
         {label}
@@ -69,17 +69,15 @@ function FormField({
         returnKeyType={returnKeyType}
         editable={editable}
         className={cn(
-          'bg-surface-variant text-on-surface h-[52px] w-full rounded-xl border border-transparent px-4 font-cairo text-[16px] leading-[24px]',
-          'focus:border-2 focus:border-brand-primary',
-          error && 'border-brand-error'
+          'bg-surface-variant h-[52px] w-full rounded-xl border px-4 font-cairo text-[16px] text-text-primary',
+          error ? 'border-brand-error' : 'border-surface-border/60',
+          'focus:border-2 focus:border-brand-primary'
         )}
       />
 
       {/* Error message */}
       {error ? (
-        <Text className="font-cairo text-[12px] font-medium leading-[16px] text-brand-error">
-          {error}
-        </Text>
+        <Text className="font-cairo text-[12px] font-medium text-brand-error">{error}</Text>
       ) : null}
     </View>
   );
@@ -98,16 +96,16 @@ export function CreateHouseholdScreen({
   return (
     <SafeAreaView className="flex-1 bg-surface-background" edges={['top', 'bottom']}>
       {/* ── Header ── white bg with subtle shadow, matching reference */}
-      <View className="h-16 w-full flex-row items-center justify-between bg-surface-surface px-6 shadow-sm">
+      <View className="z-10 h-16 w-full flex-row items-center justify-between bg-surface-surface px-6 shadow-sm">
         <View className="flex-row items-center gap-4">
           <Pressable
             onPress={onBack}
             className="active:bg-surface-surfaceVariant rounded-full p-1.5"
             accessibilityRole="button"
             accessibilityLabel="Go back">
-            <Icon as={ArrowLeft} size={26} className="text-on-surface" />
+            <Icon as={ArrowLeft} size={26} className="text-text-primary" />
           </Pressable>
-          <Text className="font-cairo text-[22px] font-bold leading-[30px] text-brand-primary">
+          <Text className="font-cairo text-[20px] font-bold text-text-primary">
             Create Household
           </Text>
         </View>
@@ -128,13 +126,13 @@ export function CreateHouseholdScreen({
 
       {/* ── Scrollable Content ── */}
       <ScrollView
-        className="flex-1 px-6"
-        contentContainerStyle={{ paddingTop: 24, paddingBottom: 12, gap: 24 }}
+        className="flex-1 px-5"
+        contentContainerStyle={{ paddingTop: 24, paddingBottom: 32, gap: 24 }}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled">
-        {/* Welcome Section — large bold green headline matching reference h2 */}
+        {/* Welcome Section */}
         <View style={{ gap: 8 }}>
-          <Text className="font-cairo text-[22px] font-bold leading-[30px] text-brand-primary">
+          <Text className="font-cairo text-[24px] font-bold leading-[32px] text-text-primary">
             Welcome to HomePal
           </Text>
           <Text className="font-cairo text-[16px] leading-[24px] text-text-secondary">
@@ -143,31 +141,31 @@ export function CreateHouseholdScreen({
           </Text>
         </View>
 
-        {/* ── Gradient Phase Banner ── h-48, neutral sage base, top-transparent → primary/40 bottom */}
-        <View
-          className="h-48 w-full overflow-hidden rounded-2xl"
-          style={{ backgroundColor: '#C8D5D0' }}>
+        {/* ── Image Phase Banner ── */}
+        <View className="bg-surface-surfaceVariant border-surface-border/30 h-48 w-full overflow-hidden rounded-2xl border shadow-sm">
+          <Image
+            source={require('../../../assets/images/household_creation_banner.png')}
+            className="absolute h-full w-full opacity-90"
+            resizeMode="cover"
+          />
           <LinearGradient
-            colors={['transparent', 'rgba(27, 80, 66, 0.55)']}
-            start={{ x: 0.5, y: 0 }}
+            colors={['transparent', 'rgba(27, 80, 66, 0.85)']}
+            start={{ x: 0.5, y: 0.2 }}
             end={{ x: 0.5, y: 1 }}
-            style={{ flex: 1, justifyContent: 'flex-end', padding: 24 }}>
-            <Text className="font-cairo text-[12px] font-semibold leading-[16px] tracking-[0.02em] text-white/80">
+            style={{ flex: 1, justifyContent: 'flex-end', padding: 20 }}>
+            {/* <Text className="font-cairo text-[13px] font-bold uppercase tracking-[0.05em] text-brand-primary-container/90 mb-1">
               Phase 1
-            </Text>
-            <Text className="font-cairo text-[20px] font-semibold leading-[28px] text-white">
+            </Text> */}
+            <Text className="font-cairo text-[22px] font-bold text-white">
               Identity &amp; Location
             </Text>
           </LinearGradient>
         </View>
 
-        {/* ── Form Card ── pure white, subtle shadow matching reference */}
+        {/* ── Form Card ── pure white, subtle shadow */}
         <View
-          className="bg-surface-card rounded-2xl border border-r-2"
-          style={{
-            padding: 24,
-            gap: 16,
-          }}>
+          className="rounded-2xl border border-surface-border bg-surface-surface p-6 shadow-sm"
+          style={{ gap: 20 }}>
           {/* Household Name */}
           <FormField
             label="Household Name"
@@ -218,14 +216,12 @@ export function CreateHouseholdScreen({
             editable={!isLoading}
           />
 
-          {/* ── Info Tip ── bg-primary-container/30 matching reference */}
-          <View
-            className="border-brand-primary/10 bg-brand-primary-container/30 flex-row items-start gap-3 rounded-xl border"
-            style={{ marginTop: 8, padding: 16 }}>
+          {/* ── Info Tip ── */}
+          <View className="border-brand-primary/10 bg-brand-primary-container/40 mt-2 flex-row items-start gap-3 rounded-xl border p-4">
             <View className="mt-0.5">
               <Icon as={Info} size={20} className="text-brand-primary" />
             </View>
-            <Text className="flex-1 font-cairo text-[14px] leading-[20px] text-text-secondary">
+            <Text className="flex-1 font-cairo text-[13px] font-medium leading-[20px] text-text-secondary">
               Providing your location helps us suggest local recipes and optimize your grocery
               budget based on regional market prices.
             </Text>

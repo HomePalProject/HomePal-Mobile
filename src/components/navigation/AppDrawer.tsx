@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Pressable, Image, Animated, Dimensions, Modal, StyleSheet } from 'react-native';
-import { router, Href } from 'expo-router';
+import { router, Href, useSegments } from 'expo-router';
 import { Home, Users, Send, Mail, User, LogOut } from 'lucide-react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
@@ -16,8 +16,19 @@ export function AppDrawer() {
   const dispatch = useAppDispatch();
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
 
-  const { isOpen, closeDrawer, activeRoute, setActiveRoute } = useDrawerStore();
-  const { fullName, email, profileImageUri } = useProfileStore();
+  const { isOpen, closeDrawer } = useDrawerStore();
+  const { fullName, email, profileImageUri, hasHousehold, isManager } = useProfileStore();
+  const segments = useSegments();
+
+  const activeRoute = React.useMemo(() => {
+    const tabSegment = segments[1] as string | undefined;
+    if (segments[0] === '(tabs)' && (tabSegment === 'index' || !tabSegment)) return 'household';
+    if (segments[0] === '(households)' && segments[1] === 'invite') return 'sent_invites';
+    if (segments[0] === '(households)' && segments[1] === 'invitations') return 'received_invites';
+    if (segments[0] === 'profile' || (segments[0] === '(tabs)' && tabSegment === 'profile'))
+      return 'profile';
+    return '';
+  }, [segments]);
 
   const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
@@ -58,7 +69,6 @@ export function AppDrawer() {
   const displayEmail = email || 'user@homepal.app';
 
   const navigateTo = (routeKey: string, href: string) => {
-    setActiveRoute(routeKey);
     closeDrawer();
     router.push(href as Href);
   };
@@ -94,6 +104,7 @@ export function AppDrawer() {
 
           {/* Sliding Panel */}
           <Animated.View
+            className="bg-surface-surface"
             style={[
               styles.drawerPanel,
               {
@@ -102,10 +113,10 @@ export function AppDrawer() {
               },
             ]}>
             {/* ── 1. Top Header (Dark Green Container) ── */}
-            <View className="bg-[#1b5042] px-5 pb-6 pt-12">
+            <View className="bg-brand-primary-pressed px-5 pb-6 pt-12">
               <View className="flex-row items-center gap-4">
                 {/* User Avatar Circle */}
-                <View className="h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 border-white/20 bg-[#C8D5D0]">
+                <View className="h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 border-white/20 bg-brand-primary-container">
                   {profileImageUri ? (
                     <Image
                       source={{ uri: profileImageUri }}
@@ -113,7 +124,7 @@ export function AppDrawer() {
                       resizeMode="cover"
                     />
                   ) : (
-                    <Text className="font-cairo text-[22px] font-bold text-[#1b5042]">
+                    <Text className="font-cairo text-[22px] font-bold text-brand-primary-pressed">
                       {userInitial}
                     </Text>
                   )}
@@ -134,37 +145,42 @@ export function AppDrawer() {
             </View>
 
             {/* ── 2. Navigation Menu Items ── */}
-            <View className="flex-1 bg-white px-3 pt-4" style={{ gap: 6 }}>
+            <View className="flex-1 bg-surface-surface px-3 pt-4" style={{ gap: 6 }}>
               {/* Item 1: My Household */}
               <Pressable
                 onPress={() => navigateTo('household', '/(tabs)')}
                 className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 active:opacity-80 ${
                   activeRoute === 'household'
-                    ? 'bg-[#356859] shadow-sm'
+                    ? 'bg-brand-primary shadow-sm'
                     : 'active:bg-surface-surfaceVariant'
                 }`}>
                 <Icon
                   as={Home}
                   size={22}
-                  color={activeRoute === 'household' ? '#ffffff' : '#1e1b17'}
+                  className={activeRoute === 'household' ? 'text-white' : 'text-text-primary'}
                 />
                 <Text
                   className={`font-cairo text-[15px] ${
                     activeRoute === 'household'
                       ? 'font-bold text-white'
-                      : 'font-semibold text-[#1e1b17]'
+                      : 'font-semibold text-text-primary'
                   }`}>
                   My Household
                 </Text>
               </Pressable>
 
               {/* Item 2: Household Members */}
-              <Pressable
-                onPress={() => navigateTo('members', '/(tabs)')}
-                className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 active:opacity-80 ${
+              {/* <Pressable
+                onPress={() => hasHousehold && navigateTo('members', '/(tabs)')}
+                disabled={!hasHousehold}
+                className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 ${
+                  !hasHousehold ? 'opacity-40' : 'active:opacity-80'
+                } ${
                   activeRoute === 'members'
                     ? 'bg-[#356859] shadow-sm'
-                    : 'active:bg-surface-surfaceVariant'
+                    : hasHousehold
+                      ? 'active:bg-surface-surfaceVariant'
+                      : ''
                 }`}>
                 <Icon
                   as={Users}
@@ -179,26 +195,32 @@ export function AppDrawer() {
                   }`}>
                   Household Members
                 </Text>
-              </Pressable>
+              </Pressable> */}
 
               {/* Item 3: Sent Invitations */}
               <Pressable
-                onPress={() => navigateTo('sent_invites', '/(households)/invite')}
-                className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 active:opacity-80 ${
+                onPress={() =>
+                  hasHousehold && isManager && navigateTo('sent_invites', '/(households)/invite')
+                }
+                disabled={!hasHousehold || !isManager}
+                style={{ opacity: !hasHousehold || !isManager ? 0.4 : 1 }}
+                className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 ${
                   activeRoute === 'sent_invites'
-                    ? 'bg-[#356859] shadow-sm'
-                    : 'active:bg-surface-surfaceVariant'
+                    ? 'bg-brand-primary shadow-sm'
+                    : hasHousehold && isManager
+                      ? 'active:bg-surface-surfaceVariant'
+                      : ''
                 }`}>
                 <Icon
                   as={Send}
                   size={22}
-                  color={activeRoute === 'sent_invites' ? '#ffffff' : '#1e1b17'}
+                  className={activeRoute === 'sent_invites' ? 'text-white' : 'text-text-primary'}
                 />
                 <Text
                   className={`font-cairo text-[15px] ${
                     activeRoute === 'sent_invites'
                       ? 'font-bold text-white'
-                      : 'font-semibold text-[#1e1b17]'
+                      : 'font-semibold text-text-primary'
                   }`}>
                   Sent Invitations
                 </Text>
@@ -206,22 +228,30 @@ export function AppDrawer() {
 
               {/* Item 4: Received Invitations */}
               <Pressable
-                onPress={() => navigateTo('received_invites', '/(households)/invitations')}
-                className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 active:opacity-80 ${
+                onPress={() =>
+                  !hasHousehold && navigateTo('received_invites', '/(households)/invitations')
+                }
+                disabled={hasHousehold}
+                style={{ opacity: hasHousehold ? 0.4 : 1 }}
+                className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 ${
                   activeRoute === 'received_invites'
-                    ? 'bg-[#356859] shadow-sm'
-                    : 'active:bg-surface-surfaceVariant'
+                    ? 'bg-brand-primary shadow-sm'
+                    : !hasHousehold
+                      ? 'active:bg-surface-surfaceVariant active:opacity-80'
+                      : ''
                 }`}>
                 <Icon
                   as={Mail}
                   size={22}
-                  color={activeRoute === 'received_invites' ? '#ffffff' : '#1e1b17'}
+                  className={
+                    activeRoute === 'received_invites' ? 'text-white' : 'text-text-primary'
+                  }
                 />
                 <Text
                   className={`font-cairo text-[15px] ${
                     activeRoute === 'received_invites'
                       ? 'font-bold text-white'
-                      : 'font-semibold text-[#1e1b17]'
+                      : 'font-semibold text-text-primary'
                   }`}>
                   Received Invitations
                 </Text>
@@ -232,19 +262,19 @@ export function AppDrawer() {
                 onPress={() => navigateTo('profile', '/profile')}
                 className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 active:opacity-80 ${
                   activeRoute === 'profile'
-                    ? 'bg-[#356859] shadow-sm'
+                    ? 'bg-brand-primary shadow-sm'
                     : 'active:bg-surface-surfaceVariant'
                 }`}>
                 <Icon
                   as={User}
                   size={22}
-                  color={activeRoute === 'profile' ? '#ffffff' : '#1e1b17'}
+                  className={activeRoute === 'profile' ? 'text-white' : 'text-text-primary'}
                 />
                 <Text
                   className={`font-cairo text-[15px] ${
                     activeRoute === 'profile'
                       ? 'font-bold text-white'
-                      : 'font-semibold text-[#1e1b17]'
+                      : 'font-semibold text-text-primary'
                   }`}>
                   Profile & Settings
                 </Text>
@@ -252,7 +282,7 @@ export function AppDrawer() {
             </View>
 
             {/* ── 3. Footer (Sign Out Button) ── */}
-            <View className="border-t border-surface-border bg-white p-4">
+            <View className="border-t border-surface-border bg-surface-surface p-4">
               <Pressable
                 onPress={handleOpenLogoutModal}
                 className="h-12 w-full flex-row items-center justify-center gap-2 rounded-full active:opacity-90"
@@ -277,7 +307,7 @@ export function AppDrawer() {
           className="flex-1 items-center justify-center bg-black/50 px-6"
           onPress={() => setLogoutModalVisible(false)}>
           <Pressable
-            className="w-full max-w-[320px] rounded-2xl border border-surface-border bg-white p-6 shadow-xl"
+            className="w-full max-w-[320px] rounded-2xl border border-surface-border bg-surface-surface p-6 shadow-xl"
             onPress={(e) => e.stopPropagation()}>
             <Text className="mb-2 text-center font-cairo text-[18px] font-bold text-text-primary">
               Confirm Logout
@@ -309,7 +339,6 @@ export function AppDrawer() {
 const styles = StyleSheet.create({
   drawerPanel: {
     height: '100%',
-    backgroundColor: '#ffffff',
     shadowColor: '#000',
     shadowOffset: { width: 4, height: 0 },
     shadowOpacity: 0.15,

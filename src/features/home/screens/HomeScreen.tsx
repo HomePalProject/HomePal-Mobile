@@ -33,7 +33,7 @@ export default function HomeScreen() {
             <Text className="text-caption font-cairo text-text-secondary">{user.family}</Text>
           </View>
 
-          <View className="bg-brand-primaryContainer h-12 w-12 items-center justify-center rounded-radius-full">
+          <View className="h-12 w-12 items-center justify-center rounded-radius-full bg-brand-primary-container">
             <Text className="text-body font-cairo font-bold text-brand-primary">
               {user.firstInitial}
               {user.lastInitial}

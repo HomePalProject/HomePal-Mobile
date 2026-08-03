@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, RefreshControl } from 'react-native';
 import { Home, PlusCircle, Mail } from 'lucide-react-native';
 import { Text } from '@/src/components/ui/text';
 import { Button } from '@/src/components/ui/button';
@@ -9,13 +9,29 @@ import { ProTipCard } from '@/src/components/ui/pro-tip-card';
 export interface OrphanStateViewProps {
   onCreateHousehold: () => void;
   onViewInvitations: () => void;
+  onRefresh?: () => void;
+  isRefreshing?: boolean;
 }
 
-export function OrphanStateView({ onCreateHousehold, onViewInvitations }: OrphanStateViewProps) {
+export function OrphanStateView({
+  onCreateHousehold,
+  onViewInvitations,
+  onRefresh,
+  isRefreshing = false,
+}: OrphanStateViewProps) {
   return (
     <ScrollView
       className="flex-1 bg-surface-background px-spacing-24"
       contentContainerStyle={{ paddingVertical: 32, gap: 32 }}
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefreshing}
+          onRefresh={onRefresh}
+          colors={['#356859']}
+          tintColor="#356859"
+          progressViewOffset={50}
+        />
+      }
       showsVerticalScrollIndicator={false}>
       {/* Welcome Title */}
       <View className="items-start gap-spacing-8">

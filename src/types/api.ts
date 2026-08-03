@@ -13,8 +13,8 @@ export interface ApiResponse<T = any> {
  * Gender enumeration matching backend schema.
  */
 export enum Gender {
-  Male = 0,
-  Female = 1,
+  Male = 1,
+  Female = 2,
 }
 
 /**

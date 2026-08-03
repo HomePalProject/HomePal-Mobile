@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, ScrollView, Pressable, Image, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, Bell, Check, X, Inbox, Home } from 'lucide-react-native';
+import { ArrowLeft, Check, X, Inbox, Home } from 'lucide-react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { ProTipCard } from '@/src/components/ui/pro-tip-card';
@@ -45,7 +45,7 @@ function ReceivedInvitationCard({
 
   return (
     <View
-      className="bg-surface-card rounded-2xl border border-surface-border p-4"
+      className="rounded-2xl border border-surface-border bg-surface-surface p-4"
       style={{
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
@@ -55,15 +55,15 @@ function ReceivedInvitationCard({
       {/* Household & Sender Info Header */}
       <View className="flex-row items-center gap-3">
         <View className="h-10 w-10 items-center justify-center rounded-xl bg-brand-primary-container">
-          <Icon as={Home} size={20} color="#356859" />
+          <Icon as={Home} size={20} className="text-brand-primary" />
         </View>
         <View className="flex-1">
-          <Text className="text-on-surface font-cairo text-[16px] font-bold leading-[22px]">
+          <Text className="font-cairo text-[16px] font-bold leading-[22px] text-text-primary">
             {invitation.householdName || 'Household Invitation'}
           </Text>
           <Text className="font-cairo text-[13px] leading-[18px] text-text-secondary">
             Invited by:{' '}
-            <Text className="text-on-surface font-semibold">
+            <Text className="font-semibold text-text-primary">
               {invitation.invitedByName || 'Household Manager'}
             </Text>
           </Text>
@@ -97,14 +97,14 @@ function ReceivedInvitationCard({
         <Pressable
           onPress={() => onDecline(invitation.id)}
           disabled={isProcessing}
-          className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl border border-surface-border bg-white py-3 active:opacity-80"
+          className="flex-1 flex-row items-center justify-center gap-1.5 rounded-xl border border-surface-border bg-surface-surface py-3 active:opacity-80"
           accessibilityRole="button"
           accessibilityLabel="Decline Invitation">
           {isProcessing ? (
-            <ActivityIndicator size="small" color="#734a00" />
+            <ActivityIndicator size="small" color="#D9534F" />
           ) : (
             <>
-              <Icon as={X} size={18} color="#734a00" />
+              <Icon as={X} size={18} className="text-status-error" />
               <Text className="font-cairo text-[14px] font-bold text-text-primary">Decline</Text>
             </>
           )}
@@ -139,19 +139,16 @@ export function PendingInvitationsScreen({
           className="active:bg-surface-surfaceVariant rounded-full p-2"
           accessibilityRole="button"
           accessibilityLabel="Go back">
-          <Icon as={ArrowLeft} size={24} className="text-on-surface" />
+          <Icon as={ArrowLeft} size={24} className="text-text-primary" />
         </Pressable>
 
         {/* Title */}
-        <Text className="text-on-surface font-cairo text-[16px] font-bold">
+        <Text className="font-cairo text-[16px] font-bold text-text-primary">
           Received Invitations
         </Text>
 
-        {/* Right: Bell + Avatar (Drawer trigger) */}
+        {/* Right: Avatar (Drawer trigger) */}
         <View className="flex-row items-center gap-3">
-          <Pressable onPress={onNotificationPress} className="p-1 active:opacity-60">
-            <Icon as={Bell} size={24} className="text-brand-primary" />
-          </Pressable>
           <Pressable
             onPress={openDrawer}
             className="h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-brand-primary-container active:opacity-70">
@@ -191,33 +188,11 @@ export function PendingInvitationsScreen({
           </View>
         ) : isEmpty ? (
           /* Empty State Card */
-          <View
-            style={{
-              marginVertical: 24,
-              alignItems: 'center',
-              borderRadius: 16,
-              borderWidth: 1,
-              borderColor: '#e4e0da',
-              backgroundColor: '#ffffff',
-              padding: 32,
-              shadowColor: '#000',
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.05,
-              shadowRadius: 4,
-              elevation: 1,
-            }}>
-            <View
-              style={{
-                width: 64,
-                height: 64,
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: 32,
-                backgroundColor: '#c8d5d0',
-              }}>
-              <Icon as={Inbox} size={32} color="#356859" />
+          <View className="my-6 items-center rounded-2xl border border-surface-border bg-surface-surface p-8 shadow-sm">
+            <View className="h-16 w-16 items-center justify-center rounded-full bg-brand-primary-container">
+              <Icon as={Inbox} size={32} className="text-brand-primary" />
             </View>
-            <Text className="text-on-surface mt-4 font-cairo text-[18px] font-bold">
+            <Text className="mt-4 font-cairo text-[18px] font-bold text-text-primary">
               No Received Invitations
             </Text>
             <Text className="mt-1 text-center font-cairo text-[14px] leading-[22px] text-text-secondary">
@@ -225,13 +200,7 @@ export function PendingInvitationsScreen({
             </Text>
             <Pressable
               onPress={onRefresh}
-              style={{
-                marginTop: 20,
-                borderRadius: 999,
-                backgroundColor: '#fdba5a',
-                paddingHorizontal: 24,
-                paddingVertical: 10,
-              }}>
+              className="mt-5 rounded-full bg-brand-amber-300 px-6 py-2.5 active:opacity-80">
               <Text className="font-cairo text-[13px] font-bold text-text-primary">
                 Check Again
               </Text>
@@ -241,12 +210,12 @@ export function PendingInvitationsScreen({
           /* List of Pending Invitations */
           <View style={{ gap: 14 }}>
             <View className="flex-row items-center justify-between">
-              <Text className="text-on-surface font-cairo text-[16px] font-bold">
+              <Text className="font-cairo text-[16px] font-bold text-text-primary">
                 Inbox ({invitations.length})
               </Text>
               <Pressable
                 onPress={onRefresh}
-                className="rounded-full bg-brand-accent/20 px-3 py-1 active:opacity-70">
+                className="bg-brand-accent/20 rounded-full px-3 py-1 active:opacity-70">
                 <Text className="font-cairo text-[12px] font-bold text-brand-accent">Refresh</Text>
               </Pressable>
             </View>

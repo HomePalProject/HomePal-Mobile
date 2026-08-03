@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
+import { DeviceEventEmitter } from 'react-native';
 import { toast } from '@/src/providers/ToastProvider';
 import { householdService } from '@/src/services/api/household.service';
 import { CreateHouseholdRequest } from '@/src/types/api';
@@ -68,6 +69,9 @@ export function useCreateHousehold() {
         'Household Registered!',
         `Successfully registered "${createdHousehold.name || formData.name.trim()}"`
       );
+
+      // Trigger a dashboard refetch before navigating back
+      DeviceEventEmitter.emit('REFRESH_DASHBOARD');
 
       // Navigate back to the main dashboard (State B will load automatically on mount)
       router.back();

@@ -162,17 +162,30 @@ apiClient.interceptors.response.use(
         });
 
         const refreshData = refreshResponse.data;
-        const newToken = refreshData?.data?.tokens?.accessToken || refreshData?.data?.token;
+        // The backend might return an ApiResponse envelope or the raw tokens directly
+        const newToken =
+          refreshData?.data?.tokens?.accessToken ||
+          refreshData?.data?.accessToken ||
+          refreshData?.data?.token ||
+          (refreshData as any)?.tokens?.accessToken ||
+          (refreshData as any)?.accessToken ||
+          (refreshData as any)?.token;
+
         const newRefreshToken =
           refreshData?.data?.tokens?.refreshToken ||
           refreshData?.data?.refreshToken ||
+          (refreshData as any)?.tokens?.refreshToken ||
+          (refreshData as any)?.refreshToken ||
           refreshToken;
 
         console.log('[HTTP Auth] Refresh token endpoint response:', {
-          success: refreshData?.success,
+          isSuccessExplicit: refreshData?.success,
           hasNewToken: !!newToken,
+          responseKeys: Object.keys(refreshData || {}),
         });
-        if (refreshData && refreshData.success && newToken) {
+
+        // Accept if we found a token and the success flag is NOT explicitly false
+        if (refreshData && refreshData.success !== false && newToken) {
           await authStorage.setTokens(newToken, newRefreshToken);
           apiClient.defaults.headers.common.Authorization = `Bearer ${newToken}`;
 
@@ -184,10 +197,14 @@ apiClient.interceptors.response.use(
           console.log('[HTTP Auth] Token refreshed successfully. Retrying original request.');
           return apiClient(originalRequest);
         } else {
+          console.warn(
+            '[HTTP Auth] Refresh token response missing token or marked as failure.',
+            refreshData
+          );
           throw new Error('Refresh token request rejected');
         }
       } catch (refreshError: any) {
-        console.error('[HTTP Auth] Token refresh failed:', refreshError.message);
+        console.warn('[HTTP Auth] Token refresh failed:', refreshError.message || refreshError);
         processQueue(refreshError, null);
         await authStorage.clearTokens();
         if (onUnauthorizedCallback) {

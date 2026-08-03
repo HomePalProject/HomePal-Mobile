@@ -1,10 +1,5 @@
-/**
- * ActiveStateView.tsx
- * Dumb UI component for the Active Household Dashboard (State B).
- * All logic is managed by useActiveDashboard.ts.
- */
 import React from 'react';
-import { View, ScrollView, Pressable, Image } from 'react-native';
+import { View, ScrollView, Pressable, Image, RefreshControl } from 'react-native';
 import { Home, MapPin, Users, Send, Inbox, Plus, Settings, LucideIcon } from 'lucide-react-native';
 import { useRouter, Href } from 'expo-router';
 import { Text } from '@/src/components/ui/text';
@@ -23,7 +18,6 @@ export interface ActiveStateViewProps {
   stats: HouseholdStats;
   // Simple member list (for the quick-glance section — kept for future use)
   members: HouseholdMember[];
-  onManageMembers: () => void;
   onInviteMember: () => void;
   // Detailed members management (HouseholdMembersList)
   detailedMembers: DetailedMember[];
@@ -39,6 +33,8 @@ export interface ActiveStateViewProps {
   editingMemberId?: string | null;
   onCancelEdit?: () => void;
   onSaveEdit?: (id: string, payload: { fullName: string; gender: string; dob: string }) => void;
+  onRefresh?: () => void;
+  isRefreshing?: boolean;
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -57,7 +53,7 @@ function StatCard({ icon, iconBgClass, iconColorClass, label, value, onPress }: 
   return (
     <Pressable
       onPress={onPress}
-      className="w-36 flex-shrink-0 rounded-2xl bg-white p-4 active:opacity-75"
+      className="w-36 flex-shrink-0 rounded-2xl bg-surface-surface p-4 active:opacity-75"
       style={{
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -72,7 +68,7 @@ function StatCard({ icon, iconBgClass, iconColorClass, label, value, onPress }: 
       <Text className="font-cairo text-[12px] font-semibold leading-[16px] tracking-[0.02em] text-text-secondary">
         {label}
       </Text>
-      <Text className="text-on-surface font-cairo text-[20px] font-semibold leading-[28px]">
+      <Text className="font-cairo text-[20px] font-semibold leading-[28px] text-text-primary">
         {value}
       </Text>
     </Pressable>
@@ -85,10 +81,10 @@ interface MemberRowProps {
 }
 
 function MemberRow({ member }: MemberRowProps) {
-  const isManager = member.role === 'Manager';
+  const isManager = member.role === 'Household Manager';
   return (
     <View
-      className="flex-row items-center justify-between rounded-2xl bg-white px-4 py-3"
+      className="flex-row items-center justify-between rounded-2xl bg-surface-surface px-4 py-3"
       style={{
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
@@ -117,7 +113,7 @@ function MemberRow({ member }: MemberRowProps) {
 
         {/* Name & Username */}
         <View style={{ gap: 1 }}>
-          <Text className="text-on-surface font-cairo text-[15px] font-semibold leading-[22px]">
+          <Text className="font-cairo text-[15px] font-semibold leading-[22px] text-text-primary">
             {member.fullName}
           </Text>
           <Text className="font-cairo text-[13px] leading-[18px] text-text-disabled">
@@ -151,7 +147,6 @@ export function ActiveStateView({
   location,
   stats,
   onInviteMember,
-  onManageMembers,
   detailedMembers,
   isAddFormOpen,
   onToggleAddForm,
@@ -165,11 +160,13 @@ export function ActiveStateView({
   onDemote,
   onLeave,
   onRemove,
+  onRefresh,
+  isRefreshing = false,
 }: ActiveStateViewProps) {
   const router = useRouter();
 
   const currentUserMember = detailedMembers.find((m) => m.isCurrentUser);
-  const isManager = currentUserMember ? currentUserMember.role === 'Manager' : true;
+  const isManager = currentUserMember ? currentUserMember.role === 'Household Manager' : true;
 
   return (
     <View className="flex-1">
@@ -181,11 +178,20 @@ export function ActiveStateView({
           paddingBottom: 120,
           gap: 32,
         }}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={onRefresh}
+            colors={['#356859']}
+            tintColor="#356859"
+            progressViewOffset={50}
+          />
+        }
         showsVerticalScrollIndicator={false}>
         {/* ── 1. Greeting Section ── */}
         <View style={{ gap: 16 }}>
           <View style={{ gap: 4 }}>
-            <Text className="text-on-surface font-cairo text-[28px] font-bold leading-[36px]">
+            <Text className="font-cairo text-[28px] font-bold leading-[36px] text-text-primary">
               Good Morning, {firstName}!
             </Text>
             <Text className="font-cairo text-[16px] leading-[24px] text-text-secondary">
@@ -254,24 +260,23 @@ export function ActiveStateView({
           contentContainerStyle={{ gap: 16, paddingVertical: 8 }}>
           <StatCard
             icon={Users}
-            iconBgClass="bg-blue-50"
-            iconColorClass="text-status-info"
+            iconBgClass="bg-brand-primary-container"
+            iconColorClass="text-brand-primary"
             label="Total Members"
             value={stats.totalMembers}
-            onPress={onManageMembers}
           />
           <StatCard
             icon={Send}
-            iconBgClass="bg-yellow-50"
-            iconColorClass="text-status-warning"
+            iconBgClass="bg-brand-accent-container"
+            iconColorClass="text-brand-accent"
             label="Sent Invitations"
             value={stats.sentInvitations}
             onPress={onInviteMember}
           />
           <StatCard
             icon={Inbox}
-            iconBgClass="bg-blue-50"
-            iconColorClass="text-status-info"
+            iconBgClass="bg-brand-primary-container"
+            iconColorClass="text-brand-primary"
             label="Received Invitations"
             value={stats.receivedInvitations}
           />

@@ -20,7 +20,7 @@ export function useMemberPreferences(memberId: string) {
   // We can determine this by checking the members list and finding the current user.
   const { members } = useHouseholdMembers();
   const currentUser = members.find((m) => m.isCurrentUser);
-  const isManager = currentUser?.role === 'Manager';
+  const isManager = currentUser?.role === 'Household Manager';
 
   // For the header, we also need to find the target member's details
   const targetMember = members.find((m) => m.id === memberId);
@@ -59,48 +59,59 @@ export function useMemberPreferences(memberId: string) {
     fetchAllData();
   }, [fetchAllData]);
 
+  const [loadingPreferences, setLoadingPreferences] = useState<Set<string>>(new Set());
+
   const togglePreference = useCallback(
-    (preferenceId: string) => {
+    async (preferenceId: string) => {
       if (!isManager) return; // Only managers can edit
 
-      setSelectedPreferenceIds((prev) => {
+      // Set this chip to loading state
+      setLoadingPreferences((prev) => {
         const next = new Set(prev);
-        if (next.has(preferenceId)) {
-          next.delete(preferenceId);
-        } else {
-          next.add(preferenceId);
-        }
+        next.add(preferenceId);
         return next;
       });
+
+      const isCurrentlySelected = selectedPreferenceIds.has(preferenceId);
+
+      try {
+        if (isCurrentlySelected) {
+          // Delete it
+          const success = await preferencesService.removeMemberPreference(memberId, preferenceId);
+          if (success) {
+            setSelectedPreferenceIds((prev) => {
+              const next = new Set(prev);
+              next.delete(preferenceId);
+              return next;
+            });
+            toast.success('Removed', 'Preference removed successfully.');
+          } else {
+            throw new Error('Failed to remove');
+          }
+        } else {
+          // Add it. Pass current selected + new one to handle both additive and replace-all API semantics
+          const payloadIds = Array.from(selectedPreferenceIds);
+          payloadIds.push(preferenceId);
+
+          const updatedPrefs = await preferencesService.assignMemberPreferences(memberId, {
+            preferenceIds: payloadIds,
+          });
+          setSelectedPreferenceIds(new Set(updatedPrefs.map((p) => p.id)));
+          toast.success('Added', 'Preference added successfully.');
+        }
+      } catch (err: any) {
+        console.warn('[useMemberPreferences] Error toggling preference:', err);
+        toast.error('Error', 'Failed to update preference.');
+      } finally {
+        setLoadingPreferences((prev) => {
+          const next = new Set(prev);
+          next.delete(preferenceId);
+          return next;
+        });
+      }
     },
-    [isManager]
+    [isManager, selectedPreferenceIds, memberId]
   );
-
-  const savePreferences = useCallback(async () => {
-    if (!isManager) return false;
-
-    setIsSaving(true);
-    setError(null);
-
-    try {
-      const payload = {
-        preferenceIds: Array.from(selectedPreferenceIds),
-      };
-
-      const updatedPrefs = await preferencesService.assignMemberPreferences(memberId, payload);
-      setMemberPreferences(updatedPrefs);
-
-      toast.success('Preferences Saved', 'Member preferences updated successfully.');
-      return true;
-    } catch (err: any) {
-      console.warn('[useMemberPreferences] Error saving preferences:', err);
-      setError('Failed to save preferences.');
-      toast.error('Save Failed', 'Could not update preferences.');
-      return false;
-    } finally {
-      setIsSaving(false);
-    }
-  }, [isManager, memberId, selectedPreferenceIds]);
 
   // Group available preferences by category for easy rendering
   const preferencesByCategory = categories.map((category) => {
@@ -112,15 +123,14 @@ export function useMemberPreferences(memberId: string) {
 
   return {
     isLoading,
-    isSaving,
     error,
     categories,
     preferencesByCategory,
     selectedPreferenceIds,
+    loadingPreferences,
     targetMember,
     isManager,
     togglePreference,
-    savePreferences,
     refetch: fetchAllData,
   };
 }

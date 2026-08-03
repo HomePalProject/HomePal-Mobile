@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Pressable, Image } from 'react-native';
-import { Bell, Menu } from 'lucide-react-native';
+import { Menu } from 'lucide-react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { useDrawerStore } from '@/src/store/useDrawerStore';
@@ -42,16 +42,6 @@ export function TabHeader({ title = 'HomePal', onNotificationPress }: TabHeaderP
         </Pressable>
         <Text className="font-cairo text-[18px] font-bold text-brand-primary">{title}</Text>
       </View>
-
-      {/* Right: Notification Bell */}
-      <Pressable
-        onPress={onNotificationPress}
-        className="items-center justify-center p-2 active:opacity-60"
-        accessibilityRole="button"
-        accessibilityLabel="Notifications">
-        <Icon as={Bell} size={24} className="text-brand-primary" />
-        <View className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-brand-accent" />
-      </Pressable>
     </View>
   );
 }

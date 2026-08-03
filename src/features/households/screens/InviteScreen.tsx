@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, ScrollView, Pressable, Image, TextInput, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, Bell, Mail, Send } from 'lucide-react-native';
+import { ArrowLeft, Mail, Send } from 'lucide-react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { ProTipCard } from '@/src/components/ui/pro-tip-card';
@@ -38,7 +38,9 @@ interface InvitationCardProps {
 function InvitationCard({ invitation, cancelingId, onCancel }: InvitationCardProps) {
   const recipient =
     invitation.invitedEmail || invitation.invitedUserName || invitation.token || 'User';
-  const isCanceled =
+  const isAccepted = invitation.status === 'Accepted';
+  const isInactive =
+    isAccepted ||
     invitation.status === 'Canceled' ||
     invitation.status === 'Cancelled' ||
     invitation.status === 'Declined';
@@ -46,24 +48,32 @@ function InvitationCard({ invitation, cancelingId, onCancel }: InvitationCardPro
 
   return (
     <View
-      className="bg-surface-card rounded-2xl border border-surface-border p-4"
+      className="rounded-2xl border border-surface-border bg-surface-surface p-4"
       style={{
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.04,
         shadowRadius: 6,
       }}>
-      <Text className="text-on-surface font-cairo text-[14px] font-semibold leading-[20px]">
+      <Text className="font-cairo text-[14px] font-semibold leading-[20px] text-text-primary">
         To: {recipient}
       </Text>
       <Text className="mt-0.5 font-cairo text-[13px] leading-[18px] text-text-secondary">
         Status: {invitation.status}
       </Text>
 
-      {/* Conditionally render Action Button vs Muted Canceled Badge */}
-      {isCanceled ? (
-        <View className="mt-3 w-full items-center justify-center rounded-xl border border-gray-200 bg-gray-100 py-2.5">
-          <Text className="font-cairo text-[13px] font-bold text-gray-500">
+      {/* Conditionally render Action Button vs Muted Badge */}
+      {isInactive ? (
+        <View
+          className={`mt-3 w-full items-center justify-center rounded-xl border py-2.5 ${
+            isAccepted
+              ? 'border-brand-primary/20 bg-brand-primary-container'
+              : 'bg-surface-variant border-surface-border'
+          }`}>
+          <Text
+            className={`font-cairo text-[13px] font-bold ${
+              isAccepted ? 'text-brand-primary' : 'text-text-secondary'
+            }`}>
             {invitation.status}
           </Text>
         </View>
@@ -71,21 +81,16 @@ function InvitationCard({ invitation, cancelingId, onCancel }: InvitationCardPro
         <Pressable
           onPress={() => onCancel(invitation.id)}
           disabled={isCanceling}
-          className="mt-3 w-full flex-row items-center justify-center gap-2 rounded-xl py-3 active:opacity-80"
-          style={{ backgroundColor: isCanceling ? '#E57373' : '#D32F2F' }}
+          className={`mt-3 w-full flex-row items-center justify-center gap-2 rounded-xl bg-status-error py-3 active:opacity-80 ${isCanceling ? 'opacity-70' : ''}`}
           accessibilityRole="button"
           accessibilityLabel={`Cancel invitation to ${recipient}`}>
           {isCanceling ? (
             <>
               <ActivityIndicator size="small" color="#fff" />
-              <Text style={{ fontFamily: 'Cairo', fontSize: 14, fontWeight: '700', color: '#fff' }}>
-                Cancelling...
-              </Text>
+              <Text className="font-cairo text-[14px] font-bold text-white">Cancelling...</Text>
             </>
           ) : (
-            <Text style={{ fontFamily: 'Cairo', fontSize: 14, fontWeight: '700', color: '#fff' }}>
-              Cancel
-            </Text>
+            <Text className="font-cairo text-[14px] font-bold text-white">Cancel</Text>
           )}
         </Pressable>
       )}
@@ -119,19 +124,16 @@ export function InviteScreen({
           className="active:bg-surface-surfaceVariant rounded-full p-2"
           accessibilityRole="button"
           accessibilityLabel="Go back">
-          <Icon as={ArrowLeft} size={24} className="text-on-surface" />
+          <Icon as={ArrowLeft} size={24} className="text-text-primary" />
         </Pressable>
 
         {/* Title */}
-        <Text className="text-on-surface font-cairo text-[16px] font-bold">
+        <Text className="font-cairo text-[16px] font-bold text-text-primary">
           Invite to Household
         </Text>
 
-        {/* Right: Bell + Avatar */}
+        {/* Right: Avatar */}
         <View className="flex-row items-center gap-3">
-          <Pressable onPress={onNotificationPress} className="p-1 active:opacity-60">
-            <Icon as={Bell} size={24} className="text-brand-primary" />
-          </Pressable>
           <Pressable
             onPress={onBack}
             className="h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-brand-primary-container">
@@ -174,7 +176,7 @@ export function InviteScreen({
 
         {/* ── Invite Form Card ── */}
         <View
-          className="bg-surface-card rounded-2xl border border-surface-border"
+          className="rounded-2xl border border-surface-border bg-surface-surface"
           style={{
             padding: 20,
             gap: 14,
@@ -190,7 +192,7 @@ export function InviteScreen({
 
           {/* Input with mail icon */}
           <View
-            className="flex-row items-center gap-2 rounded-xl bg-gray-200 px-4"
+            className="bg-surface-variant flex-row items-center gap-2 rounded-xl px-4"
             style={{ height: 52 }}>
             <Icon as={Mail} size={18} className="text-text-disabled" />
             <TextInput
@@ -204,12 +206,7 @@ export function InviteScreen({
               returnKeyType="done"
               onSubmitEditing={onSendInvite}
               editable={!isSending}
-              style={{
-                flex: 1,
-                fontFamily: 'Cairo',
-                fontSize: 14,
-                color: '#1e1b17',
-              }}
+              className="flex-1 font-cairo text-[14px] text-text-primary"
             />
           </View>
 
@@ -222,28 +219,18 @@ export function InviteScreen({
           <Pressable
             onPress={onSendInvite}
             disabled={isSending}
-            className="w-full flex-row items-center justify-center gap-2 rounded-xl active:opacity-80"
-            style={{
-              height: 52,
-              backgroundColor: isSending ? '#8CA296' : '#356859',
-            }}
+            className={`h-[52px] w-full flex-row items-center justify-center gap-2 rounded-xl bg-brand-primary active:opacity-80 ${isSending ? 'opacity-50' : ''}`}
             accessibilityRole="button"
             accessibilityLabel="Send Invitation">
             {isSending ? (
               <>
                 <ActivityIndicator size="small" color="#fff" />
-                <Text
-                  style={{ fontFamily: 'Cairo', fontSize: 15, fontWeight: '700', color: '#fff' }}>
-                  Sending...
-                </Text>
+                <Text className="font-cairo text-[15px] font-bold text-white">Sending...</Text>
               </>
             ) : (
               <>
                 <Icon as={Send} size={18} color="#fff" />
-                <Text
-                  style={{ fontFamily: 'Cairo', fontSize: 15, fontWeight: '700', color: '#fff' }}>
-                  Send Invitation
-                </Text>
+                <Text className="font-cairo text-[15px] font-bold text-white">Send Invitation</Text>
               </>
             )}
           </Pressable>
@@ -254,22 +241,13 @@ export function InviteScreen({
           <View style={{ gap: 12 }}>
             {/* Section Header */}
             <View className="flex-row items-center justify-between">
-              <Text className="text-on-surface font-cairo text-[18px] font-bold leading-[26px]">
+              <Text className="font-cairo text-[18px] font-bold leading-[26px] text-text-primary">
                 Household Sent Invitations
               </Text>
               <Pressable
                 onPress={onRefresh}
-                className="rounded-full px-3 py-1.5 active:opacity-70"
-                style={{ backgroundColor: '#FDBA5A' }}>
-                <Text
-                  style={{
-                    fontFamily: 'Cairo',
-                    fontSize: 12,
-                    fontWeight: '700',
-                    color: '#734a00',
-                  }}>
-                  Refresh
-                </Text>
+                className="rounded-full bg-brand-amber-300 px-3 py-1.5 active:opacity-70">
+                <Text className="font-cairo text-[12px] font-bold text-text-primary">Refresh</Text>
               </Pressable>
             </View>
 

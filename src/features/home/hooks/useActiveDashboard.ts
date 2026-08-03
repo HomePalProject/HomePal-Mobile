@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { HouseholdDto } from '@/src/types/api';
 import { invitationService } from '@/src/services/api/invitation.service';
 
-export type MemberRole = 'Manager' | 'Member';
+export type MemberRole = 'Household Manager' | 'Household Member';
 
 export interface HouseholdMember {
   id: string;
@@ -26,7 +26,6 @@ export interface ActiveDashboardData {
   location: string;
   stats: HouseholdStats;
   members: HouseholdMember[];
-  onManageMembers: () => void;
   onInviteMember: () => void;
 }
 
@@ -82,10 +81,6 @@ export function useActiveDashboard(
 
   const members: HouseholdMember[] = [];
 
-  const onManageMembers = () => {
-    console.log('[ActiveDashboard] Navigate to Manage Members');
-  };
-
   const onInviteMember = () => {
     console.log('[ActiveDashboard] Navigate to Invite Member');
   };
@@ -95,7 +90,6 @@ export function useActiveDashboard(
     location,
     stats,
     members,
-    onManageMembers,
     onInviteMember,
   };
 }

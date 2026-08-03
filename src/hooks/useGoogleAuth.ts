@@ -38,7 +38,7 @@ export function useGoogleAuth(options?: UseGoogleAuthOptions) {
         setIsGoogleLoading(false);
         return;
       }
-      // console.log(idToken,' id Token');
+      console.log(idToken, ' id Token');
 
       await dispatch(loginWithGoogle({ idToken })).unwrap();
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);

@@ -64,8 +64,16 @@ export default function EditProfileScreen() {
       setErrorMsg('Governorate is required');
       return;
     }
+    if (gender === null || gender === undefined) {
+      setErrorMsg('Gender is required');
+      return;
+    }
     if (!city.trim()) {
       setErrorMsg('City is required');
+      return;
+    }
+    if (!birthDate) {
+      setErrorMsg('Birth Date is required');
       return;
     }
 
@@ -77,7 +85,7 @@ export default function EditProfileScreen() {
       await profile.saveProfile({
         fullName: fullName.trim(),
         gender,
-        birthDate: birthDate || null,
+        birthDate: birthDate ? birthDate.split('T')[0] : null,
         governorate: governorate.trim(),
         city: city.trim(),
       });
@@ -95,8 +103,21 @@ export default function EditProfileScreen() {
 
       router.back();
     } catch (err: any) {
-      console.error('[EditProfileScreen] Error saving profile:', err);
-      setErrorMsg(err.message || 'Failed to save changes. Please try again.');
+      console.error('[EditProfileScreen] Error saving profile:', err, err.errors);
+      let msg = err.message || 'Failed to save changes. Please try again.';
+      if (err.errors && typeof err.errors === 'object') {
+        // Handle ASP.NET Core ProblemDetails errors object
+        const errorDetails = Object.entries(err.errors)
+          .map(([field, msgs]) => {
+            if (Array.isArray(msgs)) return msgs.join(' ');
+            return msgs;
+          })
+          .join('\n');
+        if (errorDetails) {
+          msg += '\n' + errorDetails;
+        }
+      }
+      setErrorMsg(msg);
     } finally {
       setIsSaving(false);
     }
@@ -115,7 +136,7 @@ export default function EditProfileScreen() {
           Account Settings
         </Text>
 
-        <View className="bg-brand-primaryContainer border-brand-primary/20 h-10 w-10 items-center justify-center overflow-hidden rounded-radius-full border">
+        <View className="border-brand-primary/20 h-10 w-10 items-center justify-center overflow-hidden rounded-radius-full border bg-brand-primary-container">
           {profileImageUri ? (
             <Image source={{ uri: profileImageUri }} className="h-full w-full" />
           ) : (
@@ -127,12 +148,12 @@ export default function EditProfileScreen() {
       </View>
 
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 48 }}>
-        <View className="bg-brand-primaryContainer/10 relative items-center overflow-hidden border-b border-surface-divider py-spacing-32">
+        <View className="bg-brand-primary-container/10 relative items-center overflow-hidden border-b border-surface-divider py-spacing-32">
           <View className="absolute inset-0 items-center justify-center">
             <SvgIcon name="profile-glow-edit" width={390} height={228} />
           </View>
 
-          <View className="bg-brand-primaryContainer relative z-[1] h-32 w-32 items-center justify-center rounded-radius-full border-4 border-surface-surface shadow-md">
+          <View className="relative z-[1] h-32 w-32 items-center justify-center rounded-radius-full border-4 border-surface-surface bg-brand-primary-container shadow-md">
             <View className="h-full w-full items-center justify-center overflow-hidden rounded-radius-full">
               {profileImageUri ? (
                 <Image source={{ uri: profileImageUri }} className="h-full w-full" />
@@ -183,7 +204,7 @@ export default function EditProfileScreen() {
                 onPress={() => setGender(Gender.Male)}
                 className={`h-12 flex-1 flex-row items-center justify-center rounded-radius-medium border ${
                   gender === Gender.Male
-                    ? 'bg-brand-primaryContainer/30 border-brand-primary'
+                    ? 'border-brand-primary bg-brand-primary-container'
                     : 'border-surface-border/40 bg-surface-surface'
                 } shadow-sm active:opacity-90`}>
                 <Text
@@ -198,7 +219,7 @@ export default function EditProfileScreen() {
                 onPress={() => setGender(Gender.Female)}
                 className={`h-12 flex-1 flex-row items-center justify-center rounded-radius-medium border ${
                   gender === Gender.Female
-                    ? 'bg-brand-primaryContainer/30 border-brand-primary'
+                    ? 'border-brand-primary bg-brand-primary-container'
                     : 'border-surface-border/40 bg-surface-surface'
                 } shadow-sm active:opacity-90`}>
                 <Text
@@ -256,7 +277,7 @@ export default function EditProfileScreen() {
 
           <Pressable className="active:bg-surface-surfaceVariant/40 border-surface-border/40 mt-spacing-8 flex-row items-center justify-between rounded-radius-large border bg-surface-surface p-spacing-16 shadow-sm">
             <View className="flex-row items-center gap-spacing-16">
-              <View className="bg-brand-primaryContainer h-10 w-10 items-center justify-center rounded-radius-full">
+              <View className="h-10 w-10 items-center justify-center rounded-radius-full bg-brand-primary-container">
                 <SvgIcon name="security-shield" width={18} height={20} fill="#356859" />
               </View>
               <View>
@@ -293,7 +314,7 @@ export default function EditProfileScreen() {
 
             <Pressable
               disabled={isSaving}
-              className={`h-14 items-center justify-center rounded-radius-full bg-brand-accent-container shadow-sm active:bg-brand-accent-container/80 ${
+              className={`active:bg-brand-accent-container/80 h-14 items-center justify-center rounded-radius-full bg-brand-accent-container shadow-sm ${
                 isSaving ? 'opacity-50' : ''
               }`}
               onPress={() => router.back()}>
@@ -334,7 +355,7 @@ export default function EditProfileScreen() {
                   setModalVisible(false);
                   pickImage();
                 }}
-                className="bg-brand-primaryContainer border-brand-primary/20 h-12 flex-row items-center justify-center rounded-radius-medium border active:opacity-90">
+                className="border-brand-primary/20 h-12 flex-row items-center justify-center rounded-radius-medium border bg-brand-primary-container active:opacity-90">
                 <Text className="text-body font-cairo font-bold text-brand-primary">
                   Choose from Library
                 </Text>

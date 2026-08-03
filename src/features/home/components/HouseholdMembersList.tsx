@@ -152,20 +152,20 @@ function CustomDatePicker({
         <View className="flex-row items-center gap-2">
           <Pressable
             onPress={() => setViewMode((m) => (m === 'month' ? 'calendar' : 'month'))}
-            className="flex-row items-center gap-1 rounded-lg border border-surface-border bg-[#FAF7F2] px-2.5 py-1.5 active:opacity-80">
+            className="bg-surface-variant flex-row items-center gap-1 rounded-lg border border-surface-border px-2.5 py-1.5 active:opacity-80">
             <Text className="font-cairo text-[14px] font-bold text-brand-primary">
               {months[currentMonth]}
             </Text>
-            <ChevronDown size={14} color="#1b5042" />
+            <Icon as={ChevronDown} size={14} className="text-brand-primary" />
           </Pressable>
 
           <Pressable
             onPress={() => setViewMode((m) => (m === 'year' ? 'calendar' : 'year'))}
-            className="flex-row items-center gap-1 rounded-lg border border-surface-border bg-[#FAF7F2] px-2.5 py-1.5 active:opacity-80">
+            className="bg-surface-variant flex-row items-center gap-1 rounded-lg border border-surface-border px-2.5 py-1.5 active:opacity-80">
             <Text className="font-cairo text-[14px] font-bold text-brand-primary">
               {currentYear}
             </Text>
-            <ChevronDown size={14} color="#1b5042" />
+            <Icon as={ChevronDown} size={14} className="text-brand-primary" />
           </Pressable>
         </View>
 
@@ -175,12 +175,12 @@ function CustomDatePicker({
             <Pressable
               onPress={prevMonth}
               className="active:bg-surface-surfaceVariant rounded-full p-1.5">
-              <ChevronLeft size={20} color="#1e1b17" />
+              <Icon as={ChevronLeft} size={20} className="text-text-primary" />
             </Pressable>
             <Pressable
               onPress={nextMonth}
               className="active:bg-surface-surfaceVariant rounded-full p-1.5">
-              <ChevronRight size={20} color="#1e1b17" />
+              <Icon as={ChevronRight} size={20} className="text-text-primary" />
             </Pressable>
           </View>
         )}
@@ -221,7 +221,9 @@ function CustomDatePicker({
                   <Text
                     className="font-cairo text-[14px]"
                     style={{
-                      color: isSelected ? '#ffffff' : '#1e1b17',
+                      color: isSelected
+                        ? 'var(--text-inverse, #FFFFFF)'
+                        : 'var(--text-primary, #2D2A26)',
                       fontWeight: isSelected ? '700' : '500',
                     }}>
                     {dayNum}
@@ -246,13 +248,17 @@ function CustomDatePicker({
                 }}
                 className="w-[70px] items-center justify-center rounded-xl border py-2 active:opacity-80"
                 style={{
-                  backgroundColor: y === currentYear ? '#356859' : '#FAF7F2',
+                  backgroundColor:
+                    y === currentYear ? '#356859' : 'var(--surface-variant, #F4F2EE)',
                   borderColor: y === currentYear ? '#356859' : '#E4E0DA',
                 }}>
                 <Text
                   className="font-cairo text-[13px]"
                   style={{
-                    color: y === currentYear ? '#ffffff' : '#1e1b17',
+                    color:
+                      y === currentYear
+                        ? 'var(--text-inverse, #FFFFFF)'
+                        : 'var(--text-primary, #2D2A26)',
                     fontWeight: y === currentYear ? '700' : '400',
                   }}>
                   {y}
@@ -275,13 +281,17 @@ function CustomDatePicker({
               }}
               className="w-[90px] items-center justify-center rounded-xl border py-2.5 active:opacity-80"
               style={{
-                backgroundColor: idx === currentMonth ? '#356859' : '#FAF7F2',
+                backgroundColor:
+                  idx === currentMonth ? '#356859' : 'var(--surface-variant, #F4F2EE)',
                 borderColor: idx === currentMonth ? '#356859' : '#E4E0DA',
               }}>
               <Text
                 className="font-cairo text-[13px]"
                 style={{
-                  color: idx === currentMonth ? '#ffffff' : '#1e1b17',
+                  color:
+                    idx === currentMonth
+                      ? 'var(--text-inverse, #FFFFFF)'
+                      : 'var(--text-primary, #2D2A26)',
                   fontWeight: idx === currentMonth ? '700' : '400',
                 }}>
                 {mName}
@@ -361,23 +371,13 @@ function AddOfflineMemberForm({ onSubmit }: AddOfflineMemberFormProps) {
       style={{ gap: 14 }}>
       {/* Field 1: Full Name */}
       <View style={{ gap: 6 }}>
-        <Text className="text-on-surface font-cairo text-[14px] font-bold">Full Name</Text>
+        <Text className="font-cairo text-[14px] font-bold text-text-primary">Full Name</Text>
         <TextInput
           value={fullName}
           onChangeText={setFullName}
           placeholder="Enter full name"
-          placeholderTextColor="#A8A29B"
-          style={{
-            fontFamily: 'Cairo',
-            fontSize: 15,
-            color: '#1e1b17',
-            backgroundColor: '#FAF7F2',
-            borderRadius: 12,
-            borderWidth: 1,
-            borderColor: '#E4E0DA',
-            paddingHorizontal: 14,
-            paddingVertical: 10,
-          }}
+          placeholderClassName="text-text-disabled"
+          className="bg-surface-variant rounded-xl border border-surface-border px-3.5 py-2.5 font-cairo text-[15px] text-text-primary"
         />
       </View>
 
@@ -385,39 +385,33 @@ function AddOfflineMemberForm({ onSubmit }: AddOfflineMemberFormProps) {
       <View className="flex-row gap-3">
         {/* Gender Select */}
         <View className="flex-1" style={{ gap: 6 }}>
-          <Text className="text-on-surface font-cairo text-[14px] font-bold">Gender</Text>
+          <Text className="font-cairo text-[14px] font-bold text-text-primary">Gender</Text>
           <Pressable
             onPress={toggleGenderPicker}
-            className="flex-row items-center justify-between rounded-xl border border-surface-border bg-[#FAF7F2] px-3.5 py-2.5 active:opacity-80">
-            <Text className="text-on-surface font-cairo text-[14px]">{gender}</Text>
-            <ChevronDown size={18} color="#1e1b17" />
+            className="bg-surface-variant flex-row items-center justify-between rounded-xl border border-surface-border px-3.5 py-2.5 active:opacity-80">
+            <Text className="font-cairo text-[14px] text-text-primary">{gender}</Text>
+            <Icon as={ChevronDown} size={18} className="text-text-primary" />
           </Pressable>
         </View>
 
         {/* DOB Input */}
         <View className="flex-1" style={{ gap: 6 }}>
-          <Text className="text-on-surface font-cairo text-[14px] font-bold">DOB</Text>
-          <View className="flex-row items-center justify-between rounded-xl border border-surface-border bg-[#FAF7F2] px-3 py-1.5">
+          <Text className="font-cairo text-[14px] font-bold text-text-primary">DOB</Text>
+          <View className="bg-surface-variant flex-row items-center justify-between rounded-xl border border-surface-border px-3 py-1.5">
             <TextInput
               value={dob}
               onChangeText={setDob}
               placeholder="MM/DD/YYYY"
-              placeholderTextColor="#A8A29B"
+              placeholderClassName="text-text-disabled"
               keyboardType="numbers-and-punctuation"
-              style={{
-                flex: 1,
-                fontFamily: 'Cairo',
-                fontSize: 14,
-                color: '#1e1b17',
-                paddingVertical: 2,
-              }}
+              className="flex-1 py-0.5 font-cairo text-[14px] text-text-primary"
             />
             <Pressable
               onPress={toggleDatePicker}
               className="active:bg-surface-surfaceVariant rounded-lg p-1.5"
               accessibilityRole="button"
               accessibilityLabel="Open Calendar">
-              <Calendar size={18} color="#1b5042" />
+              <Icon as={Calendar} size={18} className="text-brand-primary" />
             </Pressable>
           </View>
         </View>
@@ -425,8 +419,8 @@ function AddOfflineMemberForm({ onSubmit }: AddOfflineMemberFormProps) {
 
       {/* Inline Gender Picker Options Accordion */}
       {isGenderPickerOpen && (
-        <View className="mt-1 w-full rounded-xl border border-surface-border bg-white p-1 shadow-sm">
-          {['Male', 'Female', 'Other'].map((option) => (
+        <View className="mt-1 w-full rounded-xl border border-surface-border bg-surface-surface p-1 shadow-sm">
+          {['Male', 'Female'].map((option) => (
             <Pressable
               key={option}
               onPress={() => {
@@ -434,7 +428,9 @@ function AddOfflineMemberForm({ onSubmit }: AddOfflineMemberFormProps) {
                 setIsGenderPickerOpen(false);
               }}
               className="active:bg-surface-surfaceVariant rounded-lg px-4 py-2.5">
-              <Text className="text-on-surface font-cairo text-[14px] font-semibold">{option}</Text>
+              <Text className="font-cairo text-[14px] font-semibold text-text-primary">
+                {option}
+              </Text>
             </Pressable>
           ))}
         </View>
@@ -459,9 +455,7 @@ function AddOfflineMemberForm({ onSubmit }: AddOfflineMemberFormProps) {
           shadowRadius: 2,
           elevation: 2,
         }}>
-        <Text style={{ fontFamily: 'Cairo', fontSize: 14, fontWeight: '700', color: '#ffffff' }}>
-          Save Member
-        </Text>
+        <Text className="font-cairo text-[14px] font-bold text-text-inverse">Save Member</Text>
       </Pressable>
     </View>
   );
@@ -470,6 +464,7 @@ function AddOfflineMemberForm({ onSubmit }: AddOfflineMemberFormProps) {
 // ─── Member Card ─────────────────────────────────────────────────────────────
 interface MemberCardProps {
   member: DetailedMember;
+  isCurrentUserAdmin?: boolean;
   isEditing?: boolean;
   onPreferences: (id: string) => void;
   onEdit: (id: string) => void;
@@ -483,6 +478,7 @@ interface MemberCardProps {
 
 function MemberCard({
   member,
+  isCurrentUserAdmin = false,
   isEditing = false,
   onPreferences,
   onEdit,
@@ -493,7 +489,7 @@ function MemberCard({
   onLeave,
   onRemove,
 }: MemberCardProps) {
-  const isManager = member.role === 'Manager';
+  const isManager = member.role === 'Household Manager';
   const isCurrentUser = member.isCurrentUser;
   const isRegistered = member.type === 'Registered';
 
@@ -519,29 +515,19 @@ function MemberCard({
       <View
         className="bg-surface-surfaceVariant/40 border-brand-primary/40 rounded-2xl border p-4"
         style={{ gap: 14 }}>
-        <Text className="text-on-surface font-cairo text-[15px] font-bold">
+        <Text className="font-cairo text-[15px] font-bold text-text-primary">
           Edit Member: {member.fullName}
         </Text>
 
         {/* Field 1: Full Name */}
         <View style={{ gap: 6 }}>
-          <Text className="text-on-surface font-cairo text-[14px] font-bold">Full Name</Text>
+          <Text className="font-cairo text-[14px] font-bold text-text-primary">Full Name</Text>
           <TextInput
             value={editName}
             onChangeText={setEditName}
             placeholder="Enter full name"
-            placeholderTextColor="#A8A29B"
-            style={{
-              fontFamily: 'Cairo',
-              fontSize: 15,
-              color: '#1e1b17',
-              backgroundColor: '#FAF7F2',
-              borderRadius: 12,
-              borderWidth: 1,
-              borderColor: '#E4E0DA',
-              paddingHorizontal: 14,
-              paddingVertical: 10,
-            }}
+            placeholderClassName="text-text-disabled"
+            className="bg-surface-variant rounded-xl border border-surface-border px-3.5 py-2.5 font-cairo text-[15px] text-text-primary"
           />
         </View>
 
@@ -549,7 +535,7 @@ function MemberCard({
         <View className="flex-row gap-3">
           {/* Gender Select */}
           <View className="flex-1" style={{ gap: 6 }}>
-            <Text className="text-on-surface font-cairo text-[14px] font-bold">Gender</Text>
+            <Text className="font-cairo text-[14px] font-bold text-text-primary">Gender</Text>
             <Pressable
               onPress={() => {
                 setIsGenderPickerOpen((prev) => {
@@ -557,29 +543,23 @@ function MemberCard({
                   return !prev;
                 });
               }}
-              className="flex-row items-center justify-between rounded-xl border border-surface-border bg-[#FAF7F2] px-3.5 py-2.5 active:opacity-80">
-              <Text className="text-on-surface font-cairo text-[14px]">{editGender}</Text>
-              <ChevronDown size={18} color="#1e1b17" />
+              className="bg-surface-variant flex-row items-center justify-between rounded-xl border border-surface-border px-3.5 py-2.5 active:opacity-80">
+              <Text className="font-cairo text-[14px] text-text-primary">{editGender}</Text>
+              <Icon as={ChevronDown} size={18} className="text-text-primary" />
             </Pressable>
           </View>
 
           {/* DOB Input */}
           <View className="flex-1" style={{ gap: 6 }}>
-            <Text className="text-on-surface font-cairo text-[14px] font-bold">DOB</Text>
-            <View className="flex-row items-center justify-between rounded-xl border border-surface-border bg-[#FAF7F2] px-3 py-1.5">
+            <Text className="font-cairo text-[14px] font-bold text-text-primary">DOB</Text>
+            <View className="bg-surface-variant flex-row items-center justify-between rounded-xl border border-surface-border px-3 py-1.5">
               <TextInput
                 value={editDob}
                 onChangeText={setEditDob}
                 placeholder="MM/DD/YYYY"
-                placeholderTextColor="#A8A29B"
+                placeholderClassName="text-text-disabled"
                 keyboardType="numbers-and-punctuation"
-                style={{
-                  flex: 1,
-                  fontFamily: 'Cairo',
-                  fontSize: 14,
-                  color: '#1e1b17',
-                  paddingVertical: 2,
-                }}
+                className="flex-1 py-0.5 font-cairo text-[14px] text-text-primary"
               />
               <Pressable
                 onPress={() => {
@@ -591,7 +571,7 @@ function MemberCard({
                 className="active:bg-surface-surfaceVariant rounded-lg p-1.5"
                 accessibilityRole="button"
                 accessibilityLabel="Open Calendar">
-                <Calendar size={18} color="#1b5042" />
+                <Icon as={Calendar} size={18} className="text-brand-primary" />
               </Pressable>
             </View>
           </View>
@@ -599,8 +579,8 @@ function MemberCard({
 
         {/* Inline Gender Picker Options Accordion */}
         {isGenderPickerOpen && (
-          <View className="mt-1 w-full rounded-xl border border-surface-border bg-white p-1 shadow-sm">
-            {['Male', 'Female', 'Other'].map((option) => (
+          <View className="mt-1 w-full rounded-xl border border-surface-border bg-surface-surface p-1 shadow-sm">
+            {['Male', 'Female'].map((option) => (
               <Pressable
                 key={option}
                 onPress={() => {
@@ -608,7 +588,7 @@ function MemberCard({
                   setIsGenderPickerOpen(false);
                 }}
                 className="active:bg-surface-surfaceVariant rounded-lg px-4 py-2.5">
-                <Text className="text-on-surface font-cairo text-[14px] font-semibold">
+                <Text className="font-cairo text-[14px] font-semibold text-text-primary">
                   {option}
                 </Text>
               </Pressable>
@@ -629,7 +609,7 @@ function MemberCard({
           <Pressable
             onPress={onCancelEdit}
             disabled={isSubmitting}
-            className="rounded-xl border border-surface-border bg-white px-4 py-2.5 active:opacity-80">
+            className="rounded-xl border border-surface-border bg-surface-surface px-4 py-2.5 active:opacity-80">
             <Text className="font-cairo text-[14px] font-bold text-text-secondary">Cancel</Text>
           </Pressable>
 
@@ -648,7 +628,7 @@ function MemberCard({
             disabled={isSubmitting}
             className="flex-row items-center gap-2 rounded-xl bg-brand-primary px-5 py-2.5 shadow-sm active:opacity-90">
             {isSubmitting ? (
-              <ActivityIndicator size="small" color="#ffffff" />
+              <ActivityIndicator size="small" color="#FFFFFF" />
             ) : (
               <Text className="font-cairo text-[14px] font-bold text-white">Save Changes</Text>
             )}
@@ -683,33 +663,15 @@ function MemberCard({
               resizeMode="cover"
             />
           ) : (
-            <Text
-              style={{
-                fontFamily: 'Cairo',
-                fontSize: 18,
-                fontWeight: '700',
-                color: '#1b5042',
-              }}>
+            <Text className="font-cairo text-[18px] font-bold text-brand-primary">
               {member.initial}
             </Text>
           )}
         </View>
-        <Text
-          style={{
-            fontFamily: 'Cairo',
-            fontSize: 16,
-            fontWeight: '700',
-            color: '#1e1b17',
-          }}>
+        <Text className="font-cairo text-[16px] font-bold text-text-primary">
           {member.fullName}
           {isCurrentUser && (
-            <Text
-              style={{
-                fontFamily: 'Cairo',
-                fontSize: 16,
-                fontWeight: '400',
-                color: '#6D6862',
-              }}>
+            <Text className="font-cairo text-[16px] font-normal text-text-secondary">
               {' (You)'}
             </Text>
           )}
@@ -720,62 +682,27 @@ function MemberCard({
       <View className="flex-row flex-wrap items-center gap-2">
         {/* Role Badge */}
         {isManager ? (
-          <View
-            style={{
-              borderRadius: 999,
-              paddingHorizontal: 14,
-              paddingVertical: 5,
-              backgroundColor: '#356859',
-            }}>
-            <Text style={{ fontFamily: 'Cairo', fontSize: 12, fontWeight: '700', color: '#fff' }}>
-              Manager
-            </Text>
+          <View className="rounded-full bg-brand-primary px-3.5 py-1">
+            <Text className="font-cairo text-[12px] font-bold text-white">Manager</Text>
           </View>
         ) : (
-          <View
-            style={{
-              borderRadius: 999,
-              paddingHorizontal: 14,
-              paddingVertical: 5,
-              backgroundColor: '#FDBA5A',
-            }}>
-            <Text
-              style={{ fontFamily: 'Cairo', fontSize: 12, fontWeight: '700', color: '#734a00' }}>
-              Member
-            </Text>
+          <View className="rounded-full bg-brand-amber-300 px-3.5 py-1">
+            <Text className="font-cairo text-[12px] font-bold text-text-primary">Member</Text>
           </View>
         )}
 
         {/* Type Badge */}
         {isRegistered ? (
-          <View
-            className="flex-row items-center gap-1"
-            style={{
-              borderRadius: 999,
-              paddingHorizontal: 12,
-              paddingVertical: 5,
-              backgroundColor: '#b8eedb',
-            }}>
-            <Icon as={CheckCircle} size={13} color="#1b5042" />
-            <Text
-              style={{ fontFamily: 'Cairo', fontSize: 12, fontWeight: '600', color: '#1b5042' }}>
+          <View className="flex-row items-center gap-1 rounded-full bg-brand-primary-container px-3 py-1">
+            <Icon as={CheckCircle} size={13} className="text-brand-primary" />
+            <Text className="font-cairo text-[12px] font-semibold text-brand-primary">
               Registered User
             </Text>
           </View>
         ) : (
-          <View
-            className="flex-row items-center gap-1"
-            style={{
-              borderRadius: 999,
-              paddingHorizontal: 12,
-              paddingVertical: 5,
-              borderWidth: 1,
-              borderColor: '#C0C9C4',
-              backgroundColor: 'transparent',
-            }}>
-            <Icon as={Circle} size={13} color="#6D6862" />
-            <Text
-              style={{ fontFamily: 'Cairo', fontSize: 12, fontWeight: '600', color: '#6D6862' }}>
+          <View className="flex-row items-center gap-1 rounded-full border border-surface-border bg-transparent px-3 py-1">
+            <Icon as={Circle} size={13} className="text-text-secondary" />
+            <Text className="font-cairo text-[12px] font-semibold text-text-secondary">
               Offline Member
             </Text>
           </View>
@@ -787,74 +714,48 @@ function MemberCard({
         {/* Preferences — outline */}
         <Pressable
           onPress={() => onPreferences(member.id)}
-          className="bg-surface-card rounded-full border border-surface-border active:opacity-70"
-          style={{ paddingHorizontal: 12, paddingVertical: 7 }}>
-          <Text style={{ fontFamily: 'Cairo', fontSize: 12, fontWeight: '600', color: '#1e1b17' }}>
+          className="rounded-full border border-surface-border bg-surface-surface px-3 py-1.5 active:opacity-70">
+          <Text className="font-cairo text-[12px] font-semibold text-text-primary">
             Preferences
           </Text>
         </Pressable>
 
         {/* Edit — solid amber */}
-        <Pressable
-          onPress={() => onEdit(member.id)}
-          className="rounded-full active:opacity-70"
-          style={{ paddingHorizontal: 14, paddingVertical: 7, backgroundColor: '#FDBA5A' }}>
-          <Text style={{ fontFamily: 'Cairo', fontSize: 12, fontWeight: '700', color: '#734a00' }}>
-            Edit
-          </Text>
-        </Pressable>
+        {isCurrentUserAdmin && (
+          <Pressable
+            onPress={() => onEdit(member.id)}
+            className="rounded-full bg-brand-amber-300 px-3.5 py-1.5 active:opacity-70">
+            <Text className="font-cairo text-[12px] font-bold text-text-primary">Edit</Text>
+          </Pressable>
+        )}
 
         {/* Conditional: Leave (only if current user is NOT Manager), Remove, or Promote */}
         {isCurrentUser && !isManager ? (
           <Pressable
             onPress={() => onLeave(member.id)}
-            className="rounded-full active:opacity-70"
-            style={{ paddingHorizontal: 14, paddingVertical: 7, backgroundColor: '#D32F2F' }}>
-            <Text style={{ fontFamily: 'Cairo', fontSize: 12, fontWeight: '700', color: '#fff' }}>
-              Leave
-            </Text>
+            className="rounded-full bg-status-error px-3.5 py-1.5 active:opacity-70">
+            <Text className="font-cairo text-[12px] font-bold text-white">Leave</Text>
           </Pressable>
-        ) : !isCurrentUser ? (
+        ) : !isCurrentUser && isCurrentUserAdmin ? (
           <>
             {isManager ? (
               <Pressable
                 onPress={() => onDemote && onDemote(member.id)}
-                className="rounded-full active:opacity-70"
-                style={{ paddingHorizontal: 14, paddingVertical: 7, backgroundColor: '#FDBA5A' }}>
-                <Text
-                  style={{
-                    fontFamily: 'Cairo',
-                    fontSize: 12,
-                    fontWeight: '700',
-                    color: '#734a00',
-                  }}>
-                  Demote
-                </Text>
+                className="rounded-full bg-brand-amber-300 px-3.5 py-1.5 active:opacity-70">
+                <Text className="font-cairo text-[12px] font-bold text-text-primary">Demote</Text>
               </Pressable>
             ) : (
               <Pressable
                 onPress={() => onPromote(member.id)}
-                className="rounded-full active:opacity-70"
-                style={{ paddingHorizontal: 14, paddingVertical: 7, backgroundColor: '#FDBA5A' }}>
-                <Text
-                  style={{
-                    fontFamily: 'Cairo',
-                    fontSize: 12,
-                    fontWeight: '700',
-                    color: '#734a00',
-                  }}>
-                  Promote
-                </Text>
+                className="rounded-full bg-brand-amber-300 px-3.5 py-1.5 active:opacity-70">
+                <Text className="font-cairo text-[12px] font-bold text-text-primary">Promote</Text>
               </Pressable>
             )}
 
             <Pressable
               onPress={() => onRemove(member.id)}
-              className="rounded-full active:opacity-70"
-              style={{ paddingHorizontal: 14, paddingVertical: 7, backgroundColor: '#D32F2F' }}>
-              <Text style={{ fontFamily: 'Cairo', fontSize: 12, fontWeight: '700', color: '#fff' }}>
-                Remove
-              </Text>
+              className="rounded-full bg-status-error px-3.5 py-1.5 active:opacity-70">
+              <Text className="font-cairo text-[12px] font-bold text-white">Remove</Text>
             </Pressable>
           </>
         ) : null}
@@ -883,6 +784,11 @@ export function HouseholdMembersList({
   const showForm = onToggleAddForm ? isAddFormOpen : internalFormOpen;
   const toggleForm = onToggleAddForm || (() => setInternalFormOpen((prev) => !prev));
 
+  const currentUserMember = members.find((m) => m.isCurrentUser);
+  const isCurrentUserAdmin = currentUserMember
+    ? currentUserMember.role === 'Household Manager'
+    : false;
+
   return (
     <View style={{ gap: 16 }}>
       {/* ── Section Header ── */}
@@ -893,18 +799,20 @@ export function HouseholdMembersList({
             Household Members
           </Text>
         </View>
-        <Pressable
-          onPress={toggleForm}
-          className="rounded-full active:opacity-80"
-          style={{
-            paddingHorizontal: 14,
-            paddingVertical: 8,
-            backgroundColor: '#356859',
-          }}>
-          <Text style={{ fontFamily: 'Cairo', fontSize: 13, fontWeight: '700', color: '#fff' }}>
-            + Offline Member
-          </Text>
-        </Pressable>
+        {isCurrentUserAdmin && (
+          <Pressable
+            onPress={toggleForm}
+            className="rounded-full active:opacity-80"
+            style={{
+              paddingHorizontal: 14,
+              paddingVertical: 8,
+              backgroundColor: '#356859',
+            }}>
+            <Text style={{ fontFamily: 'Cairo', fontSize: 13, fontWeight: '700', color: '#fff' }}>
+              + Offline Member
+            </Text>
+          </Pressable>
+        )}
       </View>
 
       {/* ── Add Offline Member Form (Shown when toggled) ── */}
@@ -916,6 +824,7 @@ export function HouseholdMembersList({
           <MemberCard
             key={member.id}
             member={member}
+            isCurrentUserAdmin={isCurrentUserAdmin}
             isEditing={member.id === editingMemberId}
             onPreferences={onPreferences}
             onEdit={onEdit}

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { DeviceEventEmitter } from 'react-native';
 import { useProfileStore } from '@/src/store/useProfileStore';
 import { useRouter, Href } from 'expo-router';
 import { householdService } from '@/src/services/api/household.service';
@@ -31,9 +32,11 @@ export function useDashboard() {
       if (data) {
         setHouseholdData(data);
         setHasHousehold(true); // 200 OK -> User has household -> Render State B
+        useProfileStore.getState().updateProfile({ hasHousehold: true });
       } else {
         setHouseholdData(null);
         setHasHousehold(false); // 404 Not Found -> User has no household -> Render State A
+        useProfileStore.getState().updateProfile({ hasHousehold: false, isManager: false });
       }
     } catch (error: any) {
       console.warn(
@@ -42,6 +45,7 @@ export function useDashboard() {
       );
       setHouseholdData(null);
       setHasHousehold(false);
+      useProfileStore.getState().updateProfile({ hasHousehold: false, isManager: false });
     } finally {
       setIsHouseholdLoading(false);
       setIsFetchingHousehold(false);
@@ -50,6 +54,13 @@ export function useDashboard() {
 
   useEffect(() => {
     fetchDashboardData();
+
+    // Listen for on-demand refetch events (e.g. after creating a household)
+    const subscription = DeviceEventEmitter.addListener('REFRESH_DASHBOARD', () => {
+      fetchDashboardData();
+    });
+
+    return () => subscription.remove();
   }, [fetchDashboardData]);
 
   const handleCreateHousehold = () => {
