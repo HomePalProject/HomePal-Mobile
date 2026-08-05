@@ -1,13 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Pressable, Image, Animated, Dimensions, Modal, StyleSheet } from 'react-native';
-import { router, Href, useSegments } from 'expo-router';
+import {
+  View,
+  Pressable,
+  Image,
+  Animated,
+  Dimensions,
+  Modal,
+  StyleSheet,
+  Easing,
+} from 'react-native';
+import { router, Href, usePathname } from 'expo-router';
 import { Home, Users, Send, Mail, User, LogOut } from 'lucide-react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
-import { useProfileStore } from '@/src/store/useProfileStore';
-import { useDrawerStore } from '@/src/store/useDrawerStore';
+import { useAppSelector } from '@/src/store';
 import { useAppDispatch } from '@/src/store';
 import { logoutUser } from '@/src/store/slices/authSlice';
+import { closeDrawer } from '@/src/store/slices/uiSlice';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const DRAWER_WIDTH = Math.min(SCREEN_WIDTH * 0.82, 320);
@@ -16,19 +25,23 @@ export function AppDrawer() {
   const dispatch = useAppDispatch();
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
 
-  const { isOpen, closeDrawer } = useDrawerStore();
-  const { fullName, email, profileImageUri, hasHousehold, isManager } = useProfileStore();
-  const segments = useSegments();
+  const isOpen = useAppSelector((state) => state.ui.isDrawerOpen);
+  const handleCloseDrawer = () => dispatch(closeDrawer());
+  const { fullName, email, profileImageUri, hasHousehold, isManager } = useAppSelector(
+    (state) => state.profile
+  );
+  const pathname = usePathname();
 
   const activeRoute = React.useMemo(() => {
-    const tabSegment = segments[1] as string | undefined;
-    if (segments[0] === '(tabs)' && (tabSegment === 'index' || !tabSegment)) return 'household';
-    if (segments[0] === '(households)' && segments[1] === 'invite') return 'sent_invites';
-    if (segments[0] === '(households)' && segments[1] === 'invitations') return 'received_invites';
-    if (segments[0] === 'profile' || (segments[0] === '(tabs)' && tabSegment === 'profile'))
-      return 'profile';
+    if (pathname === '/' || pathname === '/(tabs)') return 'household';
+    if (pathname === '/family-management' || pathname === '/(households)/family-management')
+      return 'members';
+    if (pathname === '/invite' || pathname === '/(households)/invite') return 'sent_invites';
+    if (pathname === '/invitations' || pathname === '/(households)/invitations')
+      return 'received_invites';
+    if (pathname === '/profile' || pathname === '/(tabs)/profile') return 'profile';
     return '';
-  }, [segments]);
+  }, [pathname]);
 
   const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
@@ -38,12 +51,13 @@ export function AppDrawer() {
       Animated.parallel([
         Animated.timing(slideAnim, {
           toValue: 0,
-          duration: 250,
+          duration: 350,
+          easing: Easing.out(Easing.poly(4)),
           useNativeDriver: true,
         }),
         Animated.timing(opacityAnim, {
           toValue: 1,
-          duration: 250,
+          duration: 350,
           useNativeDriver: true,
         }),
       ]).start();
@@ -51,12 +65,13 @@ export function AppDrawer() {
       Animated.parallel([
         Animated.timing(slideAnim, {
           toValue: -DRAWER_WIDTH,
-          duration: 200,
+          duration: 300,
+          easing: Easing.in(Easing.poly(4)),
           useNativeDriver: true,
         }),
         Animated.timing(opacityAnim, {
           toValue: 0,
-          duration: 200,
+          duration: 300,
           useNativeDriver: true,
         }),
       ]).start();
@@ -69,7 +84,7 @@ export function AppDrawer() {
   const displayEmail = email || 'user@homepal.app';
 
   const navigateTo = (routeKey: string, href: string) => {
-    closeDrawer();
+    handleCloseDrawer();
     router.push(href as Href);
   };
 
@@ -79,7 +94,7 @@ export function AppDrawer() {
 
   const handleConfirmLogout = async () => {
     setLogoutModalVisible(false);
-    closeDrawer();
+    handleCloseDrawer();
     try {
       await dispatch(logoutUser()).unwrap();
     } catch {
@@ -91,15 +106,11 @@ export function AppDrawer() {
 
   return (
     <>
-      <Modal transparent visible={isOpen} animationType="none" onRequestClose={closeDrawer}>
+      <Modal transparent visible={isOpen} animationType="none" onRequestClose={handleCloseDrawer}>
         <View style={StyleSheet.absoluteFill} className="flex-1">
           {/* Backdrop Overlay */}
-          <Animated.View
-            style={[
-              StyleSheet.absoluteFill,
-              { opacity: opacityAnim, backgroundColor: 'rgba(0, 0, 0, 0.5)' },
-            ]}>
-            <Pressable style={StyleSheet.absoluteFill} onPress={closeDrawer} />
+          <Animated.View style={[StyleSheet.absoluteFill, { opacity: opacityAnim }]}>
+            <Pressable className="flex-1 bg-black/40" onPress={handleCloseDrawer} />
           </Animated.View>
 
           {/* Sliding Panel */}
@@ -135,7 +146,7 @@ export function AppDrawer() {
                   <Text
                     className="font-cairo text-[18px] font-bold leading-[24px] text-white"
                     numberOfLines={1}>
-                    {fullName || 'Mariam Essam2'}
+                    {fullName || 'User'}
                   </Text>
                   <Text className="mt-0.5 font-cairo text-[13px] text-slate-200" numberOfLines={1}>
                     {displayEmail}
@@ -169,15 +180,16 @@ export function AppDrawer() {
                 </Text>
               </Pressable>
 
-              {/* Item 2: Household Members */}
-              {/* <Pressable
-                onPress={() => hasHousehold && navigateTo('members', '/(tabs)')}
+              {/* Item 2: Manage Family */}
+              <Pressable
+                onPress={() =>
+                  hasHousehold && navigateTo('members', '/(households)/family-management')
+                }
                 disabled={!hasHousehold}
+                style={{ opacity: !hasHousehold ? 0.4 : 1 }}
                 className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 ${
-                  !hasHousehold ? 'opacity-40' : 'active:opacity-80'
-                } ${
                   activeRoute === 'members'
-                    ? 'bg-[#356859] shadow-sm'
+                    ? 'bg-brand-primary shadow-sm'
                     : hasHousehold
                       ? 'active:bg-surface-surfaceVariant'
                       : ''
@@ -185,17 +197,17 @@ export function AppDrawer() {
                 <Icon
                   as={Users}
                   size={22}
-                  color={activeRoute === 'members' ? '#ffffff' : '#1e1b17'}
+                  className={activeRoute === 'members' ? 'text-white' : 'text-text-primary'}
                 />
                 <Text
                   className={`font-cairo text-[15px] ${
                     activeRoute === 'members'
                       ? 'font-bold text-white'
-                      : 'font-semibold text-[#1e1b17]'
+                      : 'font-semibold text-text-primary'
                   }`}>
-                  Household Members
+                  Manage Family
                 </Text>
-              </Pressable> */}
+              </Pressable>
 
               {/* Item 3: Sent Invitations */}
               <Pressable

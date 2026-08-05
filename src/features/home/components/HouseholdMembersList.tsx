@@ -214,18 +214,13 @@ function CustomDatePicker({
                 <Pressable
                   key={dayNum}
                   onPress={() => setSelectedDay(dayNum)}
-                  className="my-1 h-[38px] w-[38px] items-center justify-center rounded-full active:opacity-80"
-                  style={{
-                    backgroundColor: isSelected ? '#356859' : 'transparent',
-                  }}>
+                  className={`my-1 h-[38px] w-[38px] items-center justify-center rounded-full active:opacity-80 ${
+                    isSelected ? 'bg-brand-primary' : 'bg-transparent'
+                  }`}>
                   <Text
-                    className="font-cairo text-[14px]"
-                    style={{
-                      color: isSelected
-                        ? 'var(--text-inverse, #FFFFFF)'
-                        : 'var(--text-primary, #2D2A26)',
-                      fontWeight: isSelected ? '700' : '500',
-                    }}>
+                    className={`font-cairo text-[14px] ${
+                      isSelected ? 'font-bold text-text-inverse' : 'font-medium text-text-primary'
+                    }`}>
                     {dayNum}
                   </Text>
                 </Pressable>
@@ -246,21 +241,17 @@ function CustomDatePicker({
                   setCurrentYear(y);
                   setViewMode('calendar');
                 }}
-                className="w-[70px] items-center justify-center rounded-xl border py-2 active:opacity-80"
-                style={{
-                  backgroundColor:
-                    y === currentYear ? '#356859' : 'var(--surface-variant, #F4F2EE)',
-                  borderColor: y === currentYear ? '#356859' : '#E4E0DA',
-                }}>
+                className={`w-[70px] items-center justify-center rounded-xl border py-2 active:opacity-80 ${
+                  y === currentYear
+                    ? 'border-brand-primary bg-brand-primary'
+                    : 'bg-surface-variant border-surface-border'
+                }`}>
                 <Text
-                  className="font-cairo text-[13px]"
-                  style={{
-                    color:
-                      y === currentYear
-                        ? 'var(--text-inverse, #FFFFFF)'
-                        : 'var(--text-primary, #2D2A26)',
-                    fontWeight: y === currentYear ? '700' : '400',
-                  }}>
+                  className={`font-cairo text-[13px] ${
+                    y === currentYear
+                      ? 'font-bold text-text-inverse'
+                      : 'font-normal text-text-primary'
+                  }`}>
                   {y}
                 </Text>
               </Pressable>
@@ -279,21 +270,17 @@ function CustomDatePicker({
                 setCurrentMonth(idx);
                 setViewMode('calendar');
               }}
-              className="w-[90px] items-center justify-center rounded-xl border py-2.5 active:opacity-80"
-              style={{
-                backgroundColor:
-                  idx === currentMonth ? '#356859' : 'var(--surface-variant, #F4F2EE)',
-                borderColor: idx === currentMonth ? '#356859' : '#E4E0DA',
-              }}>
+              className={`w-[90px] items-center justify-center rounded-xl border py-2.5 active:opacity-80 ${
+                idx === currentMonth
+                  ? 'border-brand-primary bg-brand-primary'
+                  : 'bg-surface-variant border-surface-border'
+              }`}>
               <Text
-                className="font-cairo text-[13px]"
-                style={{
-                  color:
-                    idx === currentMonth
-                      ? 'var(--text-inverse, #FFFFFF)'
-                      : 'var(--text-primary, #2D2A26)',
-                  fontWeight: idx === currentMonth ? '700' : '400',
-                }}>
+                className={`font-cairo text-[13px] ${
+                  idx === currentMonth
+                    ? 'font-bold text-text-inverse'
+                    : 'font-normal text-text-primary'
+                }`}>
                 {mName}
               </Text>
             </Pressable>

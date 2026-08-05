@@ -1,31 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Pressable, Switch, Image, Modal } from 'react-native';
+import { View, Text, ScrollView, Pressable, Image, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, Href } from 'expo-router';
 import Svg, { Circle, Defs, LinearGradient, RadialGradient, Stop } from 'react-native-svg';
+import * as Clipboard from 'expo-clipboard';
 import { SvgIcon } from '../../../components/ui/SvgIcon';
-import { ImpactCard } from '../components/ImpactCard';
 import { ProfileListItem } from '../components/ProfileListItem';
-import { Menu, ChevronDown, Check, LogOut, Calendar } from 'lucide-react-native';
+import { Menu, ChevronDown, Check, LogOut, Calendar, Copy } from 'lucide-react-native';
 import { Icon } from '../../../components/ui/icon';
-import { useProfileStore } from '../../../store/useProfileStore';
-import { useDrawerStore } from '../../../store/useDrawerStore';
-import { useAppDispatch } from '../../../store';
+import { useToast } from '@/src/providers/ToastProvider';
+import { useAppSelector, useAppDispatch } from '../../../store';
+import { openDrawer } from '../../../store/slices/uiSlice';
 import { logoutUser } from '../../../store/slices/authSlice';
 import { useTheme, ThemeMode } from '../../../providers/ThemeProvider';
 
 export default function ProfileScreen() {
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const [themeModalVisible, setThemeModalVisible] = useState(false);
   const dispatch = useAppDispatch();
   const { mode, setMode } = useTheme();
 
-  const { fullName, email, profileImageUri, birthDate, fetchProfile } = useProfileStore();
+  const { fullName, email, profileImageUri, birthDate } = useAppSelector((state) => state.profile);
+  const { showToast } = useToast();
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
+  const handleCopyEmail = async () => {
+    if (email) {
+      await Clipboard.setStringAsync(email);
+      showToast({
+        title: 'Copied!',
+        message: 'Email address copied to clipboard.',
+        type: 'success',
+      });
+    }
+  };
+
+  // Profile is fetched by authSlice during app bootstrap
+  useEffect(() => {}, []);
 
   const handleLogout = () => {
     setLogoutModalVisible(true);
@@ -33,7 +43,7 @@ export default function ProfileScreen() {
 
   const name = fullName;
 
-  const { openDrawer } = useDrawerStore();
+  const handleOpenDrawer = () => dispatch(openDrawer());
 
   const renderThemeOption = (optionMode: ThemeMode, label: string) => {
     const isSelected = mode === optionMode;
@@ -59,7 +69,7 @@ export default function ProfileScreen() {
       <View className="h-16 flex-row items-center justify-between border-b border-surface-divider bg-surface-surface px-spacing-16 shadow-sm">
         <View className="flex-row items-center gap-2">
           <Pressable
-            onPress={openDrawer}
+            onPress={handleOpenDrawer}
             className="rounded-full p-1.5 active:opacity-70"
             accessibilityRole="button"
             accessibilityLabel="Open Drawer Menu">
@@ -147,9 +157,15 @@ export default function ProfileScreen() {
             <Text className="text-h3 mb-spacing-4 font-cairo font-bold text-text-primary">
               {name}
             </Text>
-            <Text className="text-bodySmall mb-spacing-8 font-cairo text-text-primary">
-              {email}
-            </Text>
+
+            <Pressable
+              onPress={handleCopyEmail}
+              className="mb-spacing-8 flex-row items-center gap-1 active:opacity-70"
+              accessibilityRole="button"
+              accessibilityLabel="Copy email address">
+              <Text className="text-bodySmall font-cairo text-text-primary">{email}</Text>
+              <Icon as={Copy} size={14} className="text-text-secondary" />
+            </Pressable>
 
             {birthDate && (
               <View className="bg-surface-surfaceVariant py-spacing-6 mb-spacing-16 flex-row items-center gap-spacing-8 rounded-radius-full border border-surface-border px-spacing-16">

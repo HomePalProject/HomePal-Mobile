@@ -5,23 +5,28 @@ import { toast } from '@/src/providers/ToastProvider';
 import { ApiError } from '@/src/services/api/client';
 import { authService } from '@/src/services/api/auth.service';
 import { authStorage } from '@/src/services/storage/auth.storage';
-import { useProfileStore } from '@/src/store/useProfileStore';
+import { useAppDispatch } from '@/src/store';
+import { bootstrapAuth } from '@/src/store/slices/authSlice';
 import { router } from 'expo-router';
 
 export function usePendingInvitations() {
+  const dispatch = useAppDispatch();
   const [invitations, setInvitations] = useState<HouseholdInvitationResponse[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isProcessingId, setIsProcessingId] = useState<string | null>(null);
 
   const fetchInvitations = useCallback(async () => {
+    console.log('[usePendingInvitations] fetchInvitations START');
     setIsLoading(true);
     try {
       const data = await invitationService.getMyInvitations();
+      console.log('[usePendingInvitations] got data:', data);
       setInvitations(data || []);
     } catch (error: any) {
       console.error('[usePendingInvitations] Error fetching invitations:', error);
       toast.error('Failed to load', 'Could not load your pending invitations.');
     } finally {
+      console.log('[usePendingInvitations] fetchInvitations FINALLY, setting isLoading to false');
       setIsLoading(false);
     }
   }, []);
@@ -48,7 +53,7 @@ export function usePendingInvitations() {
             await authStorage.setTokens(res.data.accessToken, res.data.refreshToken);
           }
         }
-        await useProfileStore.getState().fetchProfile();
+        await dispatch(bootstrapAuth());
         router.push('/(tabs)');
       } catch (e) {
         console.warn('Failed to refresh session after accepting invitation', e);

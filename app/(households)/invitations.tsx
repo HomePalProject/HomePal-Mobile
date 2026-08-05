@@ -1,12 +1,12 @@
 import React from 'react';
 import { useRouter } from 'expo-router';
-import { useProfileStore } from '@/src/store/useProfileStore';
+import { useAppSelector } from '@/src/store';
 import { usePendingInvitations } from '@/src/features/households/hooks/usePendingInvitations';
 import { PendingInvitationsScreen } from '@/src/features/households/screens/PendingInvitationsScreen';
 
 export default function PendingInvitationsRoute() {
   const router = useRouter();
-  const { fullName, profileImageUri } = useProfileStore();
+  const { fullName, profileImageUri } = useAppSelector((state) => state.profile);
 
   const {
     invitations,
@@ -22,6 +22,10 @@ export default function PendingInvitationsRoute() {
   const safeFullName = fullName || '';
   const firstName = safeFullName.trim().split(/\s+/)[0] || 'U';
   const userInitials = firstName[0].toUpperCase();
+
+  console.log(
+    `[PendingInvitationsRoute] rendering... isLoading: ${isLoading}, invitations: ${invitations.length}`
+  );
 
   return (
     <PendingInvitationsScreen

@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { router, Href, Stack } from 'expo-router';
-import { useProfileStore } from '../../../store/useProfileStore';
+import { useAppSelector } from '@/src/store';
 
 export default function HomeScreen() {
-  const { fullName, family } = useProfileStore();
+  const { fullName, family } = useAppSelector((state) => state.profile);
 
   const nameParts = fullName.trim().split(/\s+/);
   const firstName = nameParts[0] || '';

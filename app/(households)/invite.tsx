@@ -1,12 +1,12 @@
 import React from 'react';
 import { useRouter } from 'expo-router';
-import { useProfileStore } from '@/src/store/useProfileStore';
+import { useAppSelector } from '@/src/store';
 import { useInviteMember } from '@/src/features/households/hooks/useInviteMember';
 import { InviteScreen } from '@/src/features/households/screens/InviteScreen';
 
 export default function InviteRoute() {
   const router = useRouter();
-  const { fullName, profileImageUri } = useProfileStore();
+  const { fullName, profileImageUri } = useAppSelector((state) => state.profile);
 
   const {
     inputValue,

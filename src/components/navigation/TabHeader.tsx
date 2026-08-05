@@ -3,8 +3,8 @@ import { View, Pressable, Image } from 'react-native';
 import { Menu } from 'lucide-react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
-import { useDrawerStore } from '@/src/store/useDrawerStore';
-import { useProfileStore } from '@/src/store/useProfileStore';
+import { useAppSelector, useAppDispatch } from '@/src/store';
+import { openDrawer } from '@/src/store/slices/uiSlice';
 
 export interface TabHeaderProps {
   title?: string;
@@ -12,8 +12,9 @@ export interface TabHeaderProps {
 }
 
 export function TabHeader({ title = 'HomePal', onNotificationPress }: TabHeaderProps) {
-  const { openDrawer } = useDrawerStore();
-  const { fullName, profileImageUri } = useProfileStore();
+  const dispatch = useAppDispatch();
+  const { fullName, profileImageUri } = useAppSelector((state) => state.profile);
+  const handleOpenDrawer = () => dispatch(openDrawer());
 
   const firstInitial = fullName ? fullName.trim()[0]?.toUpperCase() : 'H';
 
@@ -22,7 +23,7 @@ export function TabHeader({ title = 'HomePal', onNotificationPress }: TabHeaderP
       {/* Left: Menu Drawer Icon + Avatar + Title */}
       <View className="flex-row items-center gap-3">
         <Pressable
-          onPress={openDrawer}
+          onPress={handleOpenDrawer}
           className="rounded-full p-1.5 active:opacity-70"
           accessibilityRole="button"
           accessibilityLabel="Open Navigation Drawer">
@@ -30,7 +31,7 @@ export function TabHeader({ title = 'HomePal', onNotificationPress }: TabHeaderP
         </Pressable>
 
         <Pressable
-          onPress={openDrawer}
+          onPress={handleOpenDrawer}
           className="border-brand-primary/20 h-10 w-10 items-center justify-center overflow-hidden rounded-full border bg-brand-primary-container active:opacity-70">
           {profileImageUri ? (
             <Image source={{ uri: profileImageUri }} className="h-full w-full" />

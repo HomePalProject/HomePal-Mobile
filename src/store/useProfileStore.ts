@@ -109,6 +109,7 @@ export const useProfileStore = create<ProfileState>((set) => ({
         const roles = data.roles || [];
         const isManager = roles.includes('Household Manager');
         const isMember = roles.includes('Household Member');
+        // We'll rely on useDashboard to verify actual household existence, but keep the claim if present.
         const hasHousehold = isManager || isMember;
 
         let parsedGender = data.gender;

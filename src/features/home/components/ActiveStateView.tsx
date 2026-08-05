@@ -5,10 +5,8 @@ import { useRouter, Href } from 'expo-router';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { cn } from '@/src/utils';
+import { useAppSelector } from '@/src/store';
 import { HouseholdMember, HouseholdStats } from '../hooks/useActiveDashboard';
-import { HouseholdMembersList } from './HouseholdMembersList';
-import { DetailedMember } from '@/src/features/households/hooks/useHouseholdMembers';
-import { type HouseholdMembersListProps } from './HouseholdMembersList';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 export interface ActiveStateViewProps {
@@ -18,21 +16,6 @@ export interface ActiveStateViewProps {
   stats: HouseholdStats;
   // Simple member list (for the quick-glance section — kept for future use)
   members: HouseholdMember[];
-  onInviteMember: () => void;
-  // Detailed members management (HouseholdMembersList)
-  detailedMembers: DetailedMember[];
-  isAddFormOpen?: boolean;
-  onToggleAddForm?: () => void;
-  onAddOfflineMember: (payload: any) => void;
-  onPreferences: (id: string) => void;
-  onEditMember: (id: string) => void;
-  onPromote: (id: string) => void;
-  onDemote?: (id: string) => void;
-  onLeave: (id: string) => void;
-  onRemove: (id: string) => void;
-  editingMemberId?: string | null;
-  onCancelEdit?: () => void;
-  onSaveEdit?: (id: string, payload: { fullName: string; gender: string; dob: string }) => void;
   onRefresh?: () => void;
   isRefreshing?: boolean;
 }
@@ -139,34 +122,18 @@ function MemberRow({ member }: MemberRowProps) {
     </View>
   );
 }
-
 // ─── Main Component ───────────────────────────────────────────────────────────
 export function ActiveStateView({
   firstName,
   householdName,
   location,
   stats,
-  onInviteMember,
-  detailedMembers,
-  isAddFormOpen,
-  onToggleAddForm,
-  onAddOfflineMember,
-  onPreferences,
-  onEditMember,
-  editingMemberId,
-  onCancelEdit,
-  onSaveEdit,
-  onPromote,
-  onDemote,
-  onLeave,
-  onRemove,
+  members,
   onRefresh,
   isRefreshing = false,
 }: ActiveStateViewProps) {
+  const { isManager } = useAppSelector((state) => state.profile);
   const router = useRouter();
-
-  const currentUserMember = detailedMembers.find((m) => m.isCurrentUser);
-  const isManager = currentUserMember ? currentUserMember.role === 'Household Manager' : true;
 
   return (
     <View className="flex-1">
@@ -254,7 +221,7 @@ export function ActiveStateView({
         </View>
 
         {/* ── 2. Quick Stats — Horizontal ScrollView ── */}
-        <ScrollView
+        {/* <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ gap: 16, paddingVertical: 8 }}>
@@ -280,45 +247,8 @@ export function ActiveStateView({
             label="Received Invitations"
             value={stats.receivedInvitations}
           />
-        </ScrollView>
-
-        {/* ── 3. Household Members Management ── */}
-        <HouseholdMembersList
-          members={detailedMembers}
-          isAddFormOpen={isAddFormOpen}
-          onToggleAddForm={onToggleAddForm}
-          onAddOfflineMember={onAddOfflineMember}
-          onPreferences={onPreferences}
-          onEdit={onEditMember}
-          onPromote={onPromote}
-          onDemote={onDemote}
-          onLeave={onLeave}
-          onRemove={onRemove}
-          editingMemberId={editingMemberId}
-          onCancelEdit={onCancelEdit}
-          onSaveEdit={onSaveEdit}
-        />
+        </ScrollView> */}
       </ScrollView>
-
-      {/* ── FAB: Invite Member (floats above tab bar) ── */}
-      <Pressable
-        onPress={onInviteMember}
-        className="absolute bottom-6 right-6 z-50 flex-row items-center gap-2 rounded-full bg-brand-primary pl-5 pr-6 active:bg-brand-primary-pressed"
-        style={{
-          height: 56,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.25,
-          shadowRadius: 12,
-          elevation: 8,
-        }}
-        accessibilityRole="button"
-        accessibilityLabel="Invite Member">
-        <Icon as={Plus} size={22} color="#fff" />
-        <Text className="font-cairo text-[14px] font-bold leading-[20px] tracking-[0.01em] text-white">
-          Invite Member
-        </Text>
-      </Pressable>
     </View>
   );
 }

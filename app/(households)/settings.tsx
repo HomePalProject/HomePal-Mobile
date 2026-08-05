@@ -5,8 +5,8 @@ import { ArrowLeft, Home, MapPin, Building, Trash2, Save } from 'lucide-react-na
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { useHouseholdSettings } from '@/src/features/households/hooks/useHouseholdSettings';
-import { useProfileStore } from '@/src/store/useProfileStore';
-import { useDrawerStore } from '@/src/store/useDrawerStore';
+import { useAppSelector, useAppDispatch } from '@/src/store';
+import { openDrawer } from '@/src/store/slices/uiSlice';
 import { ProTipCard } from '@/src/components/ui/pro-tip-card';
 
 export default function HouseholdSettingsRoute() {
@@ -27,28 +27,31 @@ export default function HouseholdSettingsRoute() {
     onBack,
   } = useHouseholdSettings();
 
-  const { fullName, profileImageUri } = useProfileStore();
-  const { openDrawer } = useDrawerStore();
+  const dispatch = useAppDispatch();
+  const { fullName, profileImageUri } = useAppSelector((state) => state.profile);
+  const handleOpenDrawer = () => dispatch(openDrawer());
 
   const userInitials = fullName ? fullName.trim()[0]?.toUpperCase() : 'U';
 
   return (
     <SafeAreaView className="flex-1 bg-surface-background" edges={['top', 'bottom']}>
       {/* Header */}
-      <View className="h-16 flex-row items-center justify-between bg-surface-surface px-5 shadow-sm">
+      <View className="h-16 flex-row items-center justify-between border-b border-surface-divider bg-surface-surface px-5 shadow-sm">
         <Pressable
           onPress={onBack}
           className="active:bg-surface-surfaceVariant rounded-full p-2"
           accessibilityRole="button"
           accessibilityLabel="Go back">
-          <Icon as={ArrowLeft} size={24} className="text-on-surface" />
+          <Icon as={ArrowLeft} size={24} className="text-text-primary" />
         </Pressable>
 
-        <Text className="text-on-surface font-cairo text-[16px] font-bold">Household Settings</Text>
+        <Text className="font-cairo text-[16px] font-bold text-text-primary">
+          Household Settings
+        </Text>
 
         <View className="flex-row items-center gap-3">
           <Pressable
-            onPress={openDrawer}
+            onPress={handleOpenDrawer}
             className="h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-brand-primary-container active:opacity-70">
             {profileImageUri ? (
               <Image source={{ uri: profileImageUri }} className="h-full w-full" />
@@ -91,9 +94,9 @@ export default function HouseholdSettingsRoute() {
             {/* Field 1: Household Name (Required) */}
             <View style={{ gap: 6 }}>
               <View className="flex-row items-center gap-2">
-                <Icon as={Home} size={18} color="#356859" />
-                <Text className="text-on-surface font-cairo text-[14px] font-bold">
-                  Household Name <Text className="text-red-500">*</Text>
+                <Icon as={Home} size={18} className="text-brand-primary" />
+                <Text className="font-cairo text-[14px] font-bold text-text-primary">
+                  Household Name <Text className="text-status-error">*</Text>
                 </Text>
               </View>
               <TextInput
@@ -101,16 +104,10 @@ export default function HouseholdSettingsRoute() {
                 onChangeText={setName}
                 placeholder="e.g., Al-Amal Family Villa"
                 placeholderTextColor="#A8A29B"
+                className="bg-surface-surfaceVariant rounded-xl border border-surface-border px-3.5 py-2.5 text-text-primary"
                 style={{
                   fontFamily: 'Cairo',
                   fontSize: 15,
-                  color: '#1e1b17',
-                  backgroundColor: '#FAF7F2',
-                  borderRadius: 12,
-                  borderWidth: 1,
-                  borderColor: '#E4E0DA',
-                  paddingHorizontal: 14,
-                  paddingVertical: 10,
                 }}
               />
             </View>
@@ -118,24 +115,18 @@ export default function HouseholdSettingsRoute() {
             {/* Field 2: Address */}
             <View style={{ gap: 6 }}>
               <View className="flex-row items-center gap-2">
-                <Icon as={MapPin} size={18} color="#356859" />
-                <Text className="text-on-surface font-cairo text-[14px] font-bold">Address</Text>
+                <Icon as={MapPin} size={18} className="text-brand-primary" />
+                <Text className="font-cairo text-[14px] font-bold text-text-primary">Address</Text>
               </View>
               <TextInput
                 value={address}
                 onChangeText={setAddress}
                 placeholder="Street address (optional)"
                 placeholderTextColor="#A8A29B"
+                className="bg-surface-surfaceVariant rounded-xl border border-surface-border px-3.5 py-2.5 text-text-primary"
                 style={{
                   fontFamily: 'Cairo',
                   fontSize: 15,
-                  color: '#1e1b17',
-                  backgroundColor: '#FAF7F2',
-                  borderRadius: 12,
-                  borderWidth: 1,
-                  borderColor: '#E4E0DA',
-                  paddingHorizontal: 14,
-                  paddingVertical: 10,
                 }}
               />
             </View>
@@ -144,8 +135,8 @@ export default function HouseholdSettingsRoute() {
             <View className="flex-row gap-3">
               <View className="flex-1" style={{ gap: 6 }}>
                 <View className="flex-row items-center gap-1.5">
-                  <Icon as={Building} size={16} color="#356859" />
-                  <Text className="text-on-surface font-cairo text-[14px] font-bold">
+                  <Icon as={Building} size={16} className="text-brand-primary" />
+                  <Text className="font-cairo text-[14px] font-bold text-text-primary">
                     Governorate
                   </Text>
                 </View>
@@ -154,40 +145,28 @@ export default function HouseholdSettingsRoute() {
                   onChangeText={setGovernorate}
                   placeholder="e.g., Cairo"
                   placeholderTextColor="#A8A29B"
+                  className="bg-surface-surfaceVariant rounded-xl border border-surface-border px-3 py-2 text-text-primary"
                   style={{
                     fontFamily: 'Cairo',
                     fontSize: 14,
-                    color: '#1e1b17',
-                    backgroundColor: '#FAF7F2',
-                    borderRadius: 12,
-                    borderWidth: 1,
-                    borderColor: '#E4E0DA',
-                    paddingHorizontal: 12,
-                    paddingVertical: 9,
                   }}
                 />
               </View>
 
               <View className="flex-1" style={{ gap: 6 }}>
                 <View className="flex-row items-center gap-1.5">
-                  <Icon as={Building} size={16} color="#356859" />
-                  <Text className="text-on-surface font-cairo text-[14px] font-bold">City</Text>
+                  <Icon as={Building} size={16} className="text-brand-primary" />
+                  <Text className="font-cairo text-[14px] font-bold text-text-primary">City</Text>
                 </View>
                 <TextInput
                   value={city}
                   onChangeText={setCity}
                   placeholder="e.g., Maadi"
                   placeholderTextColor="#A8A29B"
+                  className="bg-surface-surfaceVariant rounded-xl border border-surface-border px-3 py-2 text-text-primary"
                   style={{
                     fontFamily: 'Cairo',
                     fontSize: 14,
-                    color: '#1e1b17',
-                    backgroundColor: '#FAF7F2',
-                    borderRadius: 12,
-                    borderWidth: 1,
-                    borderColor: '#E4E0DA',
-                    paddingHorizontal: 12,
-                    paddingVertical: 9,
                   }}
                 />
               </View>
@@ -217,10 +196,10 @@ export default function HouseholdSettingsRoute() {
 
           {/* Danger Zone: Delete Household */}
           <View
-            className="mt-4 rounded-2xl border border-red-200 bg-red-50/50 p-5"
+            className="bg-status-error-container/20 mt-4 rounded-2xl border border-status-error p-5"
             style={{ gap: 12 }}>
-            <Text className="font-cairo text-[16px] font-bold text-red-700">Danger Zone</Text>
-            <Text className="font-cairo text-[13px] leading-[20px] text-red-600">
+            <Text className="font-cairo text-[16px] font-bold text-status-error">Danger Zone</Text>
+            <Text className="font-cairo text-[13px] leading-[20px] text-status-error">
               Deleting this household is permanent. All members, inventory, meal plans, and
               invitations associated with this residence will be removed.
             </Text>
@@ -228,7 +207,7 @@ export default function HouseholdSettingsRoute() {
             <Pressable
               onPress={onDelete}
               disabled={isUpdating || isDeleting}
-              className="flex-row items-center justify-center gap-2 rounded-xl bg-red-600 py-3.5 shadow-sm active:opacity-90">
+              className="flex-row items-center justify-center gap-2 rounded-xl bg-status-error py-3.5 shadow-sm active:opacity-90">
               {isDeleting ? (
                 <ActivityIndicator size="small" color="#ffffff" />
               ) : (

@@ -3,7 +3,7 @@ import { DeviceEventEmitter } from 'react-native';
 import { router } from 'expo-router';
 import { toast } from '@/src/providers/ToastProvider';
 import { memberService } from '@/src/services/api/member.service';
-import { useProfileStore } from '@/src/store/useProfileStore';
+
 import { useAppSelector } from '@/src/store';
 import { HouseholdMemberResponse } from '@/src/types/api';
 import { ApiError } from '@/src/services/api/client';
@@ -56,7 +56,7 @@ export function useHouseholdMembers() {
   const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
 
   const { user } = useAppSelector((state) => state.auth);
-  const currentFullName = useProfileStore((state) => state.fullName);
+  const currentFullName = useAppSelector((state) => state.profile.fullName);
 
   const mapResponseToDetailedMember = useCallback(
     (res: HouseholdMemberResponse): DetailedMember => {

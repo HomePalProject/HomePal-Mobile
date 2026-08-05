@@ -1,12 +1,12 @@
 import React from 'react';
 import { useRouter } from 'expo-router';
-import { useProfileStore } from '@/src/store/useProfileStore';
+import { useAppSelector } from '@/src/store';
 import { useCreateHousehold } from '@/src/features/households/hooks/useCreateHousehold';
 import { CreateHouseholdScreen } from '@/src/features/households/screens/CreateHouseholdScreen';
 
 export default function CreateHouseholdRoute() {
   const router = useRouter();
-  const { fullName, profileImageUri } = useProfileStore();
+  const { fullName, profileImageUri } = useAppSelector((state) => state.profile);
   const { formData, errors, isLoading, onChangeField, onSubmit } = useCreateHousehold();
 
   // Extract initials for the profile avatar in the header

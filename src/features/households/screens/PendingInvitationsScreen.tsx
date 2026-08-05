@@ -6,7 +6,8 @@ import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { ProTipCard } from '@/src/components/ui/pro-tip-card';
 import { HouseholdInvitationResponse } from '@/src/types/api';
-import { useDrawerStore } from '@/src/store/useDrawerStore';
+import { useAppDispatch } from '@/src/store';
+import { openDrawer } from '@/src/store/slices/uiSlice';
 
 export interface PendingInvitationsScreenProps {
   userInitials: string;
@@ -58,10 +59,10 @@ function ReceivedInvitationCard({
           <Icon as={Home} size={20} className="text-brand-primary" />
         </View>
         <View className="flex-1">
-          <Text className="font-cairo text-[16px] font-bold leading-[22px] text-text-primary">
+          <Text className="font-cairo text-base font-bold leading-snug text-text-primary">
             {invitation.householdName || 'Household Invitation'}
           </Text>
-          <Text className="font-cairo text-[13px] leading-[18px] text-text-secondary">
+          <Text className="font-cairo text-sm leading-tight text-text-secondary">
             Invited by:{' '}
             <Text className="font-semibold text-text-primary">
               {invitation.invitedByName || 'Household Manager'}
@@ -71,7 +72,7 @@ function ReceivedInvitationCard({
       </View>
 
       {formattedDate ? (
-        <Text className="mt-2 font-cairo text-[12px] text-text-disabled">
+        <Text className="mt-2 font-cairo text-xs text-text-disabled">
           Received on {formattedDate}
         </Text>
       ) : null}
@@ -89,7 +90,7 @@ function ReceivedInvitationCard({
           ) : (
             <>
               <Icon as={Check} size={18} color="#fff" />
-              <Text className="font-cairo text-[14px] font-bold text-white">Accept</Text>
+              <Text className="font-cairo text-sm font-bold text-white">Accept</Text>
             </>
           )}
         </Pressable>
@@ -105,7 +106,7 @@ function ReceivedInvitationCard({
           ) : (
             <>
               <Icon as={X} size={18} className="text-status-error" />
-              <Text className="font-cairo text-[14px] font-bold text-text-primary">Decline</Text>
+              <Text className="font-cairo text-sm font-bold text-text-primary">Decline</Text>
             </>
           )}
         </Pressable>
@@ -127,7 +128,8 @@ export function PendingInvitationsScreen({
   onDecline,
   onRefresh,
 }: PendingInvitationsScreenProps) {
-  const { openDrawer } = useDrawerStore();
+  const dispatch = useAppDispatch();
+  const handleOpenDrawer = () => dispatch(openDrawer());
 
   return (
     <SafeAreaView className="flex-1 bg-surface-background" edges={['top', 'bottom']}>
@@ -143,19 +145,19 @@ export function PendingInvitationsScreen({
         </Pressable>
 
         {/* Title */}
-        <Text className="font-cairo text-[16px] font-bold text-text-primary">
+        <Text className="font-cairo text-base font-bold text-text-primary">
           Received Invitations
         </Text>
 
         {/* Right: Avatar (Drawer trigger) */}
         <View className="flex-row items-center gap-3">
           <Pressable
-            onPress={openDrawer}
+            onPress={handleOpenDrawer}
             className="h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-brand-primary-container active:opacity-70">
             {userAvatarUri ? (
               <Image source={{ uri: userAvatarUri }} className="h-full w-full" />
             ) : (
-              <Text className="font-cairo text-[15px] font-bold text-brand-primary">
+              <Text className="font-cairo text-base font-bold text-brand-primary">
                 {userInitials}
               </Text>
             )}
@@ -170,53 +172,54 @@ export function PendingInvitationsScreen({
         showsVerticalScrollIndicator={false}>
         {/* Hero Section */}
         <View style={{ gap: 6 }}>
-          <Text className="font-cairo text-[24px] font-bold leading-[32px] text-brand-primary">
+          <Text className="font-cairo text-2xl font-bold leading-8 text-brand-primary">
             Pending Invitations
           </Text>
-          <Text className="font-cairo text-[14px] leading-[22px] text-text-secondary">
+          <Text className="font-cairo text-sm leading-relaxed text-text-secondary">
             Review and accept household invitations sent to you by family or roommates.
           </Text>
         </View>
 
-        {/* Conditional Loading State */}
         {isLoading ? (
-          <View style={{ marginVertical: 48, alignItems: 'center', justifyContent: 'center' }}>
+          <View
+            key="loading"
+            style={{ marginVertical: 48, alignItems: 'center', justifyContent: 'center' }}>
             <ActivityIndicator size="large" color="#356859" />
-            <Text className="mt-3 font-cairo text-[14px] text-text-secondary">
+            <Text className="mt-3 font-cairo text-sm text-text-secondary">
               Checking for received invitations...
             </Text>
           </View>
         ) : isEmpty ? (
           /* Empty State Card */
-          <View className="my-6 items-center rounded-2xl border border-surface-border bg-surface-surface p-8 shadow-sm">
+          <View
+            key="empty"
+            className="my-6 items-center rounded-2xl border border-surface-border bg-surface-surface p-8 shadow-sm">
             <View className="h-16 w-16 items-center justify-center rounded-full bg-brand-primary-container">
               <Icon as={Inbox} size={32} className="text-brand-primary" />
             </View>
-            <Text className="mt-4 font-cairo text-[18px] font-bold text-text-primary">
+            <Text className="mt-4 font-cairo text-lg font-bold text-text-primary">
               No Received Invitations
             </Text>
-            <Text className="mt-1 text-center font-cairo text-[14px] leading-[22px] text-text-secondary">
+            <Text className="mt-1 text-center font-cairo text-sm leading-relaxed text-text-secondary">
               You're all caught up! You don't have any pending household invitations at the moment.
             </Text>
             <Pressable
               onPress={onRefresh}
               className="mt-5 rounded-full bg-brand-amber-300 px-6 py-2.5 active:opacity-80">
-              <Text className="font-cairo text-[13px] font-bold text-text-primary">
-                Check Again
-              </Text>
+              <Text className="font-cairo text-sm font-bold text-text-primary">Check Again</Text>
             </Pressable>
           </View>
         ) : (
           /* List of Pending Invitations */
-          <View style={{ gap: 14 }}>
+          <View key="list" style={{ gap: 14 }}>
             <View className="flex-row items-center justify-between">
-              <Text className="font-cairo text-[16px] font-bold text-text-primary">
+              <Text className="font-cairo text-base font-bold text-text-primary">
                 Inbox ({invitations.length})
               </Text>
               <Pressable
                 onPress={onRefresh}
-                className="bg-brand-accent/20 rounded-full px-3 py-1 active:opacity-70">
-                <Text className="font-cairo text-[12px] font-bold text-brand-accent">Refresh</Text>
+                className="rounded-full bg-brand-accent px-3 py-1 active:opacity-70">
+                <Text className="font-cairo text-xs font-bold text-white">Refresh</Text>
               </Pressable>
             </View>
 
@@ -235,7 +238,7 @@ export function PendingInvitationsScreen({
         {/* Pro Tip */}
         <ProTipCard
           description="Once you accept an invitation, you will automatically gain access to that household's shared hub, chore lists, and member management."
-          className="bg-brand-primary-container/15 mt-2 border-brand-primary-container"
+          className="mt-2 border-brand-primary-container bg-brand-primary-container"
         />
       </ScrollView>
     </SafeAreaView>

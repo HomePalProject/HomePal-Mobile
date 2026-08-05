@@ -3,7 +3,8 @@ import { View, Pressable, Image } from 'react-native';
 import { Menu } from 'lucide-react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
-import { useDrawerStore } from '@/src/store/useDrawerStore';
+import { useAppDispatch } from '@/src/store';
+import { openDrawer } from '@/src/store/slices/uiSlice';
 
 export interface DashboardHeaderProps {
   firstInitial: string;
@@ -17,13 +18,13 @@ export function DashboardHeader({
   profileImageUri,
   onAvatarPress,
 }: DashboardHeaderProps) {
-  const { openDrawer } = useDrawerStore();
+  const dispatch = useAppDispatch();
 
   const handleOpenDrawer = () => {
     if (onAvatarPress) {
       onAvatarPress();
     } else {
-      openDrawer();
+      dispatch(openDrawer());
     }
   };
 

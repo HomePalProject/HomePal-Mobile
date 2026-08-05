@@ -29,10 +29,7 @@ export interface ActiveDashboardData {
   onInviteMember: () => void;
 }
 
-export function useActiveDashboard(
-  householdData?: HouseholdDto | null,
-  activeMembersCount?: number
-): ActiveDashboardData {
+export function useActiveDashboard(householdData?: HouseholdDto | null): ActiveDashboardData {
   // Derive dynamic household name and location from real backend response when available
   const householdName = householdData?.name || 'My Household';
   const location =
@@ -68,10 +65,7 @@ export function useActiveDashboard(
     fetchStats();
   }, [fetchStats]);
 
-  const totalMembers =
-    activeMembersCount !== undefined && activeMembersCount > 0
-      ? activeMembersCount
-      : Number(householdData?.membersCount) || 1;
+  const totalMembers = Number(householdData?.membersCount) || 1;
 
   const stats: HouseholdStats = {
     totalMembers,

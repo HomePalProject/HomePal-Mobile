@@ -144,7 +144,7 @@ export function CreateHouseholdScreen({
         {/* ── Image Phase Banner ── */}
         <View className="bg-surface-surfaceVariant border-surface-border/30 h-48 w-full overflow-hidden rounded-2xl border shadow-sm">
           <Image
-            source={require('../../../assets/images/household_creation_banner.png')}
+            source={require('../../../assets/images/household_creation_banner.jpg')}
             className="absolute h-full w-full opacity-90"
             resizeMode="cover"
           />

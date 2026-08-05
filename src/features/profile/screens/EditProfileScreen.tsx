@@ -4,12 +4,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { SvgIcon } from '../../../components/ui/SvgIcon';
 import * as ImagePicker from 'expo-image-picker';
-import { useProfileStore } from '../../../store/useProfileStore';
+import { useAppSelector, useAppDispatch } from '@/src/store';
+import {
+  saveProfile,
+  uploadProfileImage,
+  deleteProfileImage,
+} from '@/src/store/slices/profileSlice';
 import { DatePicker } from '../../../components/ui';
 import { Gender } from '../../../types/api';
 
 export default function EditProfileScreen() {
-  const profile = useProfileStore();
+  const dispatch = useAppDispatch();
+  const profile = useAppSelector((state) => state.profile);
 
   const [fullName, setFullName] = useState(profile.fullName);
   const [gender, setGender] = useState<Gender | null>(profile.gender);
@@ -82,22 +88,24 @@ export default function EditProfileScreen() {
 
     try {
       // 1. Save general profile information
-      await profile.saveProfile({
-        fullName: fullName.trim(),
-        gender,
-        birthDate: birthDate ? birthDate.split('T')[0] : null,
-        governorate: governorate.trim(),
-        city: city.trim(),
-      });
+      await dispatch(
+        saveProfile({
+          fullName: fullName.trim(),
+          gender,
+          birthDate: birthDate ? birthDate.split('T')[0] : null,
+          governorate: governorate.trim(),
+          city: city.trim(),
+        })
+      ).unwrap();
 
       // 2. Handle image changes (upload or delete)
       if (profileImageUri !== profile.profileImageUri) {
         if (!profileImageUri) {
           console.log('[EditProfileScreen] Deleting profile picture...');
-          await profile.deleteProfileImage();
+          await dispatch(deleteProfileImage()).unwrap();
         } else {
           console.log('[EditProfileScreen] Uploading new profile picture...', profileImageUri);
-          await profile.uploadProfileImage(profileImageUri);
+          await dispatch(uploadProfileImage(profileImageUri)).unwrap();
         }
       }
 

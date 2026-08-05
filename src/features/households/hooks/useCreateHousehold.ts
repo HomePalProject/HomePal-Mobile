@@ -4,6 +4,10 @@ import { DeviceEventEmitter } from 'react-native';
 import { toast } from '@/src/providers/ToastProvider';
 import { householdService } from '@/src/services/api/household.service';
 import { CreateHouseholdRequest } from '@/src/types/api';
+import { useAppDispatch } from '@/src/store';
+import { bootstrapAuth } from '@/src/store/slices/authSlice';
+import { authStorage } from '@/src/services/storage/auth.storage';
+import { authService } from '@/src/services/api/auth.service';
 
 export interface CreateHouseholdForm {
   name: string;
@@ -14,6 +18,7 @@ export interface CreateHouseholdForm {
 
 export function useCreateHousehold() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   const [formData, setFormData] = useState<CreateHouseholdForm>({
     name: '',
@@ -69,6 +74,20 @@ export function useCreateHousehold() {
         'Household Registered!',
         `Successfully registered "${createdHousehold.name || formData.name.trim()}"`
       );
+
+      // Refresh token to get the new HouseholdManager claim
+      try {
+        const rt = await authStorage.getRefreshToken();
+        if (rt) {
+          const res = await authService.refreshToken({ refreshToken: rt });
+          if (res.success && res.data) {
+            await authStorage.setTokens(res.data.accessToken, res.data.refreshToken);
+          }
+        }
+        await dispatch(bootstrapAuth()).unwrap();
+      } catch (e) {
+        console.warn('Failed to refresh session after creating household', e);
+      }
 
       // Trigger a dashboard refetch before navigating back
       DeviceEventEmitter.emit('REFRESH_DASHBOARD');

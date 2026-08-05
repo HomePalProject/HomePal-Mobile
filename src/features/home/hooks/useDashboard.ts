@@ -1,18 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
 import { DeviceEventEmitter } from 'react-native';
-import { useProfileStore } from '@/src/store/useProfileStore';
+import { useAppSelector, useAppDispatch } from '@/src/store';
+import { updateProfileFields } from '@/src/store/slices/profileSlice';
 import { useRouter, Href } from 'expo-router';
 import { householdService } from '@/src/services/api/household.service';
 import { HouseholdDto } from '@/src/types/api';
 
 export function useDashboard() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const {
     fullName,
     profileImageUri,
-    fetchProfile,
     isLoading: isProfileLoading,
-  } = useProfileStore();
+  } = useAppSelector((state) => state.profile);
 
   const [hasHousehold, setHasHousehold] = useState(false);
   const [householdData, setHouseholdData] = useState<HouseholdDto | null>(null);
@@ -23,20 +24,17 @@ export function useDashboard() {
     setIsHouseholdLoading(true);
     setIsFetchingHousehold(true);
     try {
-      // 1. Fetch user profile
-      fetchProfile();
-
-      // 2. Fetch my-household endpoint (GET /api/Households/my-household)
+      // 1. Fetch my-household endpoint (GET /api/Households/my-household)
       const data = await householdService.getMyHousehold();
 
       if (data) {
         setHouseholdData(data);
         setHasHousehold(true); // 200 OK -> User has household -> Render State B
-        useProfileStore.getState().updateProfile({ hasHousehold: true });
+        dispatch(updateProfileFields({ hasHousehold: true }));
       } else {
         setHouseholdData(null);
         setHasHousehold(false); // 404 Not Found -> User has no household -> Render State A
-        useProfileStore.getState().updateProfile({ hasHousehold: false, isManager: false });
+        dispatch(updateProfileFields({ hasHousehold: false, isManager: false }));
       }
     } catch (error: any) {
       console.warn(
@@ -45,12 +43,12 @@ export function useDashboard() {
       );
       setHouseholdData(null);
       setHasHousehold(false);
-      useProfileStore.getState().updateProfile({ hasHousehold: false, isManager: false });
+      dispatch(updateProfileFields({ hasHousehold: false, isManager: false }));
     } finally {
       setIsHouseholdLoading(false);
       setIsFetchingHousehold(false);
     }
-  }, [fetchProfile]);
+  }, [dispatch]);
 
   useEffect(() => {
     fetchDashboardData();

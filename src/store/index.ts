@@ -3,9 +3,14 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import authReducer, { forceLogout } from '@/src/store/slices/authSlice';
 import { registerOnUnauthorizedCallback } from '@/src/services/api/client';
 
+import uiReducer from '@/src/store/slices/uiSlice';
+import profileReducer from '@/src/store/slices/profileSlice';
+
 export const store = configureStore({
   reducer: {
     auth: authReducer,
+    ui: uiReducer,
+    profile: profileReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

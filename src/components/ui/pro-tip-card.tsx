@@ -23,9 +23,7 @@ export function ProTipCard({ title = 'Pro Tip', description, className }: ProTip
       </View>
       <View className="flex-1 gap-spacing-4">
         <Text className="text-bodySmall font-cairo font-bold text-text-primary">{title}</Text>
-        <Text className="font-cairo text-[13px] leading-[18px] text-text-secondary">
-          {description}
-        </Text>
+        <Text className="font-cairo text-sm leading-tight text-text-secondary">{description}</Text>
       </View>
     </View>
   );

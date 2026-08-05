@@ -4,16 +4,17 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, Href } from 'expo-router';
 import { useDashboard } from '@/src/features/home/hooks/useDashboard';
 import { useActiveDashboard } from '@/src/features/home/hooks/useActiveDashboard';
-import { useHouseholdMembers } from '@/src/features/households/hooks/useHouseholdMembers';
 import { DashboardHeader } from '@/src/features/home/components/DashboardHeader';
 import { OrphanStateView } from '@/src/features/home/components/OrphanStateView';
 import { ActiveStateView } from '@/src/features/home/components/ActiveStateView';
 import { Text } from '@/src/components/ui/text';
 
-import { useDrawerStore } from '@/src/store/useDrawerStore';
+import { useAppDispatch } from '@/src/store';
+import { openDrawer } from '@/src/store/slices/uiSlice';
 
 export default function DashboardScreen() {
-  const { openDrawer } = useDrawerStore();
+  const dispatch = useAppDispatch();
+  const handleOpenDrawer = () => dispatch(openDrawer());
   const {
     isLoading,
     isFetchingHousehold,
@@ -27,31 +28,10 @@ export default function DashboardScreen() {
     refreshDashboard,
   } = useDashboard();
 
-  const {
-    members: detailedMembers,
-    isAddFormOpen,
-    editingMemberId,
-    onToggleAddForm,
-    onAddOfflineMember,
-    onPreferences,
-    onEdit,
-    onCancelEdit,
-    onSaveEdit,
-    onPromote,
-    onDemote,
-    onLeave,
-    onRemove,
-    refreshMembers,
-  } = useHouseholdMembers();
-
-  const { householdName, location, stats, members } = useActiveDashboard(
-    householdData,
-    detailedMembers.length
-  );
+  const { householdName, location, stats, members } = useActiveDashboard(householdData);
 
   const handleRefresh = async () => {
     await refreshDashboard();
-    refreshMembers();
   };
 
   return (
@@ -60,7 +40,7 @@ export default function DashboardScreen() {
       <DashboardHeader
         firstInitial={firstInitial}
         profileImageUri={profileImageUri}
-        onAvatarPress={openDrawer}
+        onAvatarPress={handleOpenDrawer}
       />
 
       {/* Conditional State Rendering */}
@@ -87,20 +67,6 @@ export default function DashboardScreen() {
           location={location}
           stats={stats}
           members={members}
-          onInviteMember={() => router.push('/(households)/invite' as Href)}
-          detailedMembers={detailedMembers}
-          isAddFormOpen={isAddFormOpen}
-          onToggleAddForm={onToggleAddForm}
-          onAddOfflineMember={onAddOfflineMember}
-          onPreferences={onPreferences}
-          onEditMember={onEdit}
-          editingMemberId={editingMemberId}
-          onCancelEdit={onCancelEdit}
-          onSaveEdit={onSaveEdit}
-          onPromote={onPromote}
-          onDemote={onDemote}
-          onLeave={onLeave}
-          onRemove={onRemove}
           onRefresh={handleRefresh}
           isRefreshing={isFetchingHousehold}
         />
