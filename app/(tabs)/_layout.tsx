@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { useColorScheme } from 'nativewind';
-import { Home, Package, UtensilsCrossed, ShoppingCart, User } from 'lucide-react-native';
+import { Home, Package, UtensilsCrossed, ShoppingCart, User, Tag } from 'lucide-react-native';
 import { Icon } from '@/src/components/ui/icon';
 
 export default function TabLayout() {
@@ -51,8 +51,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="shop"
         options={{
-          title: 'Shop',
-          tabBarIcon: ({ color, size }) => <Icon as={ShoppingCart} size={size} color={color} />,
+          title: 'Offers',
+          tabBarIcon: ({ color, size }) => <Icon as={Tag} size={size} color={color} />,
         }}
       />
       <Tabs.Screen

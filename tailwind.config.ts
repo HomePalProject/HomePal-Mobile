@@ -1,19 +1,12 @@
-const { hairlineWidth } = require('nativewind/theme');
-const fs = require('fs');
-const path = require('path');
+import type { Config } from 'tailwindcss';
+import { hairlineWidth } from 'nativewind/theme';
+import { colors } from './src/theme/colors';
+import { typography } from './src/theme/typography';
+import { spacing } from './src/theme/spacing';
+import { radius } from './src/theme/radius';
 
-const jiti = require('jiti')(__dirname, { interopDefault: true });
-
-// Load design tokens from src/theme cleanly using jiti TypeScript transpiler
-const { colors } = jiti('./src/theme/colors.ts');
-const { typography } = jiti('./src/theme/typography.ts');
-const { spacing } = jiti('./src/theme/spacing.ts');
-const { radius } = jiti('./src/theme/radius.ts');
-
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   darkMode: 'class',
-  // content: ['./app/**/*.{ts,tsx}', './components/**/*.{ts,tsx}'],
   content: [
     './app/**/*.{ts,tsx}',
     './src/app/**/*.{ts,tsx}',
@@ -24,7 +17,6 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Expose brand semantic design system tokens
         brand: {
           primary: 'var(--brand-primary, #356859)',
           'primary-pressed': 'var(--brand-primary-pressed, #2A5347)',
@@ -59,7 +51,6 @@ module.exports = {
           inverse: 'var(--text-inverse, #FFFFFF)',
           'on-accent': colors.text.onAccent,
         },
-        // Keep existing CSS-variable backed colors for NativeWind consumer components
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
@@ -98,21 +89,18 @@ module.exports = {
         cairo: [typography.fontFamily],
       },
       spacing: {
-        // Expose spacing scale tokens under both slash and hyphen syntaxes
-        ...Object.keys(spacing).reduce((acc, key) => {
+        ...Object.keys(spacing).reduce((acc: Record<string, string>, key) => {
           const hyphenKey = key.replace('/', '-');
-          acc[hyphenKey] = spacing[key];
-          acc[key] = spacing[key];
+          acc[hyphenKey] = (spacing as any)[key];
+          acc[key] = (spacing as any)[key];
           return acc;
         }, {}),
       },
       borderRadius: {
-        // Expose border radius tokens
         'radius-small': `${radius.small}px`,
         'radius-medium': `${radius.medium}px`,
         'radius-large': `${radius.large}px`,
         'radius-full': `${radius.full}px`,
-        // Keep existing variables
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
@@ -140,4 +128,4 @@ module.exports = {
     hoverOnlyWhenSupported: true,
   },
   plugins: [require('tailwindcss-animate')],
-};
+} satisfies Config;
