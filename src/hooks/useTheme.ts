@@ -11,6 +11,7 @@ export function useTheme(): ThemeContextType {
   if (!context) {
     return {
       theme: defaultTheme,
+
       mode: 'system',
       resolvedMode: 'light',
       setMode: () => {},

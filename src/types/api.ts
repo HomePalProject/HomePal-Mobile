@@ -220,3 +220,56 @@ export interface PreferenceCategoryResponse {
 export interface AssignPreferencesRequest {
   preferenceIds: string[];
 }
+
+// --- Pantry DTOs ---
+
+export interface PantryItemResponse {
+  id: string;
+  pantryId: string;
+  name: string;
+  expireDate?: string | null;
+  quantity: number;
+  measuringUnitId: string;
+  measuringUnitName?: string | null;
+  measuringUnitSymbol?: string | null;
+  categoryId: string;
+  categoryName?: string | null;
+  categoryImagePath?: string | null;
+  createdAt: string;
+  updatedAt?: string | null;
+}
+
+export interface CreatePantryItemRequest {
+  name: string;
+  expireDate?: string | null;
+  quantity?: number;
+  measuringUnitId: string;
+  categoryId: string;
+}
+
+export interface UpdatePantryItemRequest {
+  name: string;
+  expireDate?: string | null;
+  quantity?: number;
+  measuringUnitId: string;
+  categoryId: string;
+}
+
+// --- Product Categories DTOs ---
+
+export interface ProductCategoryResponse {
+  id: string;
+  name: string;
+  description?: string | null;
+  imagePath?: string | null;
+  createdAt: string;
+}
+
+// --- Measuring Units DTOs ---
+
+export interface MeasuringUnitResponse {
+  id: string;
+  name: string;
+  symbol?: string | null;
+  createdAt: string;
+}
