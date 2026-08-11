@@ -35,7 +35,7 @@ export default function DashboardScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-surface-background" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-surface-background" edges={['left', 'right']}>
       {/* Top Header Navigation */}
       <DashboardHeader
         firstInitial={firstInitial}

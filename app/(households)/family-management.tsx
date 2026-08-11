@@ -8,8 +8,10 @@ import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { Pressable } from 'react-native';
 import { router, Href } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function FamilyManagementScreen() {
+  const insets = useSafeAreaInsets();
   const {
     members: detailedMembers,
     isAddFormOpen,
@@ -31,10 +33,10 @@ export default function FamilyManagementScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-surface-background" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-surface-background" edges={['bottom', 'left', 'right']}>
       <View
-        className="flex-row items-center justify-between border-b border-surface-divider bg-surface-surface px-spacing-16 shadow-sm"
-        style={{ height: 64 }}>
+        className="flex-row items-center justify-between border-b border-surface-divider bg-surface-surface px-spacing-16 pb-3 shadow-sm"
+        style={{ paddingTop: Math.max(insets.top, 16) + 12 }}>
         <View className="flex-row items-center gap-1">
           <Pressable
             onPress={() => router.back()}
@@ -70,8 +72,9 @@ export default function FamilyManagementScreen() {
       {/* ── FAB: Invite Member ── */}
       <Pressable
         onPress={onInviteMember}
-        className="absolute bottom-6 right-6 z-50 flex-row items-center gap-2 rounded-full bg-brand-primary pl-5 pr-6 active:bg-brand-primary-pressed"
+        className="absolute right-6 z-50 flex-row items-center gap-2 rounded-full bg-brand-primary pl-5 pr-6 active:bg-brand-primary-pressed"
         style={{
+          bottom: Math.max(insets.bottom + 24, 24),
           height: 56,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 4 },

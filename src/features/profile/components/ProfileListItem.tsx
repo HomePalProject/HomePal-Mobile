@@ -20,7 +20,8 @@ export function ProfileListItem({
   return (
     <Pressable
       onPress={onPress}
-      className={`flex-row items-center justify-between p-spacing-16 ${showDivider ? 'border-b border-surface-divider' : ''}`}>
+      className="flex-row items-center justify-between border-surface-divider p-spacing-16"
+      style={{ borderBottomWidth: showDivider ? 1 : 0 }}>
       <View className="flex-row items-center gap-spacing-16">
         <View className="h-6 w-6 items-center justify-center">
           <SvgIcon name={iconName} width={20} height={20} />

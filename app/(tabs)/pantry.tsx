@@ -8,7 +8,7 @@ import { TabHeader } from '@/src/components/navigation/TabHeader';
 
 export default function PantryScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-surface-background" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-surface-background" edges={['left', 'right']}>
       <TabHeader title="Smart Pantry" />
       <View className="flex-1 items-center justify-center px-6">
         <View className="flex-col items-center gap-4">

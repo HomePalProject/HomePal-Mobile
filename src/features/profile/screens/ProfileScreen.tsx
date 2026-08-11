@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, Image, Modal } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, Href } from 'expo-router';
 import Svg, { Circle, Defs, LinearGradient, RadialGradient, Stop } from 'react-native-svg';
 import * as Clipboard from 'expo-clipboard';
@@ -19,6 +19,7 @@ export default function ProfileScreen() {
   const [themeModalVisible, setThemeModalVisible] = useState(false);
   const dispatch = useAppDispatch();
   const { mode, setMode } = useTheme();
+  const insets = useSafeAreaInsets();
 
   const { fullName, email, profileImageUri, birthDate } = useAppSelector((state) => state.profile);
   const { showToast } = useToast();
@@ -56,7 +57,7 @@ export default function ProfileScreen() {
         }}
         className="flex-row items-center justify-between border-b border-surface-border py-4">
         <Text
-          className={`font-cairo text-base ${isSelected ? 'font-bold text-brand-primary' : 'text-text-primary'}`}>
+          className={`font-cairo text-base ${isSelected ? 'font-bold' : ''} text-text-primary ${isSelected ? 'text-brand-primary' : ''}`}>
           {label}
         </Text>
         {isSelected && <Icon as={Check} size={20} className="text-brand-primary" />}
@@ -65,8 +66,10 @@ export default function ProfileScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-surface-background">
-      <View className="h-16 flex-row items-center justify-between border-b border-surface-divider bg-surface-surface px-spacing-16 shadow-sm">
+    <SafeAreaView className="flex-1 bg-surface-background" edges={['left', 'right']}>
+      <View
+        className="flex-row items-center justify-between border-b border-surface-divider bg-surface-surface px-spacing-16 pb-3 shadow-sm"
+        style={{ paddingTop: Math.max(insets.top, 16) + 12 }}>
         <View className="flex-row items-center gap-2">
           <Pressable
             onPress={handleOpenDrawer}
@@ -347,7 +350,8 @@ export default function ProfileScreen() {
           className="flex-1 justify-end bg-black/50"
           onPress={() => setThemeModalVisible(false)}>
           <Pressable
-            className="w-full rounded-t-3xl border-t border-surface-border bg-surface-surface p-6 shadow-xl"
+            className="w-full rounded-t-3xl border-t border-surface-border bg-surface-surface px-6 pt-6 shadow-xl"
+            style={{ paddingBottom: insets.bottom + 24 }}
             onPress={(e) => e.stopPropagation()}>
             <View className="mb-6 items-center">
               <View className="mb-4 h-1.5 w-12 rounded-full bg-surface-border" />

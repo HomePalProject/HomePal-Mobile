@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, ScrollView, Pressable, Image, TextInput, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft, Mail, Send } from 'lucide-react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
@@ -114,10 +114,14 @@ export function InviteScreen({
   onCancelInvite,
   onRefresh,
 }: InviteScreenProps) {
+  const insets = useSafeAreaInsets();
+
   return (
-    <SafeAreaView className="flex-1 bg-surface-background" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-surface-background" edges={['bottom', 'left', 'right']}>
       {/* ── Header ── */}
-      <View className="h-16 flex-row items-center justify-between bg-surface-surface px-5 shadow-sm">
+      <View
+        className="flex-row items-center justify-between border-b border-surface-divider bg-surface-surface px-5 pb-3 shadow-sm"
+        style={{ paddingTop: Math.max(insets.top, 16) + 12 }}>
         {/* Back button */}
         <Pressable
           onPress={onBack}

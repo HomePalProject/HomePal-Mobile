@@ -3,10 +3,12 @@ import { Tabs } from 'expo-router';
 import { useColorScheme } from 'nativewind';
 import { Home, Package, UtensilsCrossed, ShoppingCart, User, Tag } from 'lucide-react-native';
 import { Icon } from '@/src/components/ui/icon';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TabLayout() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
+  const insets = useSafeAreaInsets();
 
   return (
     <Tabs
@@ -22,8 +24,8 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: isDark ? '#1a1d1c' : '#ffffff',
           borderTopColor: isDark ? '#363d3a' : '#e4e0da',
-          height: 74,
-          paddingBottom: 10,
+          height: 64 + insets.bottom,
+          paddingBottom: Math.max(insets.bottom, 10),
           paddingTop: 8,
         },
       }}>

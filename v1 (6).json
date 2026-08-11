@@ -977,702 +977,6 @@
         }
       }
     },
-    "/api/products": {
-      "get": {
-        "tags": ["CanonicalProducts"],
-        "parameters": [
-          {
-            "name": "Query",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "CategoryId",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "PageNumber",
-            "in": "query",
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": ["integer", "string"],
-              "format": "int32"
-            }
-          },
-          {
-            "name": "PageSize",
-            "in": "query",
-            "schema": {
-              "pattern": "^-?(?:0|[1-9]\\d*)$",
-              "type": ["integer", "string"],
-              "format": "int32"
-            }
-          },
-          {
-            "name": "Accept-Language",
-            "in": "header",
-            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfPaginatedListOfCanonicalProductResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfPaginatedListOfCanonicalProductResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfPaginatedListOfCanonicalProductResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": ["CanonicalProducts"],
-        "parameters": [
-          {
-            "name": "Accept-Language",
-            "in": "header",
-            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCanonicalProductRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCanonicalProductRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCanonicalProductRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "201": {
-            "description": "Created",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfCanonicalProductResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfCanonicalProductResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfCanonicalProductResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/products/search": {
-      "get": {
-        "tags": ["CanonicalProducts"],
-        "parameters": [
-          {
-            "name": "query",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "categoryId",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "Accept-Language",
-            "in": "header",
-            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfPaginatedListOfCanonicalProductResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfPaginatedListOfCanonicalProductResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfPaginatedListOfCanonicalProductResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/products/{canonicalProductId}": {
-      "get": {
-        "tags": ["CanonicalProducts"],
-        "parameters": [
-          {
-            "name": "canonicalProductId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "Accept-Language",
-            "in": "header",
-            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfCanonicalProductResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfCanonicalProductResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfCanonicalProductResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": ["CanonicalProducts"],
-        "parameters": [
-          {
-            "name": "canonicalProductId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "Accept-Language",
-            "in": "header",
-            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateCanonicalProductRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateCanonicalProductRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateCanonicalProductRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfCanonicalProductResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfCanonicalProductResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfCanonicalProductResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": ["CanonicalProducts"],
-        "parameters": [
-          {
-            "name": "canonicalProductId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "Accept-Language",
-            "in": "header",
-            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/products/{canonicalProductId}/image": {
-      "post": {
-        "tags": ["CanonicalProducts"],
-        "parameters": [
-          {
-            "name": "canonicalProductId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "Accept-Language",
-            "in": "header",
-            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "Image": {
-                    "$ref": "#/components/schemas/IFormFile"
-                  }
-                }
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfCanonicalProductResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfCanonicalProductResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfCanonicalProductResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": ["CanonicalProducts"],
-        "parameters": [
-          {
-            "name": "canonicalProductId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "Accept-Language",
-            "in": "header",
-            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfCanonicalProductResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfCanonicalProductResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfCanonicalProductResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not Found",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiResponseOfObject"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/households/invitations": {
       "post": {
         "tags": ["HouseholdInvitations"],
@@ -3602,15 +2906,14 @@
             }
           },
           {
-            "name": "CanonicalProductId",
+            "name": "IsActiveNow",
             "in": "query",
             "schema": {
-              "type": "string",
-              "format": "uuid"
+              "type": "boolean"
             }
           },
           {
-            "name": "IsActiveNow",
+            "name": "OnlyVerified",
             "in": "query",
             "schema": {
               "type": "boolean"
@@ -3783,14 +3086,6 @@
           },
           {
             "name": "supermarketId",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "canonicalProductId",
             "in": "query",
             "schema": {
               "type": "string",
@@ -4262,6 +3557,776 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ApiResponseOfOfferResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/pantry/items": {
+      "get": {
+        "tags": ["Pantry"],
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfIReadOnlyListOfPantryItemResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfIReadOnlyListOfPantryItemResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfIReadOnlyListOfPantryItemResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Pantry"],
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePantryItemRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePantryItemRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePantryItemRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfPantryItemResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfPantryItemResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfPantryItemResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Pantry"],
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEntirePantryItemsRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEntirePantryItemsRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEntirePantryItemsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfIReadOnlyListOfPantryItemResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfIReadOnlyListOfPantryItemResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfIReadOnlyListOfPantryItemResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/pantry/items/{id}": {
+      "get": {
+        "tags": ["Pantry"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfPantryItemResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfPantryItemResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfPantryItemResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Pantry"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePantryItemRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePantryItemRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePantryItemRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfPantryItemResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfPantryItemResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfPantryItemResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Pantry"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/pantry/scan": {
+      "post": {
+        "tags": ["Pantry"],
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Image": {
+                    "$ref": "#/components/schemas/IFormFile"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfPantryScanResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfPantryScanResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfPantryScanResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/pantry/bulk-add": {
+      "post": {
+        "tags": ["Pantry"],
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkAddPantryItemsRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkAddPantryItemsRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BulkAddPantryItemsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfIReadOnlyListOfPantryItemResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfIReadOnlyListOfPantryItemResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfIReadOnlyListOfPantryItemResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
                 }
               }
             }
@@ -5907,6 +5972,673 @@
         }
       }
     },
+    "/api/offers/scrape/status": {
+      "get": {
+        "tags": ["ProductScraper"],
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfScraperJobStatusDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfScraperJobStatusDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfScraperJobStatusDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/offers/scrape/facebook-page": {
+      "post": {
+        "tags": ["ProductScraper"],
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScrapeFacebookPageRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScrapeFacebookPageRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScrapeFacebookPageRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfOfferScraperResultDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfOfferScraperResultDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfOfferScraperResultDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/offers/scrape/image-file": {
+      "post": {
+        "tags": ["ProductScraper"],
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "SupermarketId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "ImageFile": {
+                    "$ref": "#/components/schemas/IFormFile"
+                  },
+                  "OcrText": {
+                    "type": "string"
+                  },
+                  "Caption": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfOfferScraperResultDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfOfferScraperResultDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfOfferScraperResultDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shopping-list": {
+      "get": {
+        "tags": ["ShoppingList"],
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfListOfShoppingListItemResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfListOfShoppingListItemResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfListOfShoppingListItemResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["ShoppingList"],
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateShoppingListItemRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateShoppingListItemRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateShoppingListItemRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfShoppingListItemResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfShoppingListItemResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfShoppingListItemResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shopping-list/from-offer/{offerId}": {
+      "post": {
+        "tags": ["ShoppingList"],
+        "parameters": [
+          {
+            "name": "offerId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddFromOfferRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddFromOfferRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddFromOfferRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfShoppingListItemResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfShoppingListItemResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfShoppingListItemResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shopping-list/{id}": {
+      "put": {
+        "tags": ["ShoppingList"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateShoppingListItemRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateShoppingListItemRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateShoppingListItemRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfShoppingListItemResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfShoppingListItemResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfShoppingListItemResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["ShoppingList"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shopping-list/{id}/toggle": {
+      "patch": {
+        "tags": ["ShoppingList"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfShoppingListItemResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfShoppingListItemResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfShoppingListItemResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/shopping-list/purchased": {
+      "delete": {
+        "tags": ["ShoppingList"],
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/supermarkets": {
       "get": {
         "tags": ["Supermarkets"],
@@ -6586,10 +7318,668 @@
           }
         }
       }
+    },
+    "/api/users": {
+      "get": {
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "Role",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "SearchTerm",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": ["integer", "string"],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "type": ["integer", "string"],
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfPaginatedListOfUserResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfPaginatedListOfUserResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfPaginatedListOfUserResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfUserResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfUserResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfUserResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/admins": {
+      "post": {
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAdminRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAdminRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAdminRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfUserResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfUserResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfUserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "499": {
+            "description": "Client Closed Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/admins/{id}": {
+      "put": {
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAdminRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAdminRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAdminRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfUserResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfUserResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfUserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/{id}/deactivate": {
+      "put": {
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "Accept-Language",
+            "in": "header",
+            "description": "Preferred response language (e.g. 'ar-EG', 'ar', 'en-US', 'en')",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseOfObject"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AddFromOfferRequest": {
+        "required": ["offerId"],
+        "type": "object",
+        "properties": {
+          "offerId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "customQuantity": {
+            "minimum": 0.0001,
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": ["null", "number", "string"],
+            "format": "double"
+          },
+          "portionCount": {
+            "maximum": 2147483647,
+            "minimum": 1,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": ["null", "integer", "string"],
+            "format": "int32"
+          },
+          "notes": {
+            "type": ["null", "string"]
+          }
+        }
+      },
       "AddOfflineMemberRequest": {
         "required": ["fullName", "gender"],
         "type": "object",
@@ -6627,36 +8017,6 @@
           "categoryId": {
             "type": "string",
             "format": "uuid"
-          }
-        }
-      },
-      "ApiResponseOfCanonicalProductResponse": {
-        "type": "object",
-        "properties": {
-          "success": {
-            "type": "boolean"
-          },
-          "status": {
-            "type": "string"
-          },
-          "message": {
-            "type": "string"
-          },
-          "data": {
-            "oneOf": [
-              {
-                "type": "null"
-              },
-              {
-                "$ref": "#/components/schemas/CanonicalProductResponse"
-              }
-            ]
-          },
-          "errors": {
-            "type": ["null", "array"],
-            "items": {
-              "$ref": "#/components/schemas/Error"
-            }
           }
         }
       },
@@ -6906,6 +8266,58 @@
           }
         }
       },
+      "ApiResponseOfIReadOnlyListOfPantryItemResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": ["null", "array"],
+            "items": {
+              "$ref": "#/components/schemas/PantryItemResponse"
+            }
+          },
+          "errors": {
+            "type": ["null", "array"],
+            "items": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "ApiResponseOfListOfShoppingListItemResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "type": ["null", "array"],
+            "items": {
+              "$ref": "#/components/schemas/ShoppingListItemResponse"
+            }
+          },
+          "errors": {
+            "type": ["null", "array"],
+            "items": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
       "ApiResponseOfMeasuringUnitResponse": {
         "type": "object",
         "properties": {
@@ -6987,7 +8399,7 @@
           }
         }
       },
-      "ApiResponseOfPaginatedListOfCanonicalProductResponse": {
+      "ApiResponseOfOfferScraperResultDto": {
         "type": "object",
         "properties": {
           "success": {
@@ -7005,7 +8417,7 @@
                 "type": "null"
               },
               {
-                "$ref": "#/components/schemas/PaginatedListOfCanonicalProductResponse"
+                "$ref": "#/components/schemas/OfferScraperResultDto"
               }
             ]
           },
@@ -7066,6 +8478,96 @@
               },
               {
                 "$ref": "#/components/schemas/PaginatedListOfSupermarketResponse"
+              }
+            ]
+          },
+          "errors": {
+            "type": ["null", "array"],
+            "items": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "ApiResponseOfPaginatedListOfUserResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PaginatedListOfUserResponse"
+              }
+            ]
+          },
+          "errors": {
+            "type": ["null", "array"],
+            "items": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "ApiResponseOfPantryItemResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PantryItemResponse"
+              }
+            ]
+          },
+          "errors": {
+            "type": ["null", "array"],
+            "items": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "ApiResponseOfPantryScanResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/PantryScanResponse"
               }
             ]
           },
@@ -7167,6 +8669,66 @@
           }
         }
       },
+      "ApiResponseOfScraperJobStatusDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ScraperJobStatusDto"
+              }
+            ]
+          },
+          "errors": {
+            "type": ["null", "array"],
+            "items": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "ApiResponseOfShoppingListItemResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/ShoppingListItemResponse"
+              }
+            ]
+          },
+          "errors": {
+            "type": ["null", "array"],
+            "items": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
       "ApiResponseOfSupermarketResponse": {
         "type": "object",
         "properties": {
@@ -7197,6 +8759,36 @@
           }
         }
       },
+      "ApiResponseOfUserResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "status": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/UserResponse"
+              }
+            ]
+          },
+          "errors": {
+            "type": ["null", "array"],
+            "items": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
       "AssignPreferencesRequest": {
         "required": ["preferenceIds"],
         "type": "object",
@@ -7210,37 +8802,15 @@
           }
         }
       },
-      "CanonicalProductResponse": {
+      "BulkAddPantryItemsRequest": {
+        "required": ["items"],
         "type": "object",
         "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": ["null", "string"]
-          },
-          "categoryId": {
-            "type": ["null", "string"],
-            "format": "uuid"
-          },
-          "categoryName": {
-            "type": ["null", "string"]
-          },
-          "croppedImagePath": {
-            "type": ["null", "string"]
-          },
-          "offersCount": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": ["integer", "string"],
-            "format": "int32"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreatePantryItemRequest"
+            }
           }
         }
       },
@@ -7275,27 +8845,37 @@
           }
         }
       },
-      "CreateCanonicalProductRequest": {
-        "required": ["name"],
+      "CreateAdminRequest": {
+        "required": ["username", "email", "password", "fullName"],
         "type": "object",
         "properties": {
-          "name": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/LocalizedItem"
-            }
+          "username": {
+            "type": "string"
           },
-          "description": {
-            "type": ["null", "array"],
-            "items": {
-              "$ref": "#/components/schemas/LocalizedItem"
-            }
+          "email": {
+            "type": "string"
           },
-          "categoryId": {
-            "type": ["null", "string"],
-            "format": "uuid"
+          "password": {
+            "minLength": 6,
+            "type": "string"
           },
-          "croppedImagePath": {
+          "fullName": {
+            "type": "string"
+          },
+          "gender": {
+            "$ref": "#/components/schemas/Gender"
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "governorate": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "phoneNumber": {
             "type": ["null", "string"]
           }
         }
@@ -7401,8 +8981,37 @@
             "type": "string",
             "format": "uuid"
           },
-          "canonicalProductId": {
+          "isVerified": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CreatePantryItemRequest": {
+        "required": ["name", "measuringUnitId", "categoryId"],
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "expireDate": {
             "type": ["null", "string"],
+            "format": "date-time"
+          },
+          "quantity": {
+            "maximum": 999999.99,
+            "minimum": 0.01,
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": ["number", "string"],
+            "format": "double"
+          },
+          "measuringUnitId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "categoryId": {
+            "type": "string",
             "format": "uuid"
           }
         }
@@ -7442,6 +9051,45 @@
             }
           },
           "imagePath": {
+            "type": ["null", "string"]
+          }
+        }
+      },
+      "CreateShoppingListItemRequest": {
+        "required": ["name"],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "quantity": {
+            "minimum": 0.0001,
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": ["number", "string"],
+            "format": "double"
+          },
+          "portionCount": {
+            "maximum": 2147483647,
+            "minimum": 1,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": ["integer", "string"],
+            "format": "int32"
+          },
+          "price": {
+            "minimum": 0,
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": ["null", "number", "string"],
+            "format": "double"
+          },
+          "unitId": {
+            "type": ["null", "string"],
+            "format": "uuid"
+          },
+          "categoryId": {
+            "type": ["null", "string"],
+            "format": "uuid"
+          },
+          "notes": {
             "type": ["null", "string"]
           }
         }
@@ -7740,12 +9388,8 @@
           "supermarketWebsiteUrl": {
             "type": ["null", "string"]
           },
-          "canonicalProductId": {
-            "type": ["null", "string"],
-            "format": "uuid"
-          },
-          "canonicalProductName": {
-            "type": ["null", "string"]
+          "isVerified": {
+            "type": "boolean"
           },
           "createdAt": {
             "type": "string",
@@ -7753,36 +9397,24 @@
           }
         }
       },
-      "PaginatedListOfCanonicalProductResponse": {
-        "required": ["items", "pageNumber"],
+      "OfferScraperResultDto": {
         "type": "object",
         "properties": {
-          "items": {
+          "createdOffers": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/CanonicalProductResponse"
+              "$ref": "#/components/schemas/OfferResponse"
             }
           },
-          "pageNumber": {
+          "totalScrapedImages": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": ["integer", "string"],
             "format": "int32"
           },
-          "totalPages": {
+          "totalExtractedOffers": {
             "pattern": "^-?(?:0|[1-9]\\d*)$",
             "type": ["integer", "string"],
             "format": "int32"
-          },
-          "totalCount": {
-            "pattern": "^-?(?:0|[1-9]\\d*)$",
-            "type": ["integer", "string"],
-            "format": "int32"
-          },
-          "hasPreviousPage": {
-            "type": "boolean"
-          },
-          "hasNextPage": {
-            "type": "boolean"
           }
         }
       },
@@ -7849,6 +9481,134 @@
           },
           "hasNextPage": {
             "type": "boolean"
+          }
+        }
+      },
+      "PaginatedListOfUserResponse": {
+        "required": ["items", "pageNumber"],
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserResponse"
+            }
+          },
+          "pageNumber": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": ["integer", "string"],
+            "format": "int32"
+          },
+          "totalPages": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": ["integer", "string"],
+            "format": "int32"
+          },
+          "totalCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": ["integer", "string"],
+            "format": "int32"
+          },
+          "hasPreviousPage": {
+            "type": "boolean"
+          },
+          "hasNextPage": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PantryItemResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "pantryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "expireDate": {
+            "type": ["null", "string"],
+            "format": "date-time"
+          },
+          "quantity": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": ["number", "string"],
+            "format": "double"
+          },
+          "measuringUnitId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "measuringUnitName": {
+            "type": ["null", "string"]
+          },
+          "measuringUnitSymbol": {
+            "type": ["null", "string"]
+          },
+          "categoryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "categoryName": {
+            "type": ["null", "string"]
+          },
+          "categoryImagePath": {
+            "type": ["null", "string"]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": ["null", "string"],
+            "format": "date-time"
+          }
+        }
+      },
+      "PantryScanItemDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "quantity": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": ["number", "string"],
+            "format": "double"
+          },
+          "measuringUnitId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "measuringUnitName": {
+            "type": ["null", "string"]
+          },
+          "categoryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "categoryName": {
+            "type": ["null", "string"]
+          },
+          "suggestedExpireDate": {
+            "type": ["null", "string"],
+            "format": "date-time"
+          }
+        }
+      },
+      "PantryScanResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PantryScanItemDto"
+            }
           }
         }
       },
@@ -8051,6 +9811,66 @@
           }
         }
       },
+      "ScrapeFacebookPageRequest": {
+        "required": ["supermarketId", "pageUrl"],
+        "type": "object",
+        "properties": {
+          "supermarketId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "pageUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "daysBack": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": ["integer", "string"],
+            "format": "int32"
+          },
+          "resultsLimit": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": ["integer", "string"],
+            "format": "int32"
+          }
+        }
+      },
+      "ScraperJobStatusDto": {
+        "type": "object",
+        "properties": {
+          "isRunning": {
+            "type": "boolean"
+          },
+          "supermarketId": {
+            "type": ["null", "string"],
+            "format": "uuid"
+          },
+          "totalScrapedImages": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": ["integer", "string"],
+            "format": "int32"
+          },
+          "totalExtractedOffers": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": ["integer", "string"],
+            "format": "int32"
+          },
+          "startedAt": {
+            "type": ["null", "string"],
+            "format": "date-time"
+          },
+          "completedAt": {
+            "type": ["null", "string"],
+            "format": "date-time"
+          },
+          "statusMessage": {
+            "type": "string"
+          },
+          "errorMessage": {
+            "type": ["null", "string"]
+          }
+        }
+      },
       "SendInvitationRequest": {
         "required": ["invitedUserNameOrEmail"],
         "type": "object",
@@ -8059,6 +9879,86 @@
             "maxLength": 100,
             "minLength": 3,
             "type": "string"
+          }
+        }
+      },
+      "ShoppingListItemResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "shoppingListId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "quantity": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": ["number", "string"],
+            "format": "double"
+          },
+          "portionCount": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": ["integer", "string"],
+            "format": "int32"
+          },
+          "price": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": ["null", "number", "string"],
+            "format": "double"
+          },
+          "totalPrice": {
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": ["null", "number", "string"],
+            "format": "double"
+          },
+          "unitId": {
+            "type": ["null", "string"],
+            "format": "uuid"
+          },
+          "unitName": {
+            "type": ["null", "string"]
+          },
+          "unitSymbol": {
+            "type": ["null", "string"]
+          },
+          "categoryId": {
+            "type": ["null", "string"],
+            "format": "uuid"
+          },
+          "categoryName": {
+            "type": ["null", "string"]
+          },
+          "offerId": {
+            "type": ["null", "string"],
+            "format": "uuid"
+          },
+          "offerImagePath": {
+            "type": ["null", "string"]
+          },
+          "supermarketName": {
+            "type": ["null", "string"]
+          },
+          "supermarketLogoPath": {
+            "type": ["null", "string"]
+          },
+          "isPurchased": {
+            "type": "boolean"
+          },
+          "notes": {
+            "type": ["null", "string"]
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": ["null", "string"],
+            "format": "date-time"
           }
         }
       },
@@ -8087,28 +9987,43 @@
           }
         }
       },
-      "UpdateCanonicalProductRequest": {
-        "required": ["name"],
+      "UpdateAdminRequest": {
+        "required": ["email", "fullName"],
         "type": "object",
         "properties": {
-          "name": {
+          "email": {
+            "type": "string"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "gender": {
+            "$ref": "#/components/schemas/Gender"
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "governorate": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": ["null", "string"]
+          }
+        }
+      },
+      "UpdateEntirePantryItemsRequest": {
+        "required": ["items"],
+        "type": "object",
+        "properties": {
+          "items": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/LocalizedItem"
+              "$ref": "#/components/schemas/CreatePantryItemRequest"
             }
-          },
-          "description": {
-            "type": ["null", "array"],
-            "items": {
-              "$ref": "#/components/schemas/LocalizedItem"
-            }
-          },
-          "categoryId": {
-            "type": ["null", "string"],
-            "format": "uuid"
-          },
-          "croppedImagePath": {
-            "type": ["null", "string"]
           }
         }
       },
@@ -8234,8 +10149,37 @@
             "type": "string",
             "format": "uuid"
           },
-          "canonicalProductId": {
+          "isVerified": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UpdatePantryItemRequest": {
+        "required": ["name", "measuringUnitId", "categoryId"],
+        "type": "object",
+        "properties": {
+          "name": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "expireDate": {
             "type": ["null", "string"],
+            "format": "date-time"
+          },
+          "quantity": {
+            "maximum": 999999.99,
+            "minimum": 0.01,
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": ["number", "string"],
+            "format": "double"
+          },
+          "measuringUnitId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "categoryId": {
+            "type": "string",
             "format": "uuid"
           }
         }
@@ -8336,6 +10280,48 @@
           }
         }
       },
+      "UpdateShoppingListItemRequest": {
+        "required": ["name"],
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "quantity": {
+            "minimum": 0.0001,
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "type": ["number", "string"],
+            "format": "double"
+          },
+          "portionCount": {
+            "maximum": 2147483647,
+            "minimum": 1,
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": ["integer", "string"],
+            "format": "int32"
+          },
+          "price": {
+            "minimum": 0,
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$",
+            "type": ["null", "number", "string"],
+            "format": "double"
+          },
+          "unitId": {
+            "type": ["null", "string"],
+            "format": "uuid"
+          },
+          "categoryId": {
+            "type": ["null", "string"],
+            "format": "uuid"
+          },
+          "isPurchased": {
+            "type": "boolean"
+          },
+          "notes": {
+            "type": ["null", "string"]
+          }
+        }
+      },
       "UpdateSupermarketRequest": {
         "required": ["name"],
         "type": "object",
@@ -8354,6 +10340,66 @@
           },
           "websiteUrl": {
             "type": ["null", "string"]
+          }
+        }
+      },
+      "UserResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "gender": {
+            "$ref": "#/components/schemas/Gender"
+          },
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": ["null", "string"]
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date"
+          },
+          "governorate": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "isProfileComplete": {
+            "type": "boolean"
+          },
+          "profileImageUrl": {
+            "type": ["null", "string"]
+          },
+          "emailConfirmed": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastLoginAt": {
+            "type": ["null", "string"],
+            "format": "date-time"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       }
@@ -8377,9 +10423,6 @@
       "name": "Auth"
     },
     {
-      "name": "CanonicalProducts"
-    },
-    {
       "name": "HouseholdInvitations"
     },
     {
@@ -8398,6 +10441,9 @@
       "name": "Offers"
     },
     {
+      "name": "Pantry"
+    },
+    {
       "name": "PreferenceCategories"
     },
     {
@@ -8407,7 +10453,16 @@
       "name": "ProductCategories"
     },
     {
+      "name": "ProductScraper"
+    },
+    {
+      "name": "ShoppingList"
+    },
+    {
       "name": "Supermarkets"
+    },
+    {
+      "name": "Users"
     }
   ]
 }

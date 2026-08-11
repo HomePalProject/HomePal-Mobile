@@ -697,7 +697,7 @@ function MemberCard({
       </View>
 
       {/* ── Row 3: Action Buttons (right-aligned) ── */}
-      <View className="flex-row items-center justify-end gap-2">
+      <View className="mt-1 flex-row flex-wrap items-center justify-end gap-2">
         {/* Preferences — outline */}
         <Pressable
           onPress={() => onPreferences(member.id)}

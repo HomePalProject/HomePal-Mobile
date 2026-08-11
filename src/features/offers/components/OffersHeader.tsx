@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity } from 'react-native';
 import { Text } from '@/src/components/ui/text';
 import { Search, Tag } from 'lucide-react-native';
+import { Icon } from '@/src/components/ui/icon';
 import { useColorScheme } from 'nativewind';
 import { lightColors, darkColors } from '@/src/theme/colors';
 
@@ -24,7 +25,7 @@ export const OffersHeader: React.FC<OffersHeaderProps> = ({ onSearch, initialQue
     <View className="px-4 py-6" style={{ gap: 20 }}>
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <Tag size={20} className="text-brand-primary" />
+          <Icon as={Tag} size={20} className="text-brand-primary" />
           <Text className="font-cairo text-[20px] font-bold text-brand-primary">
             Supermarket Offers & Deals
           </Text>
@@ -44,7 +45,7 @@ export const OffersHeader: React.FC<OffersHeaderProps> = ({ onSearch, initialQue
         <TouchableOpacity
           onPress={handleSubmit}
           className="ml-2 h-10 w-10 items-center justify-center rounded-full bg-surface-surface">
-          <Search size={20} className="text-brand-primary" />
+          <Icon as={Search} size={20} className="text-brand-primary" />
         </TouchableOpacity>
       </View>
     </View>
