@@ -15,4 +15,8 @@ export * from './CategorySelectorSheet';
 export * from './CategoryRow';
 export * from './UnitSelectorSheet';
 export * from './UnitRow';
+export * from './ExpirationDatePickerModal';
+export * from './ExpirationDateField';
+export * from './AddEditPantryItemHeader';
+export * from './AddEditPantryItemBottomBar';
 export * from './AISuggestionCard';

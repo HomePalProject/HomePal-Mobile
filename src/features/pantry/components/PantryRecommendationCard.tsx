@@ -13,7 +13,7 @@ export function PantryRecommendationCard({
   description = 'You have Fresh Cilantro expiring soon. Consider making a quick salsa or garnish for your next meal.',
 }: PantryRecommendationCardProps) {
   return (
-    <View className="bg-surface-surfaceVariant mx-spacing-16 mb-spacing-16 flex-row items-center gap-spacing-16 rounded-radius-large border border-surface-border p-spacing-16 shadow-sm">
+    <View className="mx-spacing-16 mb-spacing-16 flex-row items-center gap-spacing-16 rounded-radius-large border border-surface-border bg-surface-surface p-spacing-16 shadow-sm">
       {/* Lightbulb Icon Circle Container */}
       <View className="h-12 w-12 items-center justify-center rounded-radius-full bg-brand-amber-300">
         <Icon as={Lightbulb} size={22} className="text-text-primary" />

@@ -20,7 +20,7 @@ export function AISuggestionCard({ suggestion, onAddToList }: AISuggestionCardPr
       {/* Header row */}
       <View className="mb-spacing-8 flex-row items-center gap-spacing-8">
         <View className="bg-brand-secondary h-7 w-7 items-center justify-center rounded-radius-full">
-          <Icon as={Lightbulb} size={14} className="text-brand-onSecondary" />
+          <Icon as={Lightbulb} size={24} className="text-brand-accent" />
         </View>
         <Text className="text-body text-brand-secondary font-cairo font-bold">
           {hasAction ? 'AI Suggestion' : 'Auto-Categorize'}

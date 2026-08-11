@@ -98,7 +98,7 @@ export function PantryItemCard({ item, onPress }: PantryItemCardProps) {
               </Text>
             </View>
           ) : (
-            <View className="py-spacing-2 flex-row items-center gap-spacing-4 self-start rounded-radius-full bg-brand-primary-container px-spacing-8">
+            <View className="py-spacing-2 flex-row items-center gap-spacing-4 self-start rounded-radius-full bg-brand-primary-container p-2 px-spacing-8">
               <Icon as={Check} size={12} className="text-brand-primary" />
               <Text className="text-caption font-cairo font-bold text-brand-primary">
                 {status.label}

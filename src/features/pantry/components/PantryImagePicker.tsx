@@ -19,23 +19,23 @@ export function PantryImagePicker({
       {/* Image Container */}
       <Pressable
         onPress={onPickerPress}
-        className="relative"
+        className="relative w-full"
         accessibilityRole="button"
         accessibilityLabel="Pick item image">
         {imageUri ? (
           /* Image with floating edit badge */
-          <View className="bg-surface-surfaceVariant h-32 w-32 overflow-hidden rounded-radius-large border border-surface-border">
+          <View className="bg-surface-surfaceVariant h-32 w-full overflow-hidden rounded-radius-large border border-surface-border">
             <Image source={{ uri: imageUri }} className="h-full w-full" resizeMode="cover" />
             {/* Floating Pencil Edit Badge */}
-            <View className="absolute bottom-2 right-2 h-8 w-8 items-center justify-center rounded-radius-full border border-surface-border bg-surface-surface shadow-sm">
+            {/* <View className="absolute bottom-2 right-2 h-8 w-8 items-center justify-center rounded-radius-full border border-surface-border bg-surface-surface shadow-sm">
               <Icon as={Pencil} size={14} className="text-text-primary" />
-            </View>
+            </View> */}
           </View>
         ) : (
           /* Dashed Placeholder Container */
           <View
             className="py-spacing-20 h-32 w-full items-center justify-center rounded-radius-large bg-surface-surface px-spacing-24"
-            style={{ borderWidth: 2, borderStyle: 'dashed', borderColor: '#E4E0DA' }}>
+            style={{ borderWidth: 2, borderStyle: 'dashed', borderColor: '#CBD1D8' }}>
             <Icon as={ImageIcon} size={32} className="mb-spacing-8 text-text-disabled" />
             <Text className="text-caption text-center font-cairo text-text-secondary">
               No image added
@@ -47,7 +47,7 @@ export function PantryImagePicker({
       {/* Scan Items Button */}
       <Pressable
         onPress={onScanPress}
-        className="px-spacing-20 py-spacing-10 flex-row items-center gap-spacing-8 rounded-radius-full border border-surface-border bg-surface-surface shadow-sm active:opacity-70"
+        className="flex-row items-center gap-spacing-8 rounded-radius-full border border-surface-border bg-surface-surface px-spacing-24 py-spacing-16 shadow-sm active:opacity-70"
         accessibilityRole="button"
         accessibilityLabel="Scan Items">
         <Icon as={Camera} size={16} className="text-text-primary" />

@@ -1,7 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
-  Text,
   TextInput,
   ScrollView,
   Pressable,
@@ -9,43 +8,44 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { ArrowLeft, Box, Ruler, Calendar, Trash2, Plus } from 'lucide-react-native';
+import { Box, Ruler, Trash2 } from 'lucide-react-native';
 import { getCategoryIconConfig } from '../components/CategorySelectorSheet';
 import { Icon } from '@/src/components/ui/icon';
 import { usePantry } from '../hooks/usePantry';
+import { env } from '@/src/config/env';
 import {
   PantryImagePicker,
   QuantityStepper,
   FormDropdown,
   CategorySelectorSheet,
   UnitSelectorSheet,
+  ExpirationDatePickerModal,
+  ExpirationDateField,
+  AddEditPantryItemHeader,
+  AddEditPantryItemBottomBar,
   AISuggestionCard,
 } from '../components';
 import { ProductCategoryResponse, MeasuringUnitResponse } from '@/src/types/api';
 
-// ─── Form State ───────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-interface FormState {
-  name: string;
-  quantity: number;
-  expireDate: string;
-  imageUri: string | null;
-  selectedCategory: ProductCategoryResponse | null;
-  selectedUnit: MeasuringUnitResponse | null;
-}
-
-const INITIAL_FORM: FormState = {
-  name: '',
-  quantity: 1,
-  expireDate: '',
-  imageUri: null,
-  selectedCategory: null,
-  selectedUnit: null,
+const resolveImageUrl = (path?: string | null): string | null => {
+  if (!path) return null;
+  if (
+    path.startsWith('http://') ||
+    path.startsWith('https://') ||
+    path.startsWith('file://') ||
+    path.startsWith('data:')
+  ) {
+    return path;
+  }
+  const baseUrl = env.API_BASE_URL.endsWith('/') ? env.API_BASE_URL : `${env.API_BASE_URL}/`;
+  const relativePath = path.startsWith('/') ? path.substring(1) : path;
+  return `${baseUrl}${relativePath}`;
 };
-
-// ─── Form Field Label ─────────────────────────────────────────────────────────
 
 interface FieldLabelProps {
   label: string;
@@ -61,53 +61,65 @@ function FieldLabel({ label, required }: FieldLabelProps) {
   );
 }
 
-// ─── Screen ───────────────────────────────────────────────────────────────────
+// Custom wrapper to keep standard Label layout
+import { Text } from 'react-native';
+
+// ─── Screen Component ──────────────────────────────────────────────────────────
 
 export default function AddEditPantryItemScreen() {
   const router = useRouter();
   const { itemId } = useLocalSearchParams<{ itemId?: string }>();
   const isEditMode = Boolean(itemId);
 
-  const { categories, measuringUnits, isLoading, addItem, editItem, removeItem } = usePantry();
+  const { items, categories, measuringUnits, isLoading, addItem, editItem, removeItem } =
+    usePantry();
 
-  const [form, setForm] = useState<FormState>(INITIAL_FORM);
+  const currentItem = items.find((i) => i.id === itemId);
+
+  // ─── States ─────────────────────────────────────────────────────────────────
+  const [name, setName] = useState('');
+  const [quantity, setQuantity] = useState(1);
+  const [expireDate, setExpireDate] = useState(''); // Stores YYYY-MM-DD
+  const [selectedCategory, setSelectedCategory] = useState<ProductCategoryResponse | null>(null);
+  const [selectedUnit, setSelectedUnit] = useState<MeasuringUnitResponse | null>(null);
+
   const [isCategorySheetOpen, setIsCategorySheetOpen] = useState(false);
   const [isUnitSheetOpen, setIsUnitSheetOpen] = useState(false);
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
-  // ── Derived ────────────────────────────────────────────────────────────────
+  // Populate Edit Mode Details
+  useEffect(() => {
+    if (isEditMode && currentItem) {
+      setName(currentItem.name);
+      setQuantity(currentItem.quantity);
+      if (currentItem.expireDate) {
+        setExpireDate(currentItem.expireDate.split('T')[0]);
+      }
+
+      const matchedCategory = categories.find((c) => c.id === currentItem.categoryId);
+      if (matchedCategory) setSelectedCategory(matchedCategory);
+
+      const matchedUnit = measuringUnits.find((u) => u.id === currentItem.measuringUnitId);
+      if (matchedUnit) setSelectedUnit(matchedUnit);
+    }
+  }, [isEditMode, currentItem, categories, measuringUnits]);
+
+  const imageUri = selectedCategory ? resolveImageUrl(selectedCategory.imagePath) : null;
+
   const isFormValid =
-    form.name.trim().length > 0 && form.selectedCategory !== null && form.selectedUnit !== null;
+    name.trim().length > 0 && quantity > 0 && selectedCategory !== null && selectedUnit !== null;
 
-  // ── Handlers ───────────────────────────────────────────────────────────────
-  const updateField = useCallback(<K extends keyof FormState>(key: K, value: FormState[K]) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
-  }, []);
-
-  const handleImagePickerPress = () => {
-    Alert.alert('Pick Image', 'Image picker will be integrated in a future update.');
-  };
-
-  const handleScanPress = () => {
-    Alert.alert('Scan Items', 'AI scanner will be integrated in a future update.');
-  };
-
-  const handleCategorySelect = (category: ProductCategoryResponse) => {
-    updateField('selectedCategory', category);
-  };
-
-  const handleUnitSelect = (unit: MeasuringUnitResponse) => {
-    updateField('selectedUnit', unit);
-  };
+  // ─── Handlers ──────────────────────────────────────────────────────────────
 
   const handleSubmit = async () => {
-    if (!isFormValid || !form.selectedCategory || !form.selectedUnit) return;
+    if (!isFormValid || !selectedCategory || !selectedUnit || isLoading) return;
 
     const payload = {
-      name: form.name.trim(),
-      quantity: form.quantity,
-      measuringUnitId: form.selectedUnit.id,
-      categoryId: form.selectedCategory.id,
-      expireDate: form.expireDate.trim() || null,
+      name: name.trim(),
+      quantity,
+      measuringUnitId: selectedUnit.id,
+      categoryId: selectedCategory.id,
+      expireDate: expireDate ? new Date(expireDate).toISOString() : null,
     };
 
     try {
@@ -141,60 +153,40 @@ export default function AddEditPantryItemScreen() {
     ]);
   };
 
-  // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <SafeAreaView className="flex-1 bg-surface-background">
+    <SafeAreaView className="flex-1 bg-surface-surface">
+      <StatusBar style="dark" />
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={0}>
-        {/* ── Header ─────────────────────────────────────────────────── */}
-        <View className="py-spacing-12 flex-row items-center justify-between border-b border-surface-border bg-surface-surface px-spacing-16">
-          <Pressable
-            onPress={() => router.back()}
-            className="bg-surface-surfaceVariant h-10 w-10 items-center justify-center rounded-radius-full active:opacity-70"
-            accessibilityRole="button"
-            accessibilityLabel="Go back">
-            <Icon as={ArrowLeft} size={20} className="text-text-primary" />
-          </Pressable>
+        {/* Header */}
+        <AddEditPantryItemHeader
+          isEditMode={isEditMode}
+          isFormValid={isFormValid}
+          isLoading={isLoading}
+          onBackPress={() => router.back()}
+          onSubmitPress={handleSubmit}
+        />
 
-          <Text className="text-heading-3 font-cairo font-bold text-text-primary">
-            {isEditMode ? 'Edit Item' : 'Add Item'}
-          </Text>
-
-          {/* Save pill — shown on both Add and Edit; disabled until form is valid */}
-          <Pressable
-            onPress={handleSubmit}
-            disabled={!isFormValid || isLoading}
-            className={`rounded-radius-full px-spacing-16 py-spacing-8 ${isFormValid && !isLoading ? 'bg-brand-primary' : 'bg-surface-surfaceVariant'}`}
-            accessibilityRole="button"
-            accessibilityLabel="Save item">
-            <Text
-              className={`text-body font-cairo font-bold ${isFormValid && !isLoading ? 'text-brand-onPrimary' : 'text-text-disabled'}`}>
-              Save
-            </Text>
-          </Pressable>
-        </View>
-
-        {/* ── Scrollable Form ─────────────────────────────────────────── */}
+        {/* Scrollable Form */}
         <ScrollView
-          className="flex-1"
-          contentContainerStyle={{ padding: 16, gap: 20, paddingBottom: 120 }}
+          className="flex-1 bg-surface-background"
+          contentContainerStyle={{ padding: 16, gap: 20, paddingBottom: 32 }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}>
-          {/* Image Picker */}
           <PantryImagePicker
-            imageUri={form.imageUri}
-            onPickerPress={handleImagePickerPress}
-            onScanPress={handleScanPress}
+            imageUri={imageUri}
+            onPickerPress={() => Alert.alert('Category Image', 'Linked to the selected category.')}
+            onScanPress={() => Alert.alert('Scan Items', 'AI scanner under development.')}
           />
 
           {/* Item Name */}
           <View>
             <FieldLabel label="Item Name" required />
             <TextInput
-              value={form.name}
-              onChangeText={(text) => updateField('name', text)}
+              value={name}
+              onChangeText={setName}
               placeholder="e.g. Olive Oil"
               returnKeyType="next"
               className="text-body h-14 rounded-radius-medium border border-surface-border bg-surface-surface px-spacing-16 font-cairo text-text-primary"
@@ -203,14 +195,14 @@ export default function AddEditPantryItemScreen() {
             />
           </View>
 
-          {/* Quantity + Unit row */}
+          {/* Quantity + Unit */}
           <View className="flex-row gap-spacing-8">
             <View className="flex-1">
               <FieldLabel label="Quantity" required />
               <QuantityStepper
-                value={form.quantity}
-                onChange={(val) => updateField('quantity', val)}
-                unitSymbol={form.selectedUnit?.symbol ?? undefined}
+                value={quantity}
+                onChange={setQuantity}
+                unitSymbol={selectedUnit?.symbol ?? undefined}
                 min={0}
               />
             </View>
@@ -218,7 +210,7 @@ export default function AddEditPantryItemScreen() {
             <View className="flex-1">
               <FormDropdown
                 label="Unit"
-                value={form.selectedUnit?.name}
+                value={selectedUnit?.name}
                 placeholder="Select"
                 leadingIcon={Ruler}
                 onPress={() => setIsUnitSheetOpen(true)}
@@ -230,51 +222,25 @@ export default function AddEditPantryItemScreen() {
           {/* Category */}
           <FormDropdown
             label="Category"
-            value={form.selectedCategory?.name}
+            value={selectedCategory?.name}
             placeholder="Select a category"
             leadingIcon={Box}
             activeIcon={
-              form.selectedCategory
-                ? getCategoryIconConfig(form.selectedCategory.name).icon
-                : undefined
+              selectedCategory ? getCategoryIconConfig(selectedCategory.name).icon : undefined
             }
             activeIconColor={
-              form.selectedCategory
-                ? getCategoryIconConfig(form.selectedCategory.name).color
-                : undefined
+              selectedCategory ? getCategoryIconConfig(selectedCategory.name).color : undefined
             }
             onPress={() => setIsCategorySheetOpen(true)}
             accessibilityLabel="Select category"
           />
 
           {/* Expiration Date */}
-          <View>
-            <View className="mb-spacing-8 flex-row items-center justify-between">
-              <FieldLabel label="Expiration Date" />
-              {/* Expiring Soon badge — shown in edit mode when applicable */}
-            </View>
-            <View className="h-14 flex-row items-center gap-spacing-8 rounded-radius-medium border border-surface-border bg-surface-surface px-spacing-16">
-              <Icon as={Calendar} size={18} className="text-text-secondary" />
-              <TextInput
-                value={form.expireDate}
-                onChangeText={(text) => updateField('expireDate', text)}
-                placeholder="mm/dd/yyyy"
-                keyboardType="numbers-and-punctuation"
-                returnKeyType="done"
-                className="text-body flex-1 font-cairo text-text-primary"
-                placeholderTextColor="#9E9E9E"
-                accessibilityLabel="Expiration date"
-              />
-            </View>
-            <Text className="text-caption mt-spacing-4 font-cairo text-text-secondary">
-              Optional. We'll remind you before it expires.
-            </Text>
-          </View>
+          <ExpirationDateField value={expireDate} onPress={() => setIsDatePickerVisible(true)} />
 
-          {/* AI Suggestion Card */}
           <AISuggestionCard />
 
-          {/* Remove Item (Edit mode only) */}
+          {/* Remove Button */}
           {isEditMode ? (
             <Pressable
               onPress={handleRemove}
@@ -287,46 +253,38 @@ export default function AddEditPantryItemScreen() {
           ) : null}
         </ScrollView>
 
-        {/* ── Sticky Bottom Button ─────────────────────────────────────── */}
+        {/* Sticky Bottom Bar */}
         {!isEditMode ? (
-          <View className="border-t border-surface-border bg-surface-surface px-spacing-16 py-spacing-16">
-            <Pressable
-              onPress={handleSubmit}
-              disabled={!isFormValid || isLoading}
-              className={`flex-row items-center justify-center gap-spacing-8 rounded-radius-full py-spacing-16 ${isFormValid && !isLoading ? 'bg-brand-primary' : 'bg-surface-surfaceVariant'}`}
-              accessibilityRole="button"
-              accessibilityLabel="Add item to pantry">
-              <Icon
-                as={Plus}
-                size={18}
-                className={
-                  isFormValid && !isLoading ? 'text-brand-onPrimary' : 'text-text-disabled'
-                }
-              />
-              <Text
-                className={`text-body font-cairo font-bold ${isFormValid && !isLoading ? 'text-brand-onPrimary' : 'text-text-disabled'}`}>
-                {isLoading ? 'Saving...' : 'Add to Pantry'}
-              </Text>
-            </Pressable>
-          </View>
+          <AddEditPantryItemBottomBar
+            isFormValid={isFormValid}
+            isLoading={isLoading}
+            onSubmitPress={handleSubmit}
+          />
         ) : null}
       </KeyboardAvoidingView>
 
-      {/* ── Bottom Sheet Modals ──────────────────────────────────────────── */}
+      {/* Sheets & Pickers */}
       <CategorySelectorSheet
         visible={isCategorySheetOpen}
         categories={categories}
-        selectedId={form.selectedCategory?.id}
-        onSelect={handleCategorySelect}
+        selectedId={selectedCategory?.id}
+        onSelect={setSelectedCategory}
         onClose={() => setIsCategorySheetOpen(false)}
       />
 
       <UnitSelectorSheet
         visible={isUnitSheetOpen}
         units={measuringUnits}
-        selectedId={form.selectedUnit?.id}
-        onSelect={handleUnitSelect}
+        selectedId={selectedUnit?.id}
+        onSelect={setSelectedUnit}
         onClose={() => setIsUnitSheetOpen(false)}
+      />
+
+      <ExpirationDatePickerModal
+        visible={isDatePickerVisible}
+        value={expireDate}
+        onChange={setExpireDate}
+        onClose={() => setIsDatePickerVisible(false)}
       />
     </SafeAreaView>
   );

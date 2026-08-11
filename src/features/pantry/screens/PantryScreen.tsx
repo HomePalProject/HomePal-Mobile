@@ -31,11 +31,11 @@ export default function PantryScreen() {
   };
 
   const handleAddItem = () => {
-    router.push('/(tabs)/add-pantry-item');
+    router.push('/add-pantry-item');
   };
 
   const handleScanItem = () => {
-    router.push('/(tabs)/add-pantry-item');
+    router.push('/add-pantry-item');
   };
 
   const renderContent = () => {
