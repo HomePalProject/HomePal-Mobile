@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { usePantry } from '../hooks/usePantry';
 import {
   PantryHeader,
@@ -11,9 +12,11 @@ import {
   PantryErrorView,
   PantryEmptyView,
   PantryList,
+  PantryFAB,
 } from '../components';
 
 export default function PantryScreen() {
+  const router = useRouter();
   const { items, categories, isLoading, error, loadPantry, clearError } = usePantry();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -25,6 +28,14 @@ export default function PantryScreen() {
   const handleRetry = () => {
     clearError();
     loadPantry();
+  };
+
+  const handleAddItem = () => {
+    router.push('/(tabs)/add-pantry-item');
+  };
+
+  const handleScanItem = () => {
+    router.push('/(tabs)/add-pantry-item');
   };
 
   const renderContent = () => {
@@ -64,8 +75,11 @@ export default function PantryScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-surface-background">
-      <PantryHeader />
-      {renderContent()}
+      <View className="flex-1">
+        <PantryHeader />
+        {renderContent()}
+        <PantryFAB onAddPress={handleAddItem} onScanPress={handleScanItem} />
+      </View>
     </SafeAreaView>
   );
 }
