@@ -26,6 +26,7 @@ import {
   ExpirationDateField,
   AddEditPantryItemHeader,
   AddEditPantryItemBottomBar,
+  DeleteConfirmationModal,
   AISuggestionCard,
 } from '../components';
 import { ProductCategoryResponse, MeasuringUnitResponse } from '@/src/types/api';
@@ -86,6 +87,8 @@ export default function AddEditPantryItemScreen() {
   const [isCategorySheetOpen, setIsCategorySheetOpen] = useState(false);
   const [isUnitSheetOpen, setIsUnitSheetOpen] = useState(false);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [deleteVisible, setDeleteVisible] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Populate Edit Mode Details
   useEffect(() => {
@@ -135,22 +138,21 @@ export default function AddEditPantryItemScreen() {
   };
 
   const handleRemove = () => {
+    setDeleteVisible(true);
+  };
+
+  const handleDeleteConfirm = async () => {
     if (!itemId) return;
-    Alert.alert('Remove Item', 'Are you sure you want to remove this item from your pantry?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Remove',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await removeItem(itemId);
-            router.back();
-          } catch {
-            Alert.alert('Error', 'Failed to remove item. Please try again.');
-          }
-        },
-      },
-    ]);
+    setIsDeleting(true);
+    try {
+      await removeItem(itemId);
+      setDeleteVisible(false);
+      router.replace('/(tabs)/pantry');
+    } catch {
+      Alert.alert('Error', 'Failed to remove item. Please try again.');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -244,7 +246,7 @@ export default function AddEditPantryItemScreen() {
           {isEditMode ? (
             <Pressable
               onPress={handleRemove}
-              className="py-spacing-14 flex-row items-center justify-center gap-spacing-8 rounded-radius-large border border-status-error active:opacity-70"
+              className="flex-row items-center justify-center gap-spacing-8 rounded-radius-large border border-status-error py-spacing-16 active:opacity-70"
               accessibilityRole="button"
               accessibilityLabel="Remove item from pantry">
               <Icon as={Trash2} size={18} className="text-status-error" />
@@ -285,6 +287,13 @@ export default function AddEditPantryItemScreen() {
         value={expireDate}
         onChange={setExpireDate}
         onClose={() => setIsDatePickerVisible(false)}
+      />
+
+      <DeleteConfirmationModal
+        visible={deleteVisible}
+        isLoading={isDeleting}
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setDeleteVisible(false)}
       />
     </SafeAreaView>
   );

@@ -4,6 +4,7 @@ import { Check, AlertTriangle, Package } from 'lucide-react-native';
 import { Icon } from '@/src/components/ui/icon';
 import { PantryItemResponse } from '@/src/types/api';
 import { env } from '@/src/config/env';
+import { router } from 'expo-router';
 
 interface PantryItemCardProps {
   item: PantryItemResponse;
@@ -61,7 +62,16 @@ export function PantryItemCard({ item, onPress }: PantryItemCardProps) {
 
   return (
     <Pressable
-      onPress={() => onPress?.(item)}
+      onPress={() => {
+        if (onPress) {
+          onPress(item);
+        } else {
+          router.push({
+            pathname: '/pantry-item-details',
+            params: { itemId: item.id },
+          });
+        }
+      }}
       className="p-spacing-12 w-[48%] gap-spacing-8 rounded-radius-large border border-surface-border bg-surface-surface shadow-sm active:opacity-80">
       {/* Category / Product Image (Fixed height & rounded corners matching Figma 60px) */}
       <View className="bg-surface-surfaceVariant h-16 w-full items-center justify-center overflow-hidden rounded-radius-medium">

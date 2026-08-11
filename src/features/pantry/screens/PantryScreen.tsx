@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View } from 'react-native';
+import { View, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { usePantry } from '../hooks/usePantry';
@@ -20,10 +20,20 @@ export default function PantryScreen() {
   const { items, categories, isLoading, error, loadPantry, clearError } = usePantry();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     loadPantry();
   }, [loadPantry]);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await loadPantry();
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   const handleRetry = () => {
     clearError();
@@ -68,7 +78,17 @@ export default function PantryScreen() {
         />
         <PantrySearchBar value={searchQuery} onChangeText={setSearchQuery} />
         <PantryRecommendationCard />
-        <PantryList items={filteredItems} />
+        <PantryList
+          items={filteredItems}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              colors={['#206B59']}
+              tintColor="#206B59"
+            />
+          }
+        />
       </View>
     );
   };

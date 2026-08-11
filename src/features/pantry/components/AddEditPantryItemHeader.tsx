@@ -19,7 +19,7 @@ export function AddEditPantryItemHeader({
   onSubmitPress,
 }: AddEditPantryItemHeaderProps) {
   return (
-    <View className="py-spacing-12 flex-row items-center justify-between border-b border-surface-border bg-surface-surface px-spacing-16">
+    <View className="flex-row items-center justify-between border-b border-surface-border bg-surface-surface px-spacing-16 py-spacing-8">
       {/* Back Button */}
       <Pressable
         onPress={onBackPress}
@@ -30,7 +30,7 @@ export function AddEditPantryItemHeader({
       </Pressable>
 
       {/* Screen Title */}
-      <Text className="text-heading-3 font-cairo font-bold text-text-primary">
+      <Text className="font-cairo text-xl font-bold text-text-primary">
         {isEditMode ? 'Edit Item' : 'Add Item'}
       </Text>
 
@@ -44,7 +44,7 @@ export function AddEditPantryItemHeader({
         accessibilityRole="button"
         accessibilityLabel="Save item">
         <Text
-          className={`text-body font-cairo font-bold ${
+          className={`font-cairo text-base font-bold text-brand-primary-container ${
             isFormValid && !isLoading ? 'text-brand-primary-container' : 'text-text-disabled'
           }`}>
           {isLoading ? 'Saving...' : 'Save'}

@@ -34,7 +34,7 @@ export function PantryHeader({ onProfilePress }: PantryHeaderProps) {
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <Icon as={Menu} size={24} className="text-brand-primary" />
         </Pressable>
-        <Text className="text-h3 font-cairo font-bold text-text-primary">Pantry</Text>
+        <Text className="font-cairo text-xl font-bold text-text-primary">Pantry</Text>
       </View>
 
       {/* Profile Button / User Avatar */}

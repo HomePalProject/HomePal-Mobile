@@ -19,4 +19,6 @@ export * from './ExpirationDatePickerModal';
 export * from './ExpirationDateField';
 export * from './AddEditPantryItemHeader';
 export * from './AddEditPantryItemBottomBar';
+export * from './DeleteConfirmationModal';
+export * from './PantryItemDetailsHeader';
 export * from './AISuggestionCard';
