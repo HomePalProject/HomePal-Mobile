@@ -28,4 +28,6 @@ export * from './AIScanItemRow';
 export * from './AIScanActionButtons';
 export * from './ImagePickerSheet';
 export * from './PantryNotificationModal';
+export * from './FieldLabel';
+export * from './PantryDetailRow';
 export * from './AISuggestionCard';

@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as Haptics from 'expo-haptics';
+import { colors } from '@/src/theme/colors';
 import {
   Calendar,
   Box,
@@ -24,6 +25,7 @@ import {
   PantryItemDetailsHeader,
   DeleteConfirmationModal,
   PantryNotificationModal,
+  PantryDetailRow,
 } from '../components';
 import { PantryItemResponse } from '@/src/types/api';
 
@@ -105,7 +107,7 @@ export default function PantryItemDetailsScreen() {
   if (!item) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-surface-background">
-        <ActivityIndicator size="large" color="#356859" />
+        <ActivityIndicator size="large" color={colors.brand.primary} />
       </SafeAreaView>
     );
   }
@@ -257,7 +259,7 @@ export default function PantryItemDetailsScreen() {
               </Pressable>
 
               {isUpdating ? (
-                <ActivityIndicator size="small" color="#356859" className="w-[60px]" />
+                <ActivityIndicator size="small" color={colors.brand.primary} className="w-[60px]" />
               ) : (
                 <Text className="min-w-[60px] text-center font-cairo text-base font-bold text-text-primary">
                   {item.quantity} {unitLabel}
@@ -274,59 +276,43 @@ export default function PantryItemDetailsScreen() {
           </View>
 
           {/* Expiry Date Row */}
-          <View className="gap-spacing-12 flex-row items-center">
-            <View className="bg-brand-amber-100/55 h-10 w-10 items-center justify-center rounded-radius-full">
-              <Icon as={Calendar} size={18} className="text-brand-amber-500" />
-            </View>
-            <View className="flex-1">
-              <Text className="text-caption font-cairo text-text-secondary">Expiry Date</Text>
-              <Text
-                className={`text-body font-cairo font-bold ${
-                  status.isWarning && item.expireDate ? 'text-status-error' : 'text-text-primary'
-                }`}>
-                {formatPrettyDate(item.expireDate)}
-              </Text>
-            </View>
-          </View>
+          <PantryDetailRow
+            icon={Calendar}
+            iconBgClass="bg-brand-amber-100/55"
+            iconColorClass="text-brand-amber-500"
+            label="Expiry Date"
+            value={formatPrettyDate(item.expireDate)}
+            valueColorClass={
+              status.isWarning && item.expireDate ? 'text-status-error' : 'text-text-primary'
+            }
+          />
 
           {/* Category Row */}
-          <View className="gap-spacing-12 flex-row items-center">
-            <View className="bg-brand-purple-100/55 h-10 w-10 items-center justify-center rounded-radius-full">
-              <Icon as={Box} size={18} className="text-brand-purple-500" />
-            </View>
-            <View className="flex-1">
-              <Text className="text-caption font-cairo text-text-secondary">Category</Text>
-              <Text className="text-body font-cairo font-bold text-text-primary">
-                {category?.name || 'Unassigned'}
-              </Text>
-            </View>
-          </View>
+          <PantryDetailRow
+            icon={Box}
+            iconBgClass="bg-brand-purple-100/55"
+            iconColorClass="text-brand-purple-500"
+            label="Category"
+            value={category?.name || 'Unassigned'}
+          />
 
           {/* Added On Row */}
-          <View className="gap-spacing-12 flex-row items-center">
-            <View className="bg-brand-blue-100/55 h-10 w-10 items-center justify-center rounded-radius-full">
-              <Icon as={Clock} size={18} className="text-brand-blue-500" />
-            </View>
-            <View className="flex-1">
-              <Text className="text-caption font-cairo text-text-secondary">Added On</Text>
-              <Text className="text-body font-cairo font-bold text-text-primary">
-                {formatPrettyDate(item.createdAt)}
-              </Text>
-            </View>
-          </View>
+          <PantryDetailRow
+            icon={Clock}
+            iconBgClass="bg-brand-blue-100/55"
+            iconColorClass="text-brand-blue-500"
+            label="Added On"
+            value={formatPrettyDate(item.createdAt)}
+          />
 
           {/* Last Updated Row */}
-          <View className="gap-spacing-12 flex-row items-center">
-            <View className="bg-brand-teal-100/55 h-10 w-10 items-center justify-center rounded-radius-full">
-              <Icon as={History} size={18} className="text-brand-teal-500" />
-            </View>
-            <View className="flex-1">
-              <Text className="text-caption font-cairo text-text-secondary">Last Updated</Text>
-              <Text className="text-body font-cairo font-bold text-text-primary">
-                {formatPrettyDate(item.updatedAt)}
-              </Text>
-            </View>
-          </View>
+          <PantryDetailRow
+            icon={History}
+            iconBgClass="bg-brand-teal-100/55"
+            iconColorClass="text-brand-teal-500"
+            label="Last Updated"
+            value={formatPrettyDate(item.updatedAt)}
+          />
         </View>
       </ScrollView>
 

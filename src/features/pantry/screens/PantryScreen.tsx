@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
+import { colors } from '@/src/theme/colors';
 import { usePantry } from '../hooks/usePantry';
 import {
   PantryHeader,
@@ -249,8 +250,8 @@ export default function PantryScreen() {
             <RefreshControl
               refreshing={isRefreshing}
               onRefresh={handleRefresh}
-              colors={['#206B59']}
-              tintColor="#206B59"
+              colors={[colors.brand.primary]}
+              tintColor={colors.brand.primary}
             />
           }
         />

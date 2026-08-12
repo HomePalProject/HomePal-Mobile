@@ -7,11 +7,13 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Text,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import * as Haptics from 'expo-haptics';
+import { colors } from '@/src/theme/colors';
 import { Box, Ruler, Trash2 } from 'lucide-react-native';
 import { getCategoryIconConfig } from '../components/CategorySelectorSheet';
 import { Icon } from '@/src/components/ui/icon';
@@ -32,6 +34,7 @@ import {
   ImagePickerSheet,
   AIScanModal,
   PantryNotificationModal,
+  FieldLabel,
 } from '../components';
 import { ProductCategoryResponse, MeasuringUnitResponse } from '@/src/types/api';
 
@@ -51,23 +54,6 @@ const resolveImageUrl = (path?: string | null): string | null => {
   const relativePath = path.startsWith('/') ? path.substring(1) : path;
   return `${baseUrl}${relativePath}`;
 };
-
-interface FieldLabelProps {
-  label: string;
-  required?: boolean;
-}
-
-function FieldLabel({ label, required }: FieldLabelProps) {
-  return (
-    <Text className="text-caption mb-spacing-8 font-cairo font-bold text-text-secondary">
-      {label}
-      {required ? <Text className="text-status-error"> *</Text> : null}
-    </Text>
-  );
-}
-
-// Custom wrapper to keep standard Label layout
-import { Text } from 'react-native';
 
 // ─── Screen Component ──────────────────────────────────────────────────────────
 
@@ -333,7 +319,7 @@ export default function AddEditPantryItemScreen() {
               placeholder="e.g. Olive Oil"
               returnKeyType="next"
               className="text-body h-14 rounded-radius-medium border border-surface-border bg-surface-surface px-spacing-16 font-cairo text-text-primary"
-              placeholderTextColor="#9E9E9E"
+              placeholderTextColor={colors.text.secondary}
               accessibilityLabel="Item name"
             />
           </View>
