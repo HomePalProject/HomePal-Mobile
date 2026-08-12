@@ -64,7 +64,7 @@ export function getCategoryIconConfig(name: string): CategoryIconConfig {
     lower.includes('rice') ||
     lower.includes('noodle')
   ) {
-    return { icon: Wheat, bg: 'bg-brand-secondary-container', color: 'text-brand-secondary' };
+    return { icon: Wheat, bg: 'bg-brand-accent-container', color: 'text-brand-accent' };
   }
   if (lower.includes('canned') || lower.includes('pantry') || lower.includes('essential')) {
     return { icon: ShoppingBag, bg: 'bg-surface-surfaceVariant', color: 'text-text-secondary' };
@@ -75,7 +75,7 @@ export function getCategoryIconConfig(name: string): CategoryIconConfig {
     lower.includes('chip') ||
     lower.includes('cracker')
   ) {
-    return { icon: Cookie, bg: 'bg-brand-secondary-container', color: 'text-brand-secondary' };
+    return { icon: Cookie, bg: 'bg-brand-accent-container', color: 'text-brand-accent' };
   }
   if (
     lower.includes('beverage') ||
