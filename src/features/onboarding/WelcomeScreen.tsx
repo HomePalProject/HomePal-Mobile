@@ -22,7 +22,7 @@ export const WelcomeScreen: React.FC = () => {
         <View className="my-4 items-center justify-center">
           <View className="h-[268px] w-full overflow-hidden rounded-[32px] border border-surface-border shadow-sm">
             <Image
-              source={require('../../../assets/images/welcome-hero.png')}
+              source={require('@/src/assets/images/welcome-hero.png')}
               className="h-full w-full"
               resizeMode="cover"
             />
