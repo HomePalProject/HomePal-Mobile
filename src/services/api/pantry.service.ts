@@ -4,6 +4,8 @@ import {
   PantryItemResponse,
   CreatePantryItemRequest,
   UpdatePantryItemRequest,
+  PantryScanResponse,
+  PantryScanItemDto,
 } from '@/src/types/api';
 
 export const pantryService = {
@@ -113,5 +115,39 @@ export const pantryService = {
   async deletePantryItem(id: string): Promise<boolean> {
     await apiClient.delete<ApiResponse<any> | any>(`/api/pantry/items/${id}`);
     return true;
+  },
+
+  /**
+   * POST /api/pantry/scan
+   * Scans a receipt/items image using camera AI.
+   */
+  async scanPantryImage(imageUri: string): Promise<PantryScanItemDto[]> {
+    const formData = new FormData();
+
+    const filename = imageUri.split('/').pop() || 'scan.jpg';
+    const match = /\.(\w+)$/.exec(filename);
+    const type = match ? `image/${match[1]}` : `image/jpeg`;
+
+    formData.append('Image', {
+      uri: imageUri,
+      name: filename,
+      type,
+    } as any);
+
+    const response = await apiClient.post<ApiResponse<PantryScanResponse> | PantryScanResponse>(
+      '/api/pantry/scan',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    const resData = response.data;
+    if (resData && typeof resData === 'object' && 'data' in resData && resData.data) {
+      return resData.data.items || [];
+    }
+    return (resData as PantryScanResponse)?.items || [];
   },
 };

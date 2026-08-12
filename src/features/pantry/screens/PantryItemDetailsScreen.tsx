@@ -19,8 +19,11 @@ import { Icon } from '@/src/components/ui/icon';
 import { usePantry } from '../hooks/usePantry';
 import { env } from '@/src/config/env';
 import { getCategoryIconConfig } from '../components/CategorySelectorSheet';
-import { PantryItemDetailsHeader } from '../components/PantryItemDetailsHeader';
-import { DeleteConfirmationModal } from '../components/DeleteConfirmationModal';
+import {
+  PantryItemDetailsHeader,
+  DeleteConfirmationModal,
+  PantryNotificationModal,
+} from '../components';
 import { PantryItemResponse } from '@/src/types/api';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -84,6 +87,12 @@ export default function PantryItemDetailsScreen() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [deleteVisible, setDeleteVisible] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [notification, setNotification] = useState({
+    visible: false,
+    type: 'success' as 'success' | 'error',
+    title: '',
+    message: '',
+  });
 
   // If item doesn't exist, we pop back
   useEffect(() => {
@@ -136,7 +145,12 @@ export default function PantryItemDetailsScreen() {
         expireDate: item.expireDate,
       });
     } catch {
-      Alert.alert('Error', 'Failed to update quantity.');
+      setNotification({
+        visible: true,
+        type: 'error',
+        title: 'Error',
+        message: 'Failed to update quantity.',
+      });
     } finally {
       setIsUpdating(false);
     }
@@ -147,9 +161,14 @@ export default function PantryItemDetailsScreen() {
     try {
       await removeItem(item.id);
       setDeleteVisible(false);
-      router.back();
+      router.replace('/pantry');
     } catch {
-      Alert.alert('Error', 'Failed to remove item.');
+      setNotification({
+        visible: true,
+        type: 'error',
+        title: 'Error',
+        message: 'Failed to remove item.',
+      });
     } finally {
       setIsDeleting(false);
     }
@@ -326,6 +345,14 @@ export default function PantryItemDetailsScreen() {
         isLoading={isDeleting}
         onConfirm={handleDeleteConfirm}
         onCancel={() => setDeleteVisible(false)}
+      />
+
+      <PantryNotificationModal
+        visible={notification.visible}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+        onClose={() => setNotification((prev) => ({ ...prev, visible: false }))}
       />
     </SafeAreaView>
   );

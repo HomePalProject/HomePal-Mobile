@@ -8,6 +8,7 @@ import {
   clearPantryError,
 } from '@/src/store/slices/pantrySlice';
 import { CreatePantryItemRequest, UpdatePantryItemRequest } from '@/src/types/api';
+import { pantryService } from '@/src/services';
 
 /**
  * Custom hook to access Pantry Redux state and operations.
@@ -47,6 +48,10 @@ export function usePantry() {
     dispatch(clearPantryError());
   }, [dispatch]);
 
+  const scanPantryImage = useCallback(async (imageUri: string) => {
+    return await pantryService.scanPantryImage(imageUri);
+  }, []);
+
   return {
     items,
     categories,
@@ -58,5 +63,6 @@ export function usePantry() {
     editItem,
     removeItem,
     clearError,
+    scanPantryImage,
   };
 }

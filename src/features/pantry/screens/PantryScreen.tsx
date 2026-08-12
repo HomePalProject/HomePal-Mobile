@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, RefreshControl } from 'react-native';
+import { View, RefreshControl, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import * as ImagePicker from 'expo-image-picker';
 import { usePantry } from '../hooks/usePantry';
 import {
   PantryHeader,
@@ -13,14 +14,41 @@ import {
   PantryEmptyView,
   PantryList,
   PantryFAB,
+  AIScanModal,
+  ImagePickerSheet,
+  PantryNotificationModal,
 } from '../components';
 
 export default function PantryScreen() {
   const router = useRouter();
-  const { items, categories, isLoading, error, loadPantry, clearError } = usePantry();
+  const {
+    items,
+    categories,
+    measuringUnits,
+    isLoading,
+    error,
+    loadPantry,
+    addItem,
+    editItem,
+    clearError,
+    scanPantryImage,
+  } = usePantry();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Scan Modal States
+  const [isScanModalVisible, setIsScanModalVisible] = useState(false);
+  const [scanStatus, setScanStatus] = useState<'loading' | 'success'>('loading');
+  const [isSavingScanned, setIsSavingScanned] = useState(false);
+  const [isImagePickerVisible, setIsImagePickerVisible] = useState(false);
+  const [scannedItems, setScannedItems] = useState<any[]>([]);
+  const [notification, setNotification] = useState({
+    visible: false,
+    type: 'success' as 'success' | 'error',
+    title: '',
+    message: '',
+  });
 
   useEffect(() => {
     loadPantry();
@@ -44,8 +72,123 @@ export default function PantryScreen() {
     router.push('/add-pantry-item');
   };
 
+  const startRealScan = async (imageUri: string) => {
+    setIsScanModalVisible(true);
+    setScanStatus('loading');
+    setScannedItems([]);
+    try {
+      const results = await scanPantryImage(imageUri);
+      const mapped = results.map((bi) => ({
+        name: bi.name,
+        quantity: bi.quantity,
+        categoryId: bi.categoryId,
+        measuringUnitId: bi.measuringUnitId,
+        expireDate: bi.suggestedExpireDate ? bi.suggestedExpireDate.split('T')[0] : '',
+        selected: true,
+      }));
+      setScannedItems(mapped);
+      setScanStatus('success');
+    } catch {
+      setIsScanModalVisible(false);
+      setNotification({
+        visible: true,
+        type: 'error',
+        title: 'Error',
+        message: 'Failed to scan image. Please try again.',
+      });
+    }
+  };
+
   const handleScanItem = () => {
-    router.push('/add-pantry-item');
+    setIsImagePickerVisible(true);
+  };
+
+  const handleTakePhoto = async () => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permissionResult.granted) {
+      setNotification({
+        visible: true,
+        type: 'error',
+        title: 'Permission Denied',
+        message: 'Camera access is required to take photos.',
+      });
+      return;
+    }
+    const pickerResult = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: false,
+      quality: 0.8,
+    });
+    if (!pickerResult.canceled && pickerResult.assets && pickerResult.assets.length > 0) {
+      startRealScan(pickerResult.assets[0].uri);
+    }
+  };
+
+  const handleChooseFromGallery = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      setNotification({
+        visible: true,
+        type: 'error',
+        title: 'Permission Denied',
+        message: 'Media library access is required.',
+      });
+      return;
+    }
+    const pickerResult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: false,
+      quality: 0.8,
+    });
+    if (!pickerResult.canceled && pickerResult.assets && pickerResult.assets.length > 0) {
+      startRealScan(pickerResult.assets[0].uri);
+    }
+  };
+
+  const handleAddScannedItems = async (scannedItems: any[]) => {
+    setIsSavingScanned(true);
+    try {
+      const promises = scannedItems.map((scanned) => {
+        const match = items.find((i) => i.name.toLowerCase() === scanned.name.toLowerCase());
+        if (match) {
+          return editItem(match.id, {
+            name: match.name,
+            quantity: match.quantity + scanned.quantity,
+            measuringUnitId: match.measuringUnitId,
+            categoryId: match.categoryId,
+            expireDate: match.expireDate,
+          });
+        } else {
+          return addItem({
+            name: scanned.name,
+            quantity: scanned.quantity,
+            measuringUnitId: scanned.measuringUnitId,
+            categoryId: scanned.categoryId,
+            expireDate: scanned.expireDate ? new Date(scanned.expireDate).toISOString() : null,
+          });
+        }
+      });
+
+      await Promise.all(promises);
+
+      setIsScanModalVisible(false);
+      loadPantry();
+      setNotification({
+        visible: true,
+        type: 'success',
+        title: 'Success',
+        message: 'Scanned items successfully added to your pantry.',
+      });
+    } catch {
+      setNotification({
+        visible: true,
+        type: 'error',
+        title: 'Error',
+        message: 'Failed to add some scanned items.',
+      });
+    } finally {
+      setIsSavingScanned(false);
+    }
   };
 
   const renderContent = () => {
@@ -100,6 +243,32 @@ export default function PantryScreen() {
         {renderContent()}
         <PantryFAB onAddPress={handleAddItem} onScanPress={handleScanItem} />
       </View>
+
+      <AIScanModal
+        visible={isScanModalVisible}
+        status={scanStatus}
+        categories={categories}
+        measuringUnits={measuringUnits}
+        onClose={() => setIsScanModalVisible(false)}
+        onAddSelected={handleAddScannedItems}
+        isSaving={isSavingScanned}
+        scannedItems={scannedItems}
+      />
+
+      <ImagePickerSheet
+        visible={isImagePickerVisible}
+        onClose={() => setIsImagePickerVisible(false)}
+        onTakePhoto={handleTakePhoto}
+        onChooseFromGallery={handleChooseFromGallery}
+      />
+
+      <PantryNotificationModal
+        visible={notification.visible}
+        type={notification.type}
+        title={notification.title}
+        message={notification.message}
+        onClose={() => setNotification((prev) => ({ ...prev, visible: false }))}
+      />
     </SafeAreaView>
   );
 }

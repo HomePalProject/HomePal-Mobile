@@ -76,7 +76,7 @@ export function PantryFAB({ onAddPress, onScanPress }: PantryFABProps) {
           </View>
           {/* Amber Icon Button */}
           <View className="bg-brand-secondary h-12 w-12 items-center justify-center rounded-radius-full shadow-md">
-            <Icon as={ScanLine} size={22} className="text-brand-onSecondary" />
+            <Icon as={ScanLine} size={22} className="text-text-primary" />
           </View>
         </Pressable>
       </Animated.View>
@@ -94,7 +94,7 @@ export function PantryFAB({ onAddPress, onScanPress }: PantryFABProps) {
           </View>
           {/* Green Icon Button */}
           <View className="h-12 w-12 items-center justify-center rounded-radius-full bg-brand-primary shadow-md">
-            <Icon as={Package} size={22} className="text-brand-primary-container" />
+            <Icon as={Package} size={22} className="text-text-primary" />
           </View>
         </Pressable>
       </Animated.View>
@@ -106,9 +106,9 @@ export function PantryFAB({ onAddPress, onScanPress }: PantryFABProps) {
         accessibilityRole="button"
         accessibilityLabel={isOpen ? 'Close menu' : 'Open add item menu'}>
         {isOpen ? (
-          <Icon as={X} size={24} className="text-brand-primary-container" />
+          <Icon as={X} size={24} className="text-text-primary" />
         ) : (
-          <Icon as={Plus} size={24} className="text-brand-primary-container" />
+          <Icon as={Plus} size={24} className="text-text-primary" />
         )}
       </Pressable>
     </View>

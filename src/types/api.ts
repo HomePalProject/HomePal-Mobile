@@ -255,6 +255,20 @@ export interface UpdatePantryItemRequest {
   categoryId: string;
 }
 
+export interface PantryScanItemDto {
+  name: string;
+  quantity: number;
+  measuringUnitId: string;
+  measuringUnitName?: string | null;
+  categoryId: string;
+  categoryName?: string | null;
+  suggestedExpireDate?: string | null;
+}
+
+export interface PantryScanResponse {
+  items: PantryScanItemDto[];
+}
+
 // --- Product Categories DTOs ---
 
 export interface ProductCategoryResponse {
