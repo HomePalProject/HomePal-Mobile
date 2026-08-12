@@ -5,6 +5,7 @@ import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { useAppSelector, useAppDispatch } from '@/src/store';
 import { openDrawer } from '@/src/store/slices/uiSlice';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export interface TabHeaderProps {
   title?: string;
@@ -15,11 +16,14 @@ export function TabHeader({ title = 'HomePal', onNotificationPress }: TabHeaderP
   const dispatch = useAppDispatch();
   const { fullName, profileImageUri } = useAppSelector((state) => state.profile);
   const handleOpenDrawer = () => dispatch(openDrawer());
+  const insets = useSafeAreaInsets();
 
   const firstInitial = fullName ? fullName.trim()[0]?.toUpperCase() : 'H';
 
   return (
-    <View className="h-16 flex-row items-center justify-between border-b border-surface-divider bg-surface-surface px-6 shadow-sm">
+    <View
+      className="flex-row items-center justify-between border-b border-surface-divider bg-surface-surface px-6 pb-3 shadow-sm"
+      style={{ paddingTop: Math.max(insets.top, 16) + 12 }}>
       {/* Left: Menu Drawer Icon + Avatar + Title */}
       <View className="flex-row items-center gap-3">
         <Pressable

@@ -64,20 +64,21 @@ export default function RootLayout() {
           <NavigationThemeProvider value={NAV_THEME[colorScheme ?? 'light']}>
             <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
             <SessionBootstrapper />
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                animation: 'slide_from_right',
-                contentStyle: { backgroundColor: colorScheme === 'dark' ? '#121413' : '#FAF8F3' },
-              }}>
-              <Stack.Screen name="index" />
-              <Stack.Screen name="(tabs)" />
-              <Stack.Screen name="(auth)" />
-              <Stack.Screen name="(households)" />
-              <Stack.Screen name="profile" />
-              <Stack.Screen name="edit-profile" />
-            </Stack>
-            <AppDrawer />
+            <AppDrawer>
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  animation: 'slide_from_right',
+                  contentStyle: { backgroundColor: colorScheme === 'dark' ? '#121413' : '#FAF8F3' },
+                }}>
+                <Stack.Screen name="index" />
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="(auth)" />
+                <Stack.Screen name="(households)" />
+                <Stack.Screen name="profile" />
+                <Stack.Screen name="edit-profile" />
+              </Stack>
+            </AppDrawer>
             <PortalHost />
           </NavigationThemeProvider>
         </ToastProvider>

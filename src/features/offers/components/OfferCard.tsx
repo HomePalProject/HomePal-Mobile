@@ -3,6 +3,7 @@ import { View, Image, TouchableOpacity } from 'react-native';
 import { Text } from '@/src/components/ui/text';
 import { Offer } from '../types';
 import { Calendar, Tag as TagIcon } from 'lucide-react-native';
+import { Icon } from '@/src/components/ui/icon';
 import { env } from '@/src/config/env';
 
 interface OfferCardProps {
@@ -112,7 +113,7 @@ export const OfferCard: React.FC<OfferCardProps> = ({ offer, onPress }) => {
         {/* Footer: Date & Price */}
         <View className="flex-row items-end justify-between">
           <View className="flex-row items-center gap-1.5 opacity-80">
-            <Calendar size={14} className="text-text-secondary" />
+            <Icon as={Calendar} size={14} className="text-text-secondary" />
             <Text className="font-cairo text-[13px] text-text-secondary">
               Valid until {formatDate(offer.validTo) || 'End of Stock'}
             </Text>

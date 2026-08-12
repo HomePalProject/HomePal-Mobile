@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Pressable, Image } from 'react-native';
 import { Menu } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { useAppDispatch } from '@/src/store';
@@ -19,6 +20,7 @@ export function DashboardHeader({
   onAvatarPress,
 }: DashboardHeaderProps) {
   const dispatch = useAppDispatch();
+  const insets = useSafeAreaInsets();
 
   const handleOpenDrawer = () => {
     if (onAvatarPress) {
@@ -29,7 +31,9 @@ export function DashboardHeader({
   };
 
   return (
-    <View className="h-16 flex-row items-center justify-between bg-surface-surface px-6 shadow-sm">
+    <View
+      className="flex-row items-center justify-between bg-surface-surface px-6 pb-3 shadow-sm"
+      style={{ paddingTop: Math.max(insets.top, 16) + 12 }}>
       {/* Left side: Menu Drawer Icon + Avatar + Brand Name */}
       <View className="flex-row items-center gap-3">
         {/* Menu Icon Button */}

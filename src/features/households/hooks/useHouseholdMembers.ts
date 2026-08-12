@@ -60,12 +60,7 @@ export function useHouseholdMembers() {
 
   const mapResponseToDetailedMember = useCallback(
     (res: HouseholdMemberResponse): DetailedMember => {
-      const isSelf =
-        (res as any).isCurrentUser ||
-        (user?.id && res.userId === user.id) ||
-        (currentFullName &&
-          res.fullName &&
-          res.fullName.trim().toLowerCase() === currentFullName.trim().toLowerCase());
+      const isSelf = (res as any).isCurrentUser || (user?.id && res.userId === user.id);
 
       const rawRole = String(res.role || '')
         .toLowerCase()

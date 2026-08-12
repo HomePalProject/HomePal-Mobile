@@ -22,8 +22,16 @@ import { useTheme } from '@/src/providers/ThemeProvider';
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const DRAWER_WIDTH = Math.min(SCREEN_WIDTH * 0.82, 320);
 
-export function AppDrawer() {
+import { useColorScheme } from 'nativewind';
+import { lightColors, darkColors } from '@/src/theme/colors';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+// ... (in the component)
+export function AppDrawer({ children }: { children?: React.ReactNode }) {
   const dispatch = useAppDispatch();
+  const insets = useSafeAreaInsets();
+  const { colorScheme } = useColorScheme();
+  const themeColors = colorScheme === 'dark' ? darkColors : lightColors;
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const { resolvedMode, setMode } = useTheme();
 
@@ -57,13 +65,12 @@ export function AppDrawer() {
       Animated.parallel([
         Animated.timing(slideAnim, {
           toValue: 0,
-          duration: 350,
-          easing: Easing.out(Easing.poly(4)),
+          duration: 250,
           useNativeDriver: true,
         }),
         Animated.timing(opacityAnim, {
           toValue: 1,
-          duration: 350,
+          duration: 250,
           useNativeDriver: true,
         }),
       ]).start();
@@ -71,20 +78,17 @@ export function AppDrawer() {
       Animated.parallel([
         Animated.timing(slideAnim, {
           toValue: -DRAWER_WIDTH,
-          duration: 300,
-          easing: Easing.in(Easing.poly(4)),
+          duration: 250,
           useNativeDriver: true,
         }),
         Animated.timing(opacityAnim, {
           toValue: 0,
-          duration: 300,
+          duration: 250,
           useNativeDriver: true,
         }),
       ]).start();
     }
   }, [isOpen, slideAnim, opacityAnim]);
-
-  if (!isOpen) return null;
 
   const userInitial = fullName ? fullName.trim()[0]?.toUpperCase() : 'M';
   const displayEmail = email || 'user@homepal.app';
@@ -110,244 +114,285 @@ export function AppDrawer() {
     }
   };
 
+  const DrawerItem = ({ route, icon, label, disabled = false, href }: any) => {
+    const isActive = activeRoute === route;
+    return (
+      <Pressable
+        onPress={() => !disabled && navigateTo(route, href)}
+        disabled={disabled}
+        className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 active:opacity-80 ${
+          isActive ? 'shadow-sm' : 'active:bg-surface-surfaceVariant'
+        }`}
+        style={[
+          { opacity: disabled ? 0.4 : 1 },
+          isActive && { backgroundColor: themeColors.brand.primary },
+        ]}>
+        <Icon
+          as={icon}
+          size={22}
+          color={isActive ? themeColors.text.inverse : themeColors.text.primary}
+        />
+        <Text
+          className={`font-cairo text-[15px] ${isActive ? 'font-bold' : 'font-semibold'}`}
+          style={{ color: isActive ? themeColors.text.inverse : themeColors.text.primary }}>
+          {label}
+        </Text>
+      </Pressable>
+    );
+  };
+
   return (
-    <>
-      <Modal transparent visible={isOpen} animationType="none" onRequestClose={handleCloseDrawer}>
-        <View style={StyleSheet.absoluteFill} className="flex-1">
-          {/* Backdrop Overlay */}
-          <Animated.View style={[StyleSheet.absoluteFill, { opacity: opacityAnim }]}>
-            <Pressable className="flex-1 bg-black/40" onPress={handleCloseDrawer} />
-          </Animated.View>
+    <View style={{ flex: 1 }}>
+      {/* ── 1. The Main App Content ── */}
+      <View style={{ flex: 1 }}>{children}</View>
 
-          {/* Sliding Panel */}
-          <Animated.View
-            className="bg-surface-surface"
-            style={[
-              styles.drawerPanel,
-              {
-                width: DRAWER_WIDTH,
-                transform: [{ translateX: slideAnim }],
-              },
-            ]}>
-            {/* ── 1. Top Header (Dark Green Container) ── */}
-            <View className="bg-brand-primary-pressed px-5 pb-6 pt-12">
-              <View className="flex-row items-center gap-4">
-                {/* User Avatar Circle */}
-                <View className="h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 border-white/20 bg-brand-primary-container">
-                  {profileImageUri ? (
-                    <Image
-                      source={{ uri: profileImageUri }}
-                      className="h-full w-full"
-                      resizeMode="cover"
-                    />
-                  ) : (
-                    <Text className="font-cairo text-[22px] font-bold text-brand-primary-pressed">
-                      {userInitial}
-                    </Text>
-                  )}
-                </View>
+      {/* ── 2. The Drawer Overlay ── */}
+      <Animated.View
+        pointerEvents={isOpen ? 'auto' : 'none'}
+        style={[StyleSheet.absoluteFill, { zIndex: 100 }]}>
+        {/* Dimmer Backdrop */}
+        <Animated.View
+          style={[
+            StyleSheet.absoluteFill,
+            { backgroundColor: 'rgba(0,0,0,0.5)', opacity: opacityAnim },
+          ]}>
+          <Pressable style={{ flex: 1 }} onPress={handleCloseDrawer} />
+        </Animated.View>
 
-                {/* User Name & Email */}
-                <View className="flex-1">
-                  <Text
-                    className="font-cairo text-[18px] font-bold leading-[24px] text-white"
-                    numberOfLines={1}>
-                    {fullName || 'User'}
+        {/* Sliding Drawer Panel */}
+        <Animated.View
+          className="bg-surface-surface"
+          style={[
+            styles.drawerPanel,
+            {
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: DRAWER_WIDTH,
+              transform: [{ translateX: slideAnim }],
+            },
+          ]}>
+          {/* ── 1. Top Header (Dark Green Container) ── */}
+          <View
+            className="bg-brand-primary-pressed px-5 pb-6"
+            style={{ paddingTop: Math.max(insets.top, 16) + 16 }}>
+            <View className="flex-row items-center gap-4">
+              {/* User Avatar Circle */}
+              <View className="h-14 w-14 items-center justify-center overflow-hidden rounded-full border-2 border-white/20 bg-brand-primary-container">
+                {profileImageUri ? (
+                  <Image
+                    source={{ uri: profileImageUri }}
+                    className="h-full w-full"
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <Text className="font-cairo text-[22px] font-bold text-brand-primary-pressed">
+                    {userInitial}
                   </Text>
-                  <Text className="mt-0.5 font-cairo text-[13px] text-slate-200" numberOfLines={1}>
-                    {displayEmail}
-                  </Text>
-                </View>
+                )}
+              </View>
+
+              {/* User Name & Email */}
+              <View className="flex-1">
+                <Text
+                  className="font-cairo text-[18px] font-bold leading-[24px] text-white"
+                  numberOfLines={1}>
+                  {fullName || 'User'}
+                </Text>
+                <Text className="mt-0.5 font-cairo text-[13px] text-slate-200" numberOfLines={1}>
+                  {displayEmail}
+                </Text>
               </View>
             </View>
+          </View>
 
-            {/* ── 2. Navigation Menu Items ── */}
-            <View className="flex-1 bg-surface-surface px-3 pt-4" style={{ gap: 6 }}>
-              {/* Item 1: My Household */}
-              <Pressable
-                onPress={() => navigateTo('household', '/(tabs)')}
-                className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 active:opacity-80 ${
+          {/* ── 2. Navigation Menu Items ── */}
+          <View className="flex-1 bg-surface-surface px-3 pt-4" style={{ gap: 6 }}>
+            {/* Item 1: My Household */}
+            <Pressable
+              onPress={() => navigateTo('household', '/(tabs)')}
+              className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 active:opacity-80 ${
+                activeRoute === 'household'
+                  ? 'bg-brand-primary shadow-sm'
+                  : 'active:bg-surface-surfaceVariant'
+              }`}>
+              <Icon
+                as={Home}
+                size={22}
+                className={activeRoute === 'household' ? 'text-white' : 'text-text-primary'}
+              />
+              <Text
+                className={`font-cairo text-[15px] ${
                   activeRoute === 'household'
-                    ? 'bg-brand-primary shadow-sm'
-                    : 'active:bg-surface-surfaceVariant'
+                    ? 'font-bold text-white'
+                    : 'font-semibold text-text-primary'
                 }`}>
-                <Icon
-                  as={Home}
-                  size={22}
-                  className={activeRoute === 'household' ? 'text-white' : 'text-text-primary'}
-                />
-                <Text
-                  className={`font-cairo text-[15px] ${
-                    activeRoute === 'household'
-                      ? 'font-bold text-white'
-                      : 'font-semibold text-text-primary'
-                  }`}>
-                  My Household
-                </Text>
-              </Pressable>
+                My Household
+              </Text>
+            </Pressable>
 
-              {/* Item 2: Manage Family */}
-              <Pressable
-                onPress={() =>
-                  hasHousehold && navigateTo('members', '/(households)/family-management')
-                }
-                disabled={!hasHousehold}
-                style={{ opacity: !hasHousehold ? 0.4 : 1 }}
-                className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 ${
+            {/* Item 2: Manage Family */}
+            <Pressable
+              onPress={() =>
+                hasHousehold && navigateTo('members', '/(households)/family-management')
+              }
+              disabled={!hasHousehold}
+              style={{ opacity: !hasHousehold ? 0.4 : 1 }}
+              className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 ${
+                activeRoute === 'members'
+                  ? 'bg-brand-primary shadow-sm'
+                  : hasHousehold
+                    ? 'active:bg-surface-surfaceVariant'
+                    : ''
+              }`}>
+              <Icon
+                as={Users}
+                size={22}
+                className={activeRoute === 'members' ? 'text-white' : 'text-text-primary'}
+              />
+              <Text
+                className={`font-cairo text-[15px] ${
                   activeRoute === 'members'
-                    ? 'bg-brand-primary shadow-sm'
-                    : hasHousehold
-                      ? 'active:bg-surface-surfaceVariant'
-                      : ''
+                    ? 'font-bold text-white'
+                    : 'font-semibold text-text-primary'
                 }`}>
-                <Icon
-                  as={Users}
-                  size={22}
-                  className={activeRoute === 'members' ? 'text-white' : 'text-text-primary'}
-                />
-                <Text
-                  className={`font-cairo text-[15px] ${
-                    activeRoute === 'members'
-                      ? 'font-bold text-white'
-                      : 'font-semibold text-text-primary'
-                  }`}>
-                  Manage Family
-                </Text>
-              </Pressable>
+                Manage Family
+              </Text>
+            </Pressable>
 
-              {/* Item 3: Sent Invitations */}
-              <Pressable
-                onPress={() =>
-                  hasHousehold && isManager && navigateTo('sent_invites', '/(households)/invite')
-                }
-                disabled={!hasHousehold || !isManager}
-                style={{ opacity: !hasHousehold || !isManager ? 0.4 : 1 }}
-                className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 ${
+            {/* Item 3: Sent Invitations */}
+            <Pressable
+              onPress={() =>
+                hasHousehold && isManager && navigateTo('sent_invites', '/(households)/invite')
+              }
+              disabled={!hasHousehold || !isManager}
+              style={{ opacity: !hasHousehold || !isManager ? 0.4 : 1 }}
+              className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 ${
+                activeRoute === 'sent_invites'
+                  ? 'bg-brand-primary shadow-sm'
+                  : hasHousehold && isManager
+                    ? 'active:bg-surface-surfaceVariant'
+                    : ''
+              }`}>
+              <Icon
+                as={Send}
+                size={22}
+                className={activeRoute === 'sent_invites' ? 'text-white' : 'text-text-primary'}
+              />
+              <Text
+                className={`font-cairo text-[15px] ${
                   activeRoute === 'sent_invites'
-                    ? 'bg-brand-primary shadow-sm'
-                    : hasHousehold && isManager
-                      ? 'active:bg-surface-surfaceVariant'
-                      : ''
+                    ? 'font-bold text-white'
+                    : 'font-semibold text-text-primary'
                 }`}>
-                <Icon
-                  as={Send}
-                  size={22}
-                  className={activeRoute === 'sent_invites' ? 'text-white' : 'text-text-primary'}
-                />
-                <Text
-                  className={`font-cairo text-[15px] ${
-                    activeRoute === 'sent_invites'
-                      ? 'font-bold text-white'
-                      : 'font-semibold text-text-primary'
-                  }`}>
-                  Sent Invitations
-                </Text>
-              </Pressable>
+                Sent Invitations
+              </Text>
+            </Pressable>
 
-              {/* Item 4: Received Invitations */}
-              <Pressable
-                onPress={() =>
-                  !hasHousehold && navigateTo('received_invites', '/(households)/invitations')
-                }
-                disabled={hasHousehold}
-                style={{ opacity: hasHousehold ? 0.4 : 1 }}
-                className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 ${
+            {/* Item 4: Received Invitations */}
+            <Pressable
+              onPress={() =>
+                !hasHousehold && navigateTo('received_invites', '/(households)/invitations')
+              }
+              disabled={hasHousehold}
+              style={{ opacity: hasHousehold ? 0.4 : 1 }}
+              className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 ${
+                activeRoute === 'received_invites'
+                  ? 'bg-brand-primary shadow-sm'
+                  : !hasHousehold
+                    ? 'active:bg-surface-surfaceVariant active:opacity-80'
+                    : ''
+              }`}>
+              <Icon
+                as={Mail}
+                size={22}
+                className={activeRoute === 'received_invites' ? 'text-white' : 'text-text-primary'}
+              />
+              <Text
+                className={`font-cairo text-[15px] ${
                   activeRoute === 'received_invites'
-                    ? 'bg-brand-primary shadow-sm'
-                    : !hasHousehold
-                      ? 'active:bg-surface-surfaceVariant active:opacity-80'
-                      : ''
+                    ? 'font-bold text-white'
+                    : 'font-semibold text-text-primary'
                 }`}>
-                <Icon
-                  as={Mail}
-                  size={22}
-                  className={
-                    activeRoute === 'received_invites' ? 'text-white' : 'text-text-primary'
-                  }
-                />
-                <Text
-                  className={`font-cairo text-[15px] ${
-                    activeRoute === 'received_invites'
-                      ? 'font-bold text-white'
-                      : 'font-semibold text-text-primary'
-                  }`}>
-                  Received Invitations
-                </Text>
-              </Pressable>
+                Received Invitations
+              </Text>
+            </Pressable>
 
-              {/* Item 5: Profile & Settings */}
-              <Pressable
-                onPress={() => navigateTo('profile', '/profile')}
-                className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 active:opacity-80 ${
+            {/* Item 5: Profile & Settings */}
+            <Pressable
+              onPress={() => navigateTo('profile', '/profile')}
+              className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 active:opacity-80 ${
+                activeRoute === 'profile'
+                  ? 'bg-brand-primary shadow-sm'
+                  : 'active:bg-surface-surfaceVariant'
+              }`}>
+              <Icon
+                as={User}
+                size={22}
+                className={activeRoute === 'profile' ? 'text-white' : 'text-text-primary'}
+              />
+              <Text
+                className={`font-cairo text-[15px] ${
                   activeRoute === 'profile'
-                    ? 'bg-brand-primary shadow-sm'
-                    : 'active:bg-surface-surfaceVariant'
+                    ? 'font-bold text-white'
+                    : 'font-semibold text-text-primary'
                 }`}>
+                Profile & Settings
+              </Text>
+            </Pressable>
+
+            {/* Item 6: Light/Dark Theme Switch Toggle */}
+            <Pressable
+              onPress={toggleTheme}
+              className="active:bg-surface-surfaceVariant flex-row items-center justify-between rounded-full px-4 py-3.5 active:opacity-80"
+              accessibilityRole="button"
+              accessibilityLabel={
+                resolvedMode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+              }>
+              <View className="flex-row items-center gap-3.5">
                 <Icon
-                  as={User}
+                  as={resolvedMode === 'dark' ? Moon : Sun}
                   size={22}
-                  className={activeRoute === 'profile' ? 'text-white' : 'text-text-primary'}
+                  className="text-text-primary"
                 />
-                <Text
-                  className={`font-cairo text-[15px] ${
-                    activeRoute === 'profile'
-                      ? 'font-bold text-white'
-                      : 'font-semibold text-text-primary'
-                  }`}>
-                  Profile & Settings
+                <Text className="font-cairo text-[15px] font-semibold text-text-primary">
+                  {resolvedMode === 'dark' ? 'Dark Mode' : 'Light Mode'}
                 </Text>
-              </Pressable>
+              </View>
 
-              {/* Item 6: Light/Dark Theme Switch Toggle */}
-              <Pressable
-                onPress={toggleTheme}
-                className="active:bg-surface-surfaceVariant flex-row items-center justify-between rounded-full px-4 py-3.5 active:opacity-80"
-                accessibilityRole="button"
-                accessibilityLabel={
-                  resolvedMode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
-                }>
-                <View className="flex-row items-center gap-3.5">
-                  <Icon
-                    as={resolvedMode === 'dark' ? Moon : Sun}
-                    size={22}
-                    className="text-text-primary"
-                  />
-                  <Text className="font-cairo text-[15px] font-semibold text-text-primary">
-                    {resolvedMode === 'dark' ? 'Dark Mode' : 'Light Mode'}
-                  </Text>
-                </View>
-
-                {/* Switch shape */}
+              {/* Switch shape */}
+              <View
+                className={[
+                  'h-6 w-11 justify-center rounded-full p-0.5',
+                  resolvedMode === 'dark' ? 'bg-brand-primary' : 'bg-surface-border',
+                ].join(' ')}>
                 <View
                   className={[
-                    'h-6 w-11 justify-center rounded-full p-0.5',
-                    resolvedMode === 'dark' ? 'bg-brand-primary' : 'bg-surface-border',
-                  ].join(' ')}>
-                  <View
-                    className={[
-                      'h-5 w-5 rounded-full bg-white shadow-sm',
-                      resolvedMode === 'dark' ? 'translate-x-[20px]' : 'translate-x-0',
-                    ].join(' ')}
-                  />
-                </View>
-              </Pressable>
-            </View>
+                    'h-5 w-5 rounded-full bg-white shadow-sm',
+                    resolvedMode === 'dark' ? 'translate-x-[20px]' : 'translate-x-0',
+                  ].join(' ')}
+                />
+              </View>
+            </Pressable>
+          </View>
 
-            {/* ── 3. Footer (Sign Out Button) ── */}
-            <View className="border-t border-surface-border bg-surface-surface p-4">
-              <Pressable
-                onPress={handleOpenLogoutModal}
-                className="h-12 w-full flex-row items-center justify-center gap-2 rounded-full active:opacity-90"
-                style={{ backgroundColor: '#C82333' }}
-                accessibilityRole="button"
-                accessibilityLabel="Sign Out">
-                <Icon as={LogOut} size={20} color="#ffffff" />
-                <Text className="font-cairo text-[16px] font-bold text-white">Sign Out</Text>
-              </Pressable>
-            </View>
-          </Animated.View>
-        </View>
-      </Modal>
+          {/* ── 3. Footer (Sign Out Button) ── */}
+          <View
+            className="border-t border-surface-border bg-surface-surface px-4 pt-4"
+            style={{ paddingBottom: Math.max(insets.bottom, 16) }}>
+            <Pressable
+              onPress={handleOpenLogoutModal}
+              className="h-12 w-full flex-row items-center justify-center gap-2 rounded-full active:opacity-90"
+              style={{ backgroundColor: '#C82333' }}
+              accessibilityRole="button"
+              accessibilityLabel="Sign Out">
+              <Icon as={LogOut} size={20} color="#ffffff" />
+              <Text className="font-cairo text-[16px] font-bold text-white">Sign Out</Text>
+            </Pressable>
+          </View>
+        </Animated.View>
+      </Animated.View>
 
       {/* Logout Confirmation Modal */}
       <Modal
@@ -384,7 +429,7 @@ export function AppDrawer() {
           </Pressable>
         </Pressable>
       </Modal>
-    </>
+    </View>
   );
 }
 

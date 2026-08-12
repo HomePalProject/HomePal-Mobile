@@ -3,8 +3,10 @@ import { View, FlatList, ActivityIndicator, Switch, RefreshControl } from 'react
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '@/src/components/ui/text';
 import { CheckCircle2 } from 'lucide-react-native';
+import { Icon } from '@/src/components/ui/icon';
 import { useColorScheme } from 'nativewind';
 import { lightColors, darkColors } from '@/src/theme/colors';
+import { useRouter } from 'expo-router';
 
 import { useOffers } from '../hooks/useOffers';
 import { useCategories } from '../hooks/useCategories';
@@ -15,6 +17,7 @@ import { FilterList } from '../components/FilterList';
 import { OfferCard } from '../components/OfferCard';
 
 export const OffersScreen = () => {
+  const router = useRouter();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
   const themeColors = isDark ? darkColors : lightColors;
@@ -70,7 +73,9 @@ export const OffersScreen = () => {
       <FlatList
         data={offers}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <OfferCard offer={item} />}
+        renderItem={({ item }) => (
+          <OfferCard offer={item} onPress={() => router.push(`/offers/${item.id}`)} />
+        )}
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
@@ -98,7 +103,8 @@ export const OffersScreen = () => {
 
             <View className="bg-surface-surfaceVariant mx-4 my-2 flex-row items-center justify-between rounded-xl border border-surface-border px-4 py-3">
               <View className="flex-row items-center gap-2">
-                <CheckCircle2
+                <Icon
+                  as={CheckCircle2}
                   size={20}
                   className={params.activeOnly ? 'text-brand-primary' : 'text-text-disabled'}
                 />
