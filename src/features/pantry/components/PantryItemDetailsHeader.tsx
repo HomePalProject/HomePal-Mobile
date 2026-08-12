@@ -17,7 +17,7 @@ export function PantryItemDetailsHeader({
       {/* Back Button */}
       <Pressable
         onPress={onBackPress}
-        className="bg-surface-surfaceVariant h-10 w-10 items-center justify-center rounded-radius-full active:opacity-70"
+        className="bg-surface-surfaceVariant h-10 w-10 items-center justify-center rounded-radius-full active:scale-90 active:opacity-70"
         accessibilityRole="button"
         accessibilityLabel="Go back">
         <Icon as={ArrowLeft} size={20} className="text-text-primary" />
@@ -29,7 +29,7 @@ export function PantryItemDetailsHeader({
       {/* Edit (Pencil) Button */}
       <Pressable
         onPress={onEditPress}
-        className="bg-surface-surfaceVariant h-10 w-10 items-center justify-center rounded-radius-full active:opacity-70"
+        className="bg-surface-surfaceVariant h-10 w-10 items-center justify-center rounded-radius-full active:scale-90 active:opacity-70"
         accessibilityRole="button"
         accessibilityLabel="Edit item">
         <Icon as={Pencil} size={20} className="text-text-primary" />

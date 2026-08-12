@@ -21,7 +21,7 @@ export function PantryCategoryFilters({
         contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}>
         <Pressable
           onPress={() => onSelectCategory('all')}
-          className={`rounded-radius-full px-spacing-16 py-spacing-8 ${
+          className={`rounded-radius-full px-spacing-16 py-spacing-8 active:scale-95 active:opacity-80 ${
             selectedCategoryId === 'all'
               ? 'bg-brand-primary'
               : 'bg-surface-surfaceVariant border border-surface-border'
@@ -40,7 +40,7 @@ export function PantryCategoryFilters({
             <Pressable
               key={category.id}
               onPress={() => onSelectCategory(category.id)}
-              className={`rounded-radius-full px-spacing-16 py-spacing-8 ${
+              className={`rounded-radius-full px-spacing-16 py-spacing-8 active:scale-95 active:opacity-80 ${
                 isSelected
                   ? 'bg-brand-primary'
                   : 'bg-surface-surfaceVariant border border-surface-border'

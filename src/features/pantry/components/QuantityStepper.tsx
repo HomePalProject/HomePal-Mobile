@@ -2,31 +2,27 @@ import React, { useRef } from 'react';
 import { View, Text, Pressable, TextInput } from 'react-native';
 import { Minus, Plus } from 'lucide-react-native';
 import { Icon } from '@/src/components/ui/icon';
+import * as Haptics from 'expo-haptics';
 
 interface QuantityStepperProps {
   value: number;
   onChange: (value: number) => void;
-  unitSymbol?: string;
   min?: number;
   max?: number;
 }
 
-export function QuantityStepper({
-  value,
-  onChange,
-  unitSymbol,
-  min = 0,
-  max = 9999,
-}: QuantityStepperProps) {
+export function QuantityStepper({ value, onChange, min = 0, max = 9999 }: QuantityStepperProps) {
   const inputRef = useRef<TextInput>(null);
 
   const handleDecrement = () => {
     const next = Math.max(min, value - 1);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onChange(next);
   };
 
   const handleIncrement = () => {
     const next = Math.min(max, value + 1);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     onChange(next);
   };
 
@@ -48,7 +44,7 @@ export function QuantityStepper({
       <Pressable
         onPress={handleDecrement}
         disabled={isDecrementDisabled}
-        className="h-full items-center justify-center bg-surface-surface-variant px-spacing-16 active:opacity-60"
+        className="h-full items-center justify-center bg-surface-surface-variant px-spacing-16 active:scale-95 active:opacity-60"
         accessibilityRole="button"
         accessibilityLabel="Decrease quantity">
         <Icon
@@ -61,7 +57,7 @@ export function QuantityStepper({
       {/* Divider */}
       <View className="h-full w-px bg-surface-border" />
 
-      {/* Center: Number Input + Unit Symbol */}
+      {/* Center: Number Input */}
       <View className="flex-1 flex-row items-center justify-center gap-spacing-8 px-spacing-8">
         <TextInput
           ref={inputRef}
@@ -73,9 +69,6 @@ export function QuantityStepper({
           className="text-body min-w-[40px] font-cairo font-bold text-text-primary"
           accessibilityLabel="Quantity"
         />
-        {unitSymbol ? (
-          <Text className="text-body font-cairo text-text-secondary">{unitSymbol}</Text>
-        ) : null}
       </View>
 
       {/* Divider */}
@@ -85,7 +78,7 @@ export function QuantityStepper({
       <Pressable
         onPress={handleIncrement}
         disabled={isIncrementDisabled}
-        className="h-full items-center justify-center bg-surface-surface-variant px-spacing-16 active:opacity-60"
+        className="h-full items-center justify-center bg-surface-surface-variant px-spacing-16 active:scale-95 active:opacity-60"
         accessibilityRole="button"
         accessibilityLabel="Increase quantity">
         <Icon

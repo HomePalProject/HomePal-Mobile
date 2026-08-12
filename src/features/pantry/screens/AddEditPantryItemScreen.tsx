@@ -11,6 +11,7 @@ import {
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { Box, Ruler, Trash2 } from 'lucide-react-native';
 import { getCategoryIconConfig } from '../components/CategorySelectorSheet';
 import { Icon } from '@/src/components/ui/icon';
@@ -28,7 +29,6 @@ import {
   AddEditPantryItemHeader,
   AddEditPantryItemBottomBar,
   DeleteConfirmationModal,
-  AISuggestionCard,
   ImagePickerSheet,
   AIScanModal,
   PantryNotificationModal,
@@ -156,6 +156,7 @@ export default function AddEditPantryItemScreen() {
       } else {
         await addItem(payload);
       }
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.back();
     } catch {
       Alert.alert('Error', 'Failed to save item. Please try again.');
@@ -172,6 +173,7 @@ export default function AddEditPantryItemScreen() {
     try {
       await removeItem(itemId);
       setDeleteVisible(false);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.replace('/(tabs)/pantry');
     } catch {
       Alert.alert('Error', 'Failed to remove item. Please try again.');
@@ -279,6 +281,7 @@ export default function AddEditPantryItemScreen() {
 
       await Promise.all(promises);
 
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setIsScanModalVisible(false);
       router.back();
     } catch {
@@ -299,7 +302,7 @@ export default function AddEditPantryItemScreen() {
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={0}>
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}>
         {/* Header */}
         <AddEditPantryItemHeader
           isEditMode={isEditMode}
@@ -339,12 +342,7 @@ export default function AddEditPantryItemScreen() {
           <View className="flex-row gap-spacing-8">
             <View className="flex-1">
               <FieldLabel label="Quantity" required />
-              <QuantityStepper
-                value={quantity}
-                onChange={setQuantity}
-                unitSymbol={selectedUnit?.symbol ?? undefined}
-                min={0}
-              />
+              <QuantityStepper value={quantity} onChange={setQuantity} min={0} />
             </View>
 
             <View className="flex-1">
@@ -378,13 +376,11 @@ export default function AddEditPantryItemScreen() {
           {/* Expiration Date */}
           <ExpirationDateField value={expireDate} onPress={() => setIsDatePickerVisible(true)} />
 
-          <AISuggestionCard />
-
           {/* Remove Button */}
           {isEditMode ? (
             <Pressable
               onPress={handleRemove}
-              className="flex-row items-center justify-center gap-spacing-8 rounded-radius-large border border-status-error py-spacing-16 active:opacity-70"
+              className="flex-row items-center justify-center gap-spacing-8 rounded-radius-large border border-status-error py-spacing-16 active:scale-95 active:opacity-70"
               accessibilityRole="button"
               accessibilityLabel="Remove item from pantry">
               <Icon as={Trash2} size={18} className="text-status-error" />

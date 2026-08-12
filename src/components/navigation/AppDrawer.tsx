@@ -10,13 +10,14 @@ import {
   Easing,
 } from 'react-native';
 import { router, Href, usePathname } from 'expo-router';
-import { Home, Users, Send, Mail, User, LogOut } from 'lucide-react-native';
+import { Home, Users, Send, Mail, User, LogOut, Sun, Moon } from 'lucide-react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { useAppSelector } from '@/src/store';
 import { useAppDispatch } from '@/src/store';
 import { logoutUser } from '@/src/store/slices/authSlice';
 import { closeDrawer } from '@/src/store/slices/uiSlice';
+import { useTheme } from '@/src/providers/ThemeProvider';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const DRAWER_WIDTH = Math.min(SCREEN_WIDTH * 0.82, 320);
@@ -24,6 +25,11 @@ const DRAWER_WIDTH = Math.min(SCREEN_WIDTH * 0.82, 320);
 export function AppDrawer() {
   const dispatch = useAppDispatch();
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+  const { resolvedMode, setMode } = useTheme();
+
+  const toggleTheme = () => {
+    setMode(resolvedMode === 'dark' ? 'light' : 'dark');
+  };
 
   const isOpen = useAppSelector((state) => state.ui.isDrawerOpen);
   const handleCloseDrawer = () => dispatch(closeDrawer());
@@ -290,6 +296,40 @@ export function AppDrawer() {
                   }`}>
                   Profile & Settings
                 </Text>
+              </Pressable>
+
+              {/* Item 6: Light/Dark Theme Switch Toggle */}
+              <Pressable
+                onPress={toggleTheme}
+                className="active:bg-surface-surfaceVariant flex-row items-center justify-between rounded-full px-4 py-3.5 active:opacity-80"
+                accessibilityRole="button"
+                accessibilityLabel={
+                  resolvedMode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+                }>
+                <View className="flex-row items-center gap-3.5">
+                  <Icon
+                    as={resolvedMode === 'dark' ? Moon : Sun}
+                    size={22}
+                    className="text-text-primary"
+                  />
+                  <Text className="font-cairo text-[15px] font-semibold text-text-primary">
+                    {resolvedMode === 'dark' ? 'Dark Mode' : 'Light Mode'}
+                  </Text>
+                </View>
+
+                {/* Switch shape */}
+                <View
+                  className={[
+                    'h-6 w-11 justify-center rounded-full p-0.5',
+                    resolvedMode === 'dark' ? 'bg-brand-primary' : 'bg-surface-border',
+                  ].join(' ')}>
+                  <View
+                    className={[
+                      'h-5 w-5 rounded-full bg-white shadow-sm',
+                      resolvedMode === 'dark' ? 'translate-x-[20px]' : 'translate-x-0',
+                    ].join(' ')}
+                  />
+                </View>
               </Pressable>
             </View>
 

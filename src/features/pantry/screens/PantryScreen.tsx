@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, RefreshControl, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
+import * as Haptics from 'expo-haptics';
 import { usePantry } from '../hooks/usePantry';
 import {
   PantryHeader,
@@ -36,6 +37,26 @@ export default function PantryScreen() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Identify the pantry item closest to its expiration date (strictly in the future)
+  const urgentItem = useMemo(() => {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    const validItems = items.filter((item) => {
+      if (!item.expireDate) return false;
+      const expiry = new Date(item.expireDate);
+      return expiry > now;
+    });
+
+    if (validItems.length === 0) return null;
+
+    return [...validItems].sort((a, b) => {
+      const dateA = new Date(a.expireDate!);
+      const dateB = new Date(b.expireDate!);
+      return dateA.getTime() - dateB.getTime();
+    })[0];
+  }, [items]);
 
   // Scan Modal States
   const [isScanModalVisible, setIsScanModalVisible] = useState(false);
@@ -171,6 +192,7 @@ export default function PantryScreen() {
 
       await Promise.all(promises);
 
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setIsScanModalVisible(false);
       loadPantry();
       setNotification({
@@ -220,7 +242,7 @@ export default function PantryScreen() {
           onSelectCategory={setSelectedCategoryId}
         />
         <PantrySearchBar value={searchQuery} onChangeText={setSearchQuery} />
-        <PantryRecommendationCard />
+        {urgentItem && <PantryRecommendationCard itemName={urgentItem.name} />}
         <PantryList
           items={filteredItems}
           refreshControl={

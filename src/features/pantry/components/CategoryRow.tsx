@@ -112,8 +112,9 @@ export function CategoryRow({ item, isSelected, onPress }: CategoryRowProps) {
       accessibilityRole="button"
       accessibilityState={{ selected: isSelected }}>
       {/* Category Icon with soft tinted background */}
-      <View className={`h-10 w-10 items-center justify-center rounded-radius-full ${bg}`}>
-        <Icon as={icon} size={20} className={color} />
+      {/* <View className={`h-10 w-10 items-center justify-center rounded-radius-full ${bg}`}> */}
+      <View className="h-12 w-12 items-center justify-center rounded-s-radius-medium bg-surface-background">
+        <Icon as={icon} size={26} className={color} />
       </View>
 
       {/* Name + Optional Description */}

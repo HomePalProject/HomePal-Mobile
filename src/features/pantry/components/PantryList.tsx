@@ -2,6 +2,7 @@ import React from 'react';
 import { View, FlatList } from 'react-native';
 import { PantryItemResponse } from '@/src/types/api';
 import { PantryItemCard } from './PantryItemCard';
+import Animated, { LinearTransition, FadeIn, FadeOut } from 'react-native-reanimated';
 
 interface PantryListProps {
   items: PantryItemResponse[];
@@ -26,7 +27,15 @@ export function PantryList({ items, onItemPress, refreshControl }: PantryListPro
         paddingTop: 12,
         paddingBottom: 32,
       }}
-      renderItem={({ item }) => <PantryItemCard item={item} onPress={onItemPress} />}
+      renderItem={({ item }) => (
+        <Animated.View
+          layout={LinearTransition}
+          entering={FadeIn.duration(200)}
+          exiting={FadeOut.duration(200)}
+          className="w-[48%]">
+          <PantryItemCard item={item} onPress={onItemPress} />
+        </Animated.View>
+      )}
     />
   );
 }

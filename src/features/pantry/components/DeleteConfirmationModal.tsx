@@ -42,7 +42,7 @@ export function DeleteConfirmationModal({
             <Pressable
               onPress={onConfirm}
               disabled={isLoading}
-              className={`py-spacing-12 h-8 w-full items-center justify-center rounded-radius-full bg-status-error active:opacity-85 ${
+              className={`py-spacing-12 h-8 w-full items-center justify-center rounded-radius-full bg-status-error active:scale-95 active:opacity-85 ${
                 isLoading ? 'opacity-55' : ''
               }`}
               accessibilityRole="button"
@@ -56,7 +56,7 @@ export function DeleteConfirmationModal({
             <Pressable
               onPress={onCancel}
               disabled={isLoading}
-              className="py-spacing-12 h-8 w-full items-center justify-center rounded-radius-full border border-surface-border bg-surface-surface active:opacity-75"
+              className="py-spacing-12 h-8 w-full items-center justify-center rounded-radius-full border border-surface-border bg-surface-surface active:scale-95 active:opacity-75"
               accessibilityRole="button"
               accessibilityLabel="Cancel removal">
               <Text className="text-body font-cairo font-bold text-text-primary">Cancel</Text>

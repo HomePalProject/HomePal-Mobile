@@ -3,6 +3,7 @@ import { View, Text, ScrollView, Pressable, Image, Alert, ActivityIndicator } fr
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import * as Haptics from 'expo-haptics';
 import {
   Calendar,
   Box,
@@ -135,6 +136,7 @@ export default function PantryItemDetailsScreen() {
 
   const handleUpdateQuantity = async (newQty: number) => {
     if (newQty < 0 || isUpdating) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setIsUpdating(true);
     try {
       await editItem(item.id, {
@@ -161,6 +163,7 @@ export default function PantryItemDetailsScreen() {
     try {
       await removeItem(item.id);
       setDeleteVisible(false);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.replace('/pantry');
     } catch {
       setNotification({
@@ -249,7 +252,7 @@ export default function PantryItemDetailsScreen() {
               <Pressable
                 onPress={() => handleUpdateQuantity(item.quantity - 1)}
                 disabled={isUpdating || item.quantity <= 0}
-                className="h-7 w-7 items-center justify-center rounded-radius-full bg-brand-primary active:opacity-60">
+                className="h-7 w-7 items-center justify-center rounded-radius-full bg-brand-primary active:scale-90 active:opacity-60">
                 <Icon as={Minus} size={14} className="text-text-inverse" />
               </Pressable>
 
@@ -264,7 +267,7 @@ export default function PantryItemDetailsScreen() {
               <Pressable
                 onPress={() => handleUpdateQuantity(item.quantity + 1)}
                 disabled={isUpdating}
-                className="h-7 w-7 items-center justify-center rounded-radius-full bg-brand-primary active:opacity-60">
+                className="h-7 w-7 items-center justify-center rounded-radius-full bg-brand-primary active:scale-90 active:opacity-60">
                 <Icon as={Plus} size={14} className="text-text-inverse" />
               </Pressable>
             </View>
@@ -331,7 +334,7 @@ export default function PantryItemDetailsScreen() {
       <View className="border-t border-surface-border bg-surface-surface px-spacing-16 py-spacing-16">
         <Pressable
           onPress={() => setDeleteVisible(true)}
-          className="flex-row items-center justify-center gap-spacing-8 rounded-radius-full border border-status-error bg-surface-surface py-spacing-16 active:opacity-75"
+          className="flex-row items-center justify-center gap-spacing-8 rounded-radius-full border border-status-error bg-surface-surface py-spacing-16 active:scale-95 active:opacity-75"
           accessibilityRole="button"
           accessibilityLabel="Delete item">
           <Icon as={Trash2} size={18} className="text-status-error" />

@@ -60,23 +60,23 @@ export function PantryFAB({ onAddPress, onScanPress }: PantryFABProps) {
   };
 
   return (
-    <View className="gap-spacing-12 absolute bottom-6 right-4 items-end">
+    <View className="absolute bottom-6 right-4 items-end gap-spacing-8">
       {/* Speed-dial: Scan Items or Receipt */}
       <Animated.View style={scanItemStyle} pointerEvents={isOpen ? 'auto' : 'none'}>
         <Pressable
           onPress={handleScanPress}
-          className="gap-spacing-12 flex-row items-center"
+          className="flex-row items-center gap-spacing-4 active:scale-95 active:opacity-80"
           accessibilityRole="button"
           accessibilityLabel="Scan Items or Receipt">
           {/* Pill Label */}
-          <View className="rounded-radius-full bg-surface-surface px-spacing-16 py-spacing-8 shadow-md">
+          <View className="rounded-radius-full border border-surface-border bg-surface-surface px-spacing-16 py-spacing-8 shadow-md">
             <Text className="text-body font-cairo font-bold text-text-primary">
               Scan Items or Receipt
             </Text>
           </View>
           {/* Amber Icon Button */}
-          <View className="bg-brand-secondary h-12 w-12 items-center justify-center rounded-radius-full shadow-md">
-            <Icon as={ScanLine} size={22} className="text-text-primary" />
+          <View className="h-12 w-12 items-center justify-center rounded-radius-full bg-brand-primary shadow-md">
+            <Icon as={ScanLine} size={22} className="text-text-inverse" />
           </View>
         </Pressable>
       </Animated.View>
@@ -85,16 +85,16 @@ export function PantryFAB({ onAddPress, onScanPress }: PantryFABProps) {
       <Animated.View style={addItemStyle} pointerEvents={isOpen ? 'auto' : 'none'}>
         <Pressable
           onPress={handleAddPress}
-          className="gap-spacing-12 flex-row items-center"
+          className="flex-row items-center gap-spacing-4 active:scale-95 active:opacity-80"
           accessibilityRole="button"
           accessibilityLabel="Add Item">
           {/* Pill Label */}
-          <View className="rounded-radius-full bg-surface-surface px-spacing-16 py-spacing-8 shadow-md">
+          <View className="rounded-radius-full border border-surface-border bg-surface-surface px-spacing-16 py-spacing-8 shadow-md">
             <Text className="text-body font-cairo font-bold text-text-primary">Add Item</Text>
           </View>
           {/* Green Icon Button */}
           <View className="h-12 w-12 items-center justify-center rounded-radius-full bg-brand-primary shadow-md">
-            <Icon as={Package} size={22} className="text-text-primary" />
+            <Icon as={Package} size={22} className="text-text-inverse" />
           </View>
         </Pressable>
       </Animated.View>
@@ -102,13 +102,13 @@ export function PantryFAB({ onAddPress, onScanPress }: PantryFABProps) {
       {/* Main FAB */}
       <Pressable
         onPress={toggleMenu}
-        className="h-14 w-14 items-center justify-center rounded-radius-full bg-brand-primary shadow-lg active:opacity-80"
+        className="h-14 w-14 items-center justify-center rounded-radius-full bg-brand-primary shadow-lg active:scale-90 active:opacity-80"
         accessibilityRole="button"
         accessibilityLabel={isOpen ? 'Close menu' : 'Open add item menu'}>
         {isOpen ? (
-          <Icon as={X} size={24} className="text-text-primary" />
+          <Icon as={X} size={24} className="text-text-inverse" />
         ) : (
-          <Icon as={Plus} size={24} className="text-text-primary" />
+          <Icon as={Plus} size={24} className="text-text-inverse" />
         )}
       </Pressable>
     </View>

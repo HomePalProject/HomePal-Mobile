@@ -72,7 +72,7 @@ export function PantryItemCard({ item, onPress }: PantryItemCardProps) {
           });
         }
       }}
-      className="p-spacing-12 w-[48%] gap-spacing-8 rounded-radius-large border border-surface-border bg-surface-surface shadow-sm active:opacity-80">
+      className="p-spacing-12 w-full gap-spacing-8 rounded-radius-large border border-surface-border bg-surface-surface shadow-sm active:scale-95 active:opacity-80">
       {/* Category / Product Image (Fixed height & rounded corners matching Figma 60px) */}
       <View className="bg-surface-surfaceVariant h-16 w-full items-center justify-center overflow-hidden rounded-radius-medium">
         {imageUrl ? (
