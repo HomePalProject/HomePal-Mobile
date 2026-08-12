@@ -10,20 +10,21 @@ import {
   Easing,
 } from 'react-native';
 import { router, Href, usePathname } from 'expo-router';
-import { Home, Users, Send, Mail, User, LogOut } from 'lucide-react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Home, Users, Send, Mail, User, LogOut, Sun, Moon } from 'lucide-react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { useAppSelector } from '@/src/store';
 import { useAppDispatch } from '@/src/store';
 import { logoutUser } from '@/src/store/slices/authSlice';
 import { closeDrawer } from '@/src/store/slices/uiSlice';
+import { useTheme } from '@/src/providers/ThemeProvider';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const DRAWER_WIDTH = Math.min(SCREEN_WIDTH * 0.82, 320);
 
 import { useColorScheme } from 'nativewind';
 import { lightColors, darkColors } from '@/src/theme/colors';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // ... (in the component)
 export function AppDrawer({ children }: { children?: React.ReactNode }) {
@@ -32,6 +33,11 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
   const { colorScheme } = useColorScheme();
   const themeColors = colorScheme === 'dark' ? darkColors : lightColors;
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+  const { resolvedMode, setMode } = useTheme();
+
+  const toggleTheme = () => {
+    setMode(resolvedMode === 'dark' ? 'light' : 'dark');
+  };
 
   const isOpen = useAppSelector((state) => state.ui.isDrawerOpen);
   const handleCloseDrawer = () => dispatch(closeDrawer());
@@ -201,30 +207,174 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
             </View>
           </View>
 
+          {/* ── 2. Navigation Menu Items ── */}
           <View className="flex-1 bg-surface-surface px-3 pt-4" style={{ gap: 6 }}>
-            <DrawerItem route="household" icon={Home} label="My Household" href="/(tabs)" />
-            <DrawerItem
-              route="members"
-              icon={Users}
-              label="Manage Family"
-              href="/(households)/family-management"
+            {/* Item 1: My Household */}
+            <Pressable
+              onPress={() => navigateTo('household', '/(tabs)')}
+              className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 active:opacity-80 ${
+                activeRoute === 'household'
+                  ? 'bg-brand-primary shadow-sm'
+                  : 'active:bg-surface-surfaceVariant'
+              }`}>
+              <Icon
+                as={Home}
+                size={22}
+                className={activeRoute === 'household' ? 'text-white' : 'text-text-primary'}
+              />
+              <Text
+                className={`font-cairo text-[15px] ${
+                  activeRoute === 'household'
+                    ? 'font-bold text-white'
+                    : 'font-semibold text-text-primary'
+                }`}>
+                My Household
+              </Text>
+            </Pressable>
+
+            {/* Item 2: Manage Family */}
+            <Pressable
+              onPress={() =>
+                hasHousehold && navigateTo('members', '/(households)/family-management')
+              }
               disabled={!hasHousehold}
-            />
-            <DrawerItem
-              route="sent_invites"
-              icon={Send}
-              label="Sent Invitations"
-              href="/(households)/invite"
+              style={{ opacity: !hasHousehold ? 0.4 : 1 }}
+              className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 ${
+                activeRoute === 'members'
+                  ? 'bg-brand-primary shadow-sm'
+                  : hasHousehold
+                    ? 'active:bg-surface-surfaceVariant'
+                    : ''
+              }`}>
+              <Icon
+                as={Users}
+                size={22}
+                className={activeRoute === 'members' ? 'text-white' : 'text-text-primary'}
+              />
+              <Text
+                className={`font-cairo text-[15px] ${
+                  activeRoute === 'members'
+                    ? 'font-bold text-white'
+                    : 'font-semibold text-text-primary'
+                }`}>
+                Manage Family
+              </Text>
+            </Pressable>
+
+            {/* Item 3: Sent Invitations */}
+            <Pressable
+              onPress={() =>
+                hasHousehold && isManager && navigateTo('sent_invites', '/(households)/invite')
+              }
               disabled={!hasHousehold || !isManager}
-            />
-            <DrawerItem
-              route="received_invites"
-              icon={Mail}
-              label="Received Invitations"
-              href="/(households)/invitations"
+              style={{ opacity: !hasHousehold || !isManager ? 0.4 : 1 }}
+              className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 ${
+                activeRoute === 'sent_invites'
+                  ? 'bg-brand-primary shadow-sm'
+                  : hasHousehold && isManager
+                    ? 'active:bg-surface-surfaceVariant'
+                    : ''
+              }`}>
+              <Icon
+                as={Send}
+                size={22}
+                className={activeRoute === 'sent_invites' ? 'text-white' : 'text-text-primary'}
+              />
+              <Text
+                className={`font-cairo text-[15px] ${
+                  activeRoute === 'sent_invites'
+                    ? 'font-bold text-white'
+                    : 'font-semibold text-text-primary'
+                }`}>
+                Sent Invitations
+              </Text>
+            </Pressable>
+
+            {/* Item 4: Received Invitations */}
+            <Pressable
+              onPress={() =>
+                !hasHousehold && navigateTo('received_invites', '/(households)/invitations')
+              }
               disabled={hasHousehold}
-            />
-            <DrawerItem route="profile" icon={User} label="Profile & Settings" href="/profile" />
+              style={{ opacity: hasHousehold ? 0.4 : 1 }}
+              className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 ${
+                activeRoute === 'received_invites'
+                  ? 'bg-brand-primary shadow-sm'
+                  : !hasHousehold
+                    ? 'active:bg-surface-surfaceVariant active:opacity-80'
+                    : ''
+              }`}>
+              <Icon
+                as={Mail}
+                size={22}
+                className={activeRoute === 'received_invites' ? 'text-white' : 'text-text-primary'}
+              />
+              <Text
+                className={`font-cairo text-[15px] ${
+                  activeRoute === 'received_invites'
+                    ? 'font-bold text-white'
+                    : 'font-semibold text-text-primary'
+                }`}>
+                Received Invitations
+              </Text>
+            </Pressable>
+
+            {/* Item 5: Profile & Settings */}
+            <Pressable
+              onPress={() => navigateTo('profile', '/profile')}
+              className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 active:opacity-80 ${
+                activeRoute === 'profile'
+                  ? 'bg-brand-primary shadow-sm'
+                  : 'active:bg-surface-surfaceVariant'
+              }`}>
+              <Icon
+                as={User}
+                size={22}
+                className={activeRoute === 'profile' ? 'text-white' : 'text-text-primary'}
+              />
+              <Text
+                className={`font-cairo text-[15px] ${
+                  activeRoute === 'profile'
+                    ? 'font-bold text-white'
+                    : 'font-semibold text-text-primary'
+                }`}>
+                Profile & Settings
+              </Text>
+            </Pressable>
+
+            {/* Item 6: Light/Dark Theme Switch Toggle */}
+            <Pressable
+              onPress={toggleTheme}
+              className="active:bg-surface-surfaceVariant flex-row items-center justify-between rounded-full px-4 py-3.5 active:opacity-80"
+              accessibilityRole="button"
+              accessibilityLabel={
+                resolvedMode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+              }>
+              <View className="flex-row items-center gap-3.5">
+                <Icon
+                  as={resolvedMode === 'dark' ? Moon : Sun}
+                  size={22}
+                  className="text-text-primary"
+                />
+                <Text className="font-cairo text-[15px] font-semibold text-text-primary">
+                  {resolvedMode === 'dark' ? 'Dark Mode' : 'Light Mode'}
+                </Text>
+              </View>
+
+              {/* Switch shape */}
+              <View
+                className={[
+                  'h-6 w-11 justify-center rounded-full p-0.5',
+                  resolvedMode === 'dark' ? 'bg-brand-primary' : 'bg-surface-border',
+                ].join(' ')}>
+                <View
+                  className={[
+                    'h-5 w-5 rounded-full bg-white shadow-sm',
+                    resolvedMode === 'dark' ? 'translate-x-[20px]' : 'translate-x-0',
+                  ].join(' ')}
+                />
+              </View>
+            </Pressable>
           </View>
 
           {/* ── 3. Footer (Sign Out Button) ── */}
