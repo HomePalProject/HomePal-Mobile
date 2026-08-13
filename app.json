@@ -13,8 +13,9 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/icon-foreground.png",
+        "monochromeImage": "./assets/images/icon-foreground.png",
+        "backgroundColor": "#2A5347"
       },
       "package": "com.homepal.app"
     },
@@ -28,15 +29,20 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash.png",
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#FAF8F3",
+          "image": "./assets/images/splash-icon-light.png",
+          "dark": {
+            "backgroundColor": "#356859",
+            "image": "./assets/images/splash-icon-dark.png"
+          },
+          "imageWidth": 200,
+          "resizeMode": "contain"
         }
       ],
       "expo-status-bar",
       "expo-font",
       "expo-secure-store",
-      "@react-native-google-signin/google-signin"
+      "@react-native-google-signin/google-signin/app.plugin.js"
     ],
     "experiments": {
       "typedRoutes": true

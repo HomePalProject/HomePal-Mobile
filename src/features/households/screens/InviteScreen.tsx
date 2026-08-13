@@ -171,7 +171,7 @@ export function InviteScreen({
         {/* Hero Illustration */}
         <View className="w-full overflow-hidden rounded-2xl">
           <Image
-            source={require('@/assets/images/invite-illustration.png')}
+            source={require('@/src/assets/images/invite-illustration.png')}
             className="w-full"
             style={{ aspectRatio: 16 / 9 }}
             resizeMode="cover"
