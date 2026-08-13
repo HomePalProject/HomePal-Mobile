@@ -6,6 +6,7 @@ import { registerOnUnauthorizedCallback } from '@/src/services/api/client';
 import uiReducer from '@/src/store/slices/uiSlice';
 import profileReducer from '@/src/store/slices/profileSlice';
 import pantryReducer from '@/src/store/slices/pantrySlice';
+import shoppingListReducer from '@/src/store/slices/shoppingListSlice';
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     ui: uiReducer,
     profile: profileReducer,
     pantry: pantryReducer,
+    shoppingList: shoppingListReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

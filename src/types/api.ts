@@ -287,3 +287,47 @@ export interface MeasuringUnitResponse {
   symbol?: string | null;
   createdAt: string;
 }
+
+export interface ShoppingListItemResponse {
+  id: string;
+  shoppingListId: string;
+  name: string;
+  quantity: number;
+  portionCount: number;
+  price: number | null;
+  totalPrice: number | null;
+  unitId: string | null;
+  unitName: string | null;
+  unitSymbol: string | null;
+  categoryId: string | null;
+  categoryName: string | null;
+  offerId: string | null;
+  offerImagePath: string | null;
+  supermarketName: string | null;
+  supermarketLogoPath: string | null;
+  isPurchased: boolean;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string | null;
+}
+
+export interface CreateShoppingListItemRequest {
+  name: string;
+  quantity?: number;
+  portionCount?: number;
+  price?: number | null;
+  unitId?: string | null;
+  categoryId?: string | null;
+  notes?: string | null;
+}
+
+export interface UpdateShoppingListItemRequest {
+  name: string;
+  quantity?: number;
+  portionCount?: number;
+  price?: number | null;
+  unitId?: string | null;
+  categoryId?: string | null;
+  isPurchased?: boolean;
+  notes?: string | null;
+}
