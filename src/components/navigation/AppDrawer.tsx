@@ -10,7 +10,17 @@ import {
   Easing,
 } from 'react-native';
 import { router, Href, usePathname } from 'expo-router';
-import { Home, Users, Send, Mail, User, LogOut, Sun, Moon } from 'lucide-react-native';
+import {
+  Home,
+  Users,
+  Send,
+  Mail,
+  User,
+  LogOut,
+  Sun,
+  Moon,
+  ShoppingCart,
+} from 'lucide-react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { useAppSelector } from '@/src/store';
@@ -53,6 +63,8 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
     if (pathname === '/invite' || pathname === '/(households)/invite') return 'sent_invites';
     if (pathname === '/invitations' || pathname === '/(households)/invitations')
       return 'received_invites';
+    if (pathname === '/shopping-list' || pathname === '/(households)/shopping-list')
+      return 'shopping_list';
     if (pathname === '/profile' || pathname === '/(tabs)/profile') return 'profile';
     return '';
   }, [pathname]);
@@ -229,6 +241,35 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
                     : 'font-semibold text-text-primary'
                 }`}>
                 My Household
+              </Text>
+            </Pressable>
+
+            {/* Item 1.5: Shopping List */}
+            <Pressable
+              onPress={() =>
+                hasHousehold && navigateTo('shopping_list', '/(households)/shopping-list')
+              }
+              disabled={!hasHousehold}
+              style={{ opacity: !hasHousehold ? 0.4 : 1 }}
+              className={`flex-row items-center gap-3.5 rounded-full px-4 py-3.5 ${
+                activeRoute === 'shopping_list'
+                  ? 'bg-brand-primary shadow-sm'
+                  : hasHousehold
+                    ? 'active:bg-surface-surfaceVariant'
+                    : ''
+              }`}>
+              <Icon
+                as={ShoppingCart}
+                size={22}
+                className={activeRoute === 'shopping_list' ? 'text-white' : 'text-text-primary'}
+              />
+              <Text
+                className={`font-cairo text-[15px] ${
+                  activeRoute === 'shopping_list'
+                    ? 'font-bold text-white'
+                    : 'font-semibold text-text-primary'
+                }`}>
+                Shopping List
               </Text>
             </Pressable>
 
