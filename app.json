@@ -49,7 +49,11 @@
     },
     "extra": {
       "apiBaseUrl": "https://homepal.runasp.net/",
-      "googleWebClientId": "815260218319-25gl1soin1gf2cavndjoqmtt501dkn1s.apps.googleusercontent.com"
+      "googleWebClientId": "815260218319-25gl1soin1gf2cavndjoqmtt501dkn1s.apps.googleusercontent.com",
+      "router": {},
+      "eas": {
+        "projectId": "a1e8b0f4-f845-4b19-bd73-185efe9984b5"
+      }
     }
   }
 }
