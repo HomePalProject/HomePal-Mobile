@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { View, ScrollView, Pressable, ActivityIndicator, useColorScheme } from 'react-native';
+import { View, ScrollView, Pressable, ActivityIndicator, I18nManager } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -30,6 +30,10 @@ export default function MealPlanDetailsScreen() {
       dispatch(clearMealPlanDetails());
     };
   }, [id, dispatch]);
+
+  const textAlign = I18nManager.isRTL ? 'right' : 'left';
+  const writingDirection = I18nManager.isRTL ? 'rtl' : 'ltr';
+  const flexDirection = I18nManager.isRTL ? 'row-reverse' : 'row';
 
   return (
     <SafeAreaView className="flex-1 bg-surface-background" edges={['bottom']}>
@@ -88,8 +92,8 @@ export default function MealPlanDetailsScreen() {
                   fontFamily: 'Cairo',
                   color: theme.colors.text.primary,
                   fontSize: 16,
-                  textAlign: 'right',
-                  writingDirection: 'rtl',
+                  textAlign,
+                  writingDirection,
                 },
                 heading1: {
                   fontFamily: 'Cairo',
@@ -97,7 +101,7 @@ export default function MealPlanDetailsScreen() {
                   color: theme.colors.brand.primary,
                   marginTop: 10,
                   marginBottom: 10,
-                  textAlign: 'right',
+                  textAlign,
                 },
                 heading2: {
                   fontFamily: 'Cairo',
@@ -105,7 +109,7 @@ export default function MealPlanDetailsScreen() {
                   color: theme.colors.brand.primary,
                   marginTop: 10,
                   marginBottom: 10,
-                  textAlign: 'right',
+                  textAlign,
                 },
                 heading3: {
                   fontFamily: 'Cairo',
@@ -113,21 +117,21 @@ export default function MealPlanDetailsScreen() {
                   color: theme.colors.brand.primary,
                   marginTop: 10,
                   marginBottom: 10,
-                  textAlign: 'right',
+                  textAlign,
                 },
                 paragraph: {
                   marginBottom: 10,
                   lineHeight: 24,
-                  textAlign: 'right',
+                  textAlign,
                   color: theme.colors.text.primary,
                 },
                 list_item: {
                   marginBottom: 5,
-                  flexDirection: 'row-reverse',
+                  flexDirection,
                   color: theme.colors.text.primary,
                 },
-                bullet_list: { textAlign: 'right', color: theme.colors.text.primary },
-                ordered_list: { textAlign: 'right', color: theme.colors.text.primary },
+                bullet_list: { textAlign, color: theme.colors.text.primary },
+                ordered_list: { textAlign, color: theme.colors.text.primary },
               }}>
               {currentPlanDetails.planData || 'No meal plan content available.'}
             </Markdown>

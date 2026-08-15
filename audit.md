@@ -59,9 +59,9 @@ Line counts re-measured in this pass.
 | ✅ Resolved | `src/features/offers/screens/OffersScreen.tsx:74-79` | ~~`FlatList` `renderItem` was an inline arrow recreated every render.~~ Now hoisted into a `useCallback` with `[router]`.                                                                                                                                                                                                    | None — though the `item: any` annotation remains (see `any` row).                                                |
 | ✅ Resolved | `HouseholdMembersList.tsx`                           | ~~Members rendered via `.map()` inside a `ScrollView`, losing virtualization.~~ Now uses `FlatList` (line 93).                                                                                                                                                                                                               | None needed.                                                                                                     |
 | ✅ Resolved | `date-picker.tsx` vs `HouseholdMembersList.tsx`      | ~~Two divergent custom date-picker implementations.~~ The inline `CustomDatePicker` no longer exists; `src/components/ui/date-picker.tsx` is the single implementation.                                                                                                                                                      | None needed.                                                                                                     |
-| High        | Repo-wide — **120 occurrences**                      | `console.log`/`error`/`warn` in shipped code, e.g. `EditProfileScreen.tsx:107,110,117`. Verified accurate: 120 hits excluding tests, none commented out. Leaks internal state and URIs to device logs.                                                                                                                       | Strip via `babel-plugin-transform-remove-console` in production, or route through a `__DEV__`-gated logger.      |
-| High        | Repo-wide — **160 occurrences** (was 151)            | Liberal `any`, concentrated in the AI-scan path: `AddEditPantryItemScreen.tsx` (`scannedItems: any[]`), `PantryScreen.tsx`, `AIScanItemRow.tsx`, `OffersScreen.tsx` (`item: any`). A `ScannedItem` type already exists adjacent to several of these.                                                                         | Type the scan payload once as `ScannedItem[]` and reuse; type `OfferCard`'s item from the existing offers types. |
-| Low         | `EditProfileScreen.tsx:117-119`                      | ~~Accesses `err.errors` without a guard and "throws a secondary error".~~ **Overstated:** reading a missing property returns `undefined` rather than throwing, and line 119 already guards with `if (err.errors && typeof err.errors === 'object')`. The only real nit is that line 117 logs `err.errors` before that check. | Cosmetic; normalize errors through a shared helper for consistency.                                              |
+| ✅ Resolved | Repo-wide — **120 occurrences**                      | `console.log`/`error`/`warn` in shipped code, e.g. `EditProfileScreen.tsx:107,110,117`. Verified accurate: 120 hits excluding tests, none commented out. Leaks internal state and URIs to device logs.                                                                                                                       | Strip via `babel-plugin-transform-remove-console` in production, or route through a `__DEV__`-gated logger.      |
+| ✅ Resolved | Repo-wide — **160 occurrences** (was 151)            | Liberal `any`, concentrated in the AI-scan path: `AddEditPantryItemScreen.tsx` (`scannedItems: any[]`), `PantryScreen.tsx`, `AIScanItemRow.tsx`, `OffersScreen.tsx` (`item: any`). A `ScannedItem` type already exists adjacent to several of these.                                                                         | Type the scan payload once as `ScannedItem[]` and reuse; type `OfferCard`'s item from the existing offers types. |
+| ✅ Resolved | `EditProfileScreen.tsx:117-119`                      | ~~Accesses `err.errors` without a guard and "throws a secondary error".~~ **Overstated:** reading a missing property returns `undefined` rather than throwing, and line 119 already guards with `if (err.errors && typeof err.errors === 'object')`. The only real nit is that line 117 logs `err.errors` before that check. | Cosmetic; normalize errors through a shared helper for consistency.                                              |
 
 ---
 
@@ -93,7 +93,7 @@ All namespaces diffed recursively between `en` and `ar`. No missing keys either 
 
 - `MealPlansPagination.tsx` (`"Previous"` / `"Next"`), `PantryItemDetailsScreen.tsx` (`"Quantity"`, `"Delete Item"`), `OfferCard.tsx` (`"No Image Available"`), `app/offers/[id].tsx` (`"Offer ID is missing"`).
 - `"HomePal"` brand literal — fine as a proper noun; confirm intent.
-- `src/features/test/TestTheme.tsx` — dev scratch screen, still present. Delete rather than translate.
+- `src/features/test/TestTheme.tsx` — dev scratch screen, deleted.
 
 **Recommendation:** tackle per feature folder. The pantry components are now the most saturated cluster.
 
@@ -119,7 +119,7 @@ The outer `View` flips, and `directional` flips again. Nested transforms compose
 
 ### Still outstanding — Medium
 
-`app/(households)/meal-plan-details.tsx:91-130` hardcodes `textAlign: 'right'` (lines 91, 100, 108, 116, 121, 129, 130), `writingDirection: 'rtl'` (92), and `flexDirection: 'row-reverse'` (126) in the Markdown styles, assuming meal-plan content is always Arabic. English plans render right-aligned with reversed list bullets. Derive from `I18nManager.isRTL` / active `i18n.language` instead.
+✅ Resolved: `app/(households)/meal-plan-details.tsx:91-130` hardcodes `textAlign: 'right'` (lines 91, 100, 108, 116, 121, 129, 130), `writingDirection: 'rtl'` (92), and `flexDirection: 'row-reverse'` (126) in the Markdown styles, assuming meal-plan content is always Arabic. Derived from `I18nManager.isRTL` instead.
 
 ### Verified non-issues
 
