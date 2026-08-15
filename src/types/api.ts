@@ -331,3 +331,33 @@ export interface UpdateShoppingListItemRequest {
   isPurchased?: boolean;
   notes?: string | null;
 }
+
+// --- Meal Plans DTOs ---
+
+export interface MealPlanResponse {
+  id: string;
+  householdId: string;
+  title: string;
+  startDate: string;
+  endDate: string;
+  totalEstimatedCost: number;
+  planData: string;
+  createdAt: string;
+  updatedAt: string | null;
+}
+
+export interface CreateMealPlanRequest {
+  title: string;
+  startDate: string;
+  endDate: string;
+  totalEstimatedCost: number;
+  planData: string;
+}
+
+export interface UpdateMealPlanRequest {
+  title: string;
+  startDate: string;
+  endDate: string;
+  totalEstimatedCost: number;
+  planData: string;
+}

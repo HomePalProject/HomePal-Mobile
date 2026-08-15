@@ -8,6 +8,7 @@ import profileReducer from '@/src/store/slices/profileSlice';
 import pantryReducer from '@/src/store/slices/pantrySlice';
 import shoppingListReducer from '@/src/store/slices/shoppingListSlice';
 import budgetReducer from '@/src/store/slices/budgetSlice';
+import mealPlansReducer from '@/src/store/slices/mealPlansSlice';
 
 export const store = configureStore({
   reducer: {
@@ -17,6 +18,7 @@ export const store = configureStore({
     pantry: pantryReducer,
     shoppingList: shoppingListReducer,
     budget: budgetReducer,
+    mealPlans: mealPlansReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
