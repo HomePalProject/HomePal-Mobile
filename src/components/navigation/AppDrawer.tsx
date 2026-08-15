@@ -1,23 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Pressable, Image, Animated, Dimensions, Modal, StyleSheet, I18nManager } from 'react-native';
-import { router, Href, usePathname } from 'expo-router';
 import {
-  Home,
-  Users,
-  Send,
-  Mail,
-  User,
-  ShoppingCart,
-  Wallet,
-} from 'lucide-react-native';
+  View,
+  Pressable,
+  Image,
+  Animated,
+  Dimensions,
+  Modal,
+  StyleSheet,
+  I18nManager,
+} from 'react-native';
+import { router, Href, usePathname } from 'expo-router';
+import { Home, Users, Send, Mail, User, ShoppingCart, Wallet } from 'lucide-react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { useAppSelector, useAppDispatch } from '@/src/store';
-import { closeDrawer } from '@/src/store/slices/uiSlice';
+
 import { useColorScheme } from 'nativewind';
 import { lightColors, darkColors } from '@/src/theme/colors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { useDrawerStore } from '@/src/store/useDrawerStore';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const DRAWER_WIDTH = Math.min(SCREEN_WIDTH * 0.82, 320);
@@ -40,10 +42,8 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
     return cleanPathname === cleanRoute;
   };
 
-
-
-  const isOpen = useAppSelector((state) => state.ui.isDrawerOpen);
-  const handleCloseDrawer = () => dispatch(closeDrawer());
+  const isOpen = useDrawerStore((state) => state.isOpen);
+  const handleCloseDrawer = useDrawerStore((state) => state.closeDrawer);
   const { fullName, email, profileImageUri, hasHousehold, isManager } = useAppSelector(
     (state) => state.profile
   );
@@ -79,8 +79,6 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
     handleCloseDrawer();
     router.push(href as Href);
   };
-
-
 
   return (
     <View style={{ flex: 1 }}>
@@ -385,12 +383,9 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
                 </Pressable>
               );
             })()}
-
           </View>
         </Animated.View>
       </Animated.View>
-
-
     </View>
   );
 }

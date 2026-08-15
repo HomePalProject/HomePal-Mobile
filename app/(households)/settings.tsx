@@ -1,4 +1,5 @@
 import React from 'react';
+import { useDrawerStore } from '@/src/store/useDrawerStore';
 import { View, ScrollView, Pressable, TextInput, Image, ActivityIndicator } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft, Home, MapPin, Building, Trash2, Save } from 'lucide-react-native';
@@ -6,8 +7,8 @@ import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { useHouseholdSettings } from '@/src/features/households/hooks/useHouseholdSettings';
 import { useAppSelector, useAppDispatch } from '@/src/store';
-import { openDrawer } from '@/src/store/slices/uiSlice';
 import { ProTipCard } from '@/src/components/ui/pro-tip-card';
+import { useTranslation } from 'react-i18next';
 
 export default function HouseholdSettingsRoute() {
   const {
@@ -27,9 +28,10 @@ export default function HouseholdSettingsRoute() {
     onBack,
   } = useHouseholdSettings();
 
+  const { t } = useTranslation('households');
   const dispatch = useAppDispatch();
   const { fullName, profileImageUri } = useAppSelector((state) => state.profile);
-  const handleOpenDrawer = () => dispatch(openDrawer());
+  const handleOpenDrawer = useDrawerStore((state) => state.openDrawer);
   const insets = useSafeAreaInsets();
 
   const userInitials = fullName ? fullName.trim()[0]?.toUpperCase() : 'U';
@@ -49,7 +51,7 @@ export default function HouseholdSettingsRoute() {
         </Pressable>
 
         <Text className="font-cairo text-[16px] font-bold text-text-primary">
-          Household Settings
+          {t('settings.title')}
         </Text>
 
         <View className="flex-row items-center gap-3">
@@ -72,7 +74,7 @@ export default function HouseholdSettingsRoute() {
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <ActivityIndicator size="large" color="#356859" />
           <Text className="mt-3 font-cairo text-[14px] text-text-secondary">
-            Loading household settings...
+            {t('settings.loading')}
           </Text>
         </View>
       ) : (
@@ -83,10 +85,10 @@ export default function HouseholdSettingsRoute() {
           {/* Section Header */}
           <View style={{ gap: 6 }}>
             <Text className="font-cairo text-[24px] font-bold leading-[32px] text-brand-primary">
-              Manage Residence
+              {t('settings.manageResidence')}
             </Text>
             <Text className="font-cairo text-[14px] leading-[22px] text-text-secondary">
-              Update your household's profile details or manage administrative settings.
+              {t('settings.manageDesc')}
             </Text>
           </View>
 
@@ -99,13 +101,13 @@ export default function HouseholdSettingsRoute() {
               <View className="flex-row items-center gap-2">
                 <Icon as={Home} size={18} className="text-brand-primary" />
                 <Text className="font-cairo text-[14px] font-bold text-text-primary">
-                  Household Name <Text className="text-status-error">*</Text>
+                  {t('settings.householdName')} <Text className="text-status-error">*</Text>
                 </Text>
               </View>
               <TextInput
                 value={name}
                 onChangeText={setName}
-                placeholder="e.g., Al-Amal Family Villa"
+                placeholder={t('settings.namePlaceholder')}
                 placeholderTextColor="#A8A29B"
                 className="bg-surface-surfaceVariant rounded-xl border border-surface-border px-3.5 py-2.5 text-text-primary"
                 style={{
@@ -119,12 +121,14 @@ export default function HouseholdSettingsRoute() {
             <View style={{ gap: 6 }}>
               <View className="flex-row items-center gap-2">
                 <Icon as={MapPin} size={18} className="text-brand-primary" />
-                <Text className="font-cairo text-[14px] font-bold text-text-primary">Address</Text>
+                <Text className="font-cairo text-[14px] font-bold text-text-primary">
+                  {t('settings.address')}
+                </Text>
               </View>
               <TextInput
                 value={address}
                 onChangeText={setAddress}
-                placeholder="Street address (optional)"
+                placeholder={t('settings.addressPlaceholder')}
                 placeholderTextColor="#A8A29B"
                 className="bg-surface-surfaceVariant rounded-xl border border-surface-border px-3.5 py-2.5 text-text-primary"
                 style={{
@@ -140,13 +144,13 @@ export default function HouseholdSettingsRoute() {
                 <View className="flex-row items-center gap-1.5">
                   <Icon as={Building} size={16} className="text-brand-primary" />
                   <Text className="font-cairo text-[14px] font-bold text-text-primary">
-                    Governorate
+                    {t('settings.governorate')}
                   </Text>
                 </View>
                 <TextInput
                   value={governorate}
                   onChangeText={setGovernorate}
-                  placeholder="e.g., Cairo"
+                  placeholder={t('settings.governoratePlaceholder')}
                   placeholderTextColor="#A8A29B"
                   className="bg-surface-surfaceVariant rounded-xl border border-surface-border px-3 py-2 text-text-primary"
                   style={{
@@ -159,12 +163,14 @@ export default function HouseholdSettingsRoute() {
               <View className="flex-1" style={{ gap: 6 }}>
                 <View className="flex-row items-center gap-1.5">
                   <Icon as={Building} size={16} className="text-brand-primary" />
-                  <Text className="font-cairo text-[14px] font-bold text-text-primary">City</Text>
+                  <Text className="font-cairo text-[14px] font-bold text-text-primary">
+                    {t('settings.city')}
+                  </Text>
                 </View>
                 <TextInput
                   value={city}
                   onChangeText={setCity}
-                  placeholder="e.g., Maadi"
+                  placeholder={t('settings.cityPlaceholder')}
                   placeholderTextColor="#A8A29B"
                   className="bg-surface-surfaceVariant rounded-xl border border-surface-border px-3 py-2 text-text-primary"
                   style={{
@@ -185,7 +191,9 @@ export default function HouseholdSettingsRoute() {
               ) : (
                 <>
                   <Icon as={Save} size={18} color="#ffffff" />
-                  <Text className="font-cairo text-[15px] font-bold text-white">Save Changes</Text>
+                  <Text className="font-cairo text-[15px] font-bold text-white">
+                    {t('settings.saveChanges')}
+                  </Text>
                 </>
               )}
             </Pressable>
@@ -193,7 +201,7 @@ export default function HouseholdSettingsRoute() {
 
           {/* Pro Tip Card */}
           <ProTipCard
-            description="Updating your household details reflects across all members' dashboards instantly."
+            description={t('settings.proTip')}
             className="border-brand-primary-container bg-brand-primary-container/15"
           />
 
@@ -201,10 +209,11 @@ export default function HouseholdSettingsRoute() {
           <View
             className="mt-4 rounded-2xl border border-status-error bg-status-error-container/20 p-5"
             style={{ gap: 12 }}>
-            <Text className="font-cairo text-[16px] font-bold text-status-error">Danger Zone</Text>
+            <Text className="font-cairo text-[16px] font-bold text-status-error">
+              {t('settings.dangerZone')}
+            </Text>
             <Text className="font-cairo text-[13px] leading-[20px] text-status-error">
-              Deleting this household is permanent. All members, inventory, meal plans, and
-              invitations associated with this residence will be removed.
+              {t('settings.deleteWarning')}
             </Text>
 
             <Pressable
@@ -217,7 +226,7 @@ export default function HouseholdSettingsRoute() {
                 <>
                   <Icon as={Trash2} size={18} color="#ffffff" />
                   <Text className="font-cairo text-[15px] font-bold text-white">
-                    Delete Household
+                    {t('settings.deleteBtn')}
                   </Text>
                 </>
               )}

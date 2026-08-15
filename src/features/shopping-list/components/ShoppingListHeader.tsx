@@ -3,8 +3,9 @@ import { View, Text, Pressable, Image } from 'react-native';
 import { Menu, User } from 'lucide-react-native';
 import { Icon } from '@/src/components/ui/icon';
 import { useAppDispatch, useAppSelector } from '@/src/store';
-import { openDrawer } from '@/src/store/slices/uiSlice';
+
 import { useTranslation } from 'react-i18next';
+import { useDrawerStore } from '@/src/store/useDrawerStore';
 
 export function ShoppingListHeader() {
   const dispatch = useAppDispatch();
@@ -16,7 +17,7 @@ export function ShoppingListHeader() {
   const firstInitial = firstName ? firstName[0].toUpperCase() : '';
 
   const handleOpenDrawer = () => {
-    dispatch(openDrawer());
+    useDrawerStore.getState().openDrawer();
   };
 
   return (
@@ -34,7 +35,7 @@ export function ShoppingListHeader() {
       </View>
 
       <Pressable
-        className="border-brand-primary/20 h-10 w-10 items-center justify-center overflow-hidden rounded-radius-full border bg-brand-primary-container active:opacity-70"
+        className="h-10 w-10 items-center justify-center overflow-hidden rounded-radius-full border border-brand-primary/20 bg-brand-primary-container active:opacity-70"
         accessibilityRole="button"
         accessibilityLabel="Profile">
         {profileImageUri ? (

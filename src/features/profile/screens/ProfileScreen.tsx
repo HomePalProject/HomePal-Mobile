@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useDrawerStore } from '@/src/store/useDrawerStore';
 import { View, Text, ScrollView, Pressable, Image, Modal } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, Href } from 'expo-router';
@@ -10,7 +11,6 @@ import { Menu, ChevronDown, Check, LogOut, Calendar, Copy } from 'lucide-react-n
 import { Icon } from '../../../components/ui/icon';
 import { useToast } from '@/src/providers/ToastProvider';
 import { useAppSelector, useAppDispatch } from '../../../store';
-import { openDrawer } from '../../../store/slices/uiSlice';
 import { logoutUser } from '../../../store/slices/authSlice';
 import { useTheme, ThemeMode } from '../../../providers/ThemeProvider';
 import { useLanguage } from '@/src/localization';
@@ -51,7 +51,7 @@ export default function ProfileScreen() {
 
   const name = fullName;
 
-  const handleOpenDrawer = () => dispatch(openDrawer());
+  const handleOpenDrawer = useDrawerStore((state) => state.openDrawer);
 
   const renderThemeOption = (optionMode: ThemeMode, label: string) => {
     const isSelected = mode === optionMode;
