@@ -70,14 +70,19 @@ export const OffersScreen = () => {
     );
   };
 
+  const renderItem = React.useCallback(
+    ({ item }: { item: any }) => (
+      <OfferCard offer={item} onPress={() => router.push(`/offers/${item.id}`)} />
+    ),
+    [router]
+  );
+
   return (
     <SafeAreaView className="flex-1 bg-surface-background" edges={['top']}>
       <FlatList
         data={offers}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <OfferCard offer={item} onPress={() => router.push(`/offers/${item.id}`)} />
-        )}
+        renderItem={renderItem}
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={

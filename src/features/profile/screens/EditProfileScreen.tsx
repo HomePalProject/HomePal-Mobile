@@ -13,6 +13,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { DatePicker } from '../../../components/ui';
 import { SvgIcon } from '../../../components/ui/SvgIcon';
 import { Gender } from '../../../types/api';
+import { useProfileAvatar } from '../hooks/useProfileAvatar';
 import { AppBottomSheet } from '@/src/components/ui/bottom-sheet';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 export default function EditProfileScreen() {
@@ -24,45 +25,21 @@ export default function EditProfileScreen() {
   const [birthDate, setBirthDate] = useState<string>(profile.birthDate || '');
   const [governorate, setGovernorate] = useState(profile.governorate);
   const [city, setCity] = useState(profile.city);
-  const [profileImageUri, setProfileImageUri] = useState<string | null>(profile.profileImageUri);
-  const photoBottomSheetRef = useRef<BottomSheetModal>(null);
-  const [permissionModalVisible, setPermissionModalVisible] = useState(false);
+
+  const {
+    profileImageUri,
+    setProfileImageUri,
+    photoBottomSheetRef,
+    permissionModalVisible,
+    setPermissionModalVisible,
+    pickImage,
+    takePhoto,
+    handleImageSelection,
+  } = useProfileAvatar(profile.profileImageUri);
+
   const [isSaving, setIsSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const { t } = useTranslation('profile');
-
-  const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
-    if (!result.canceled) {
-      setProfileImageUri(result.assets[0].uri);
-    }
-  };
-
-  const takePhoto = async () => {
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== 'granted') {
-      setPermissionModalVisible(true);
-      return;
-    }
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      allowsMultipleSelection: false,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
-    if (!result.canceled) {
-      setProfileImageUri(result.assets[0].uri);
-    }
-  };
-
-  const handleImageSelection = () => {
-    photoBottomSheetRef.current?.present();
-  };
 
   const handleSave = async () => {
     if (!fullName.trim()) {
