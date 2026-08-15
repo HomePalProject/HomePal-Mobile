@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { I18nManager, DevSettings } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
@@ -16,10 +16,9 @@ export type LanguageOption = SupportedLanguage | 'system';
 
 export function useLanguage() {
   const { i18n } = useTranslation();
-  const [activeLanguage, setActiveLanguage] = useState<SupportedLanguage>(
-    (i18n.language as SupportedLanguage) || 'en'
-  );
+  const [isReloading, setIsReloading] = useState(false);
 
+  const activeLanguage = (i18n.language as SupportedLanguage) || 'en';
   const isRTL = checkIsRTL(activeLanguage);
 
   const changeLanguage = useCallback(
@@ -39,13 +38,14 @@ export function useLanguage() {
       const rtlChanged = I18nManager.isRTL !== nextIsRTL;
 
       await i18n.changeLanguage(nextLang);
-      setActiveLanguage(nextLang);
 
       if (rtlChanged) {
+        setIsReloading(true);
         I18nManager.allowRTL(nextIsRTL);
         I18nManager.forceRTL(nextIsRTL);
 
-        // Dual-path reload strategy:
+        await new Promise((resolve) => setTimeout(resolve, 50));
+
         if (__DEV__) {
           DevSettings.reload();
         } else {
@@ -64,6 +64,7 @@ export function useLanguage() {
   return {
     currentLanguage: activeLanguage,
     isRTL,
+    isReloading,
     changeLanguage,
     supportedLanguages: SUPPORTED_LANGUAGES,
   };

@@ -1,13 +1,7 @@
-import React, { useCallback } from 'react';
-import { PressableProps, ViewStyle, StyleProp } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  runOnJS,
-} from 'react-native-reanimated';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
+import React, { useCallback } from 'react';
+import { PressableProps } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 const AnimatedPressableBase = Animated.createAnimatedComponent(require('react-native').Pressable);
 

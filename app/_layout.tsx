@@ -22,12 +22,16 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'nativewind';
 import { useEffect, useState } from 'react';
-import { I18nManager } from 'react-native';
+import { I18nManager, LogBox } from 'react-native';
 import { Provider } from 'react-redux';
+
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 export { ErrorBoundary } from 'expo-router';
 
 SplashScreen.preventAutoHideAsync();
+LogBox.ignoreAllLogs(true); // Hides the broken RTL warning toasts from the UI (warnings still show in terminal)
 
 function SessionBootstrapper() {
   const dispatch = useAppDispatch();
@@ -64,40 +68,48 @@ export default function RootLayout() {
     prepare();
   }, []);
 
+  const appIsReady = (fontsLoaded || fontError) && i18nInitialized;
+
   useEffect(() => {
-    if ((fontsLoaded || fontError) && i18nInitialized) {
+    if (appIsReady) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, fontError, i18nInitialized]);
+  }, [appIsReady]);
 
   const stackAnimation = I18nManager.isRTL ? 'slide_from_left' : 'slide_from_right';
 
   return (
-    <Provider store={store}>
-      <HomePalThemeProvider>
-        <ToastProvider>
-          <NavigationThemeProvider value={NAV_THEME[colorScheme ?? 'light']}>
-            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-            <SessionBootstrapper />
-            <AppDrawer>
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  animation: stackAnimation,
-                  contentStyle: { backgroundColor: colorScheme === 'dark' ? '#121413' : '#FAF8F3' },
-                }}>
-                <Stack.Screen name="index" />
-                <Stack.Screen name="(tabs)" />
-                <Stack.Screen name="(auth)" />
-                <Stack.Screen name="(households)" />
-                <Stack.Screen name="profile" />
-                <Stack.Screen name="edit-profile" />
-              </Stack>
-            </AppDrawer>
-            <PortalHost />
-          </NavigationThemeProvider>
-        </ToastProvider>
-      </HomePalThemeProvider>
-    </Provider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Provider store={store}>
+        <HomePalThemeProvider>
+          <ToastProvider>
+            <NavigationThemeProvider value={NAV_THEME[colorScheme ?? 'light']}>
+              <BottomSheetModalProvider>
+                <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+                <SessionBootstrapper />
+                <AppDrawer>
+                  <Stack
+                    screenOptions={{
+                      headerShown: false,
+                      animation: stackAnimation,
+                      contentStyle: {
+                        backgroundColor: colorScheme === 'dark' ? '#121413' : '#FAF8F3',
+                      },
+                    }}>
+                    <Stack.Screen name="index" />
+                    <Stack.Screen name="(tabs)" />
+                    <Stack.Screen name="(auth)" />
+                    <Stack.Screen name="(households)" />
+                    <Stack.Screen name="profile" />
+                    <Stack.Screen name="edit-profile" />
+                  </Stack>
+                </AppDrawer>
+                <PortalHost />
+              </BottomSheetModalProvider>
+            </NavigationThemeProvider>
+          </ToastProvider>
+        </HomePalThemeProvider>
+      </Provider>
+    </GestureHandlerRootView>
   );
 }
