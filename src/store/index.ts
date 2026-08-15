@@ -7,6 +7,7 @@ import uiReducer from '@/src/store/slices/uiSlice';
 import profileReducer from '@/src/store/slices/profileSlice';
 import pantryReducer from '@/src/store/slices/pantrySlice';
 import shoppingListReducer from '@/src/store/slices/shoppingListSlice';
+import budgetReducer from '@/src/store/slices/budgetSlice';
 import mealPlansReducer from '@/src/store/slices/mealPlansSlice';
 
 export const store = configureStore({
@@ -16,6 +17,7 @@ export const store = configureStore({
     profile: profileReducer,
     pantry: pantryReducer,
     shoppingList: shoppingListReducer,
+    budget: budgetReducer,
     mealPlans: mealPlansReducer,
   },
   middleware: (getDefaultMiddleware) =>

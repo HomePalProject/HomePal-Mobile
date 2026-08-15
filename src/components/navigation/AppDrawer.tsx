@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Pressable, Image, Animated, Dimensions, Modal, StyleSheet } from 'react-native';
-import { router, Href } from 'expo-router';
+import { router, Href, usePathname } from 'expo-router';
 import {
   Home,
   Users,
@@ -11,6 +11,7 @@ import {
   Sun,
   Moon,
   ShoppingCart,
+  Wallet,
 } from 'lucide-react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
@@ -26,12 +27,22 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const DRAWER_WIDTH = Math.min(SCREEN_WIDTH * 0.82, 320);
 
 export function AppDrawer({ children }: { children?: React.ReactNode }) {
+  const pathname = usePathname();
   const dispatch = useAppDispatch();
   const insets = useSafeAreaInsets();
   const { colorScheme } = useColorScheme();
   const themeColors = colorScheme === 'dark' ? darkColors : lightColors;
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const { resolvedMode, setMode } = useTheme();
+
+  const checkActive = (route: string) => {
+    const cleanPathname = pathname.replace(/\/\([^)]+\)/g, '');
+    const cleanRoute = route.replace(/\/\([^)]+\)/g, '');
+    if (cleanRoute === '/(tabs)' || cleanRoute === '/tabs' || cleanRoute === '/') {
+      return cleanPathname === '/' || cleanPathname === '/index';
+    }
+    return cleanPathname === cleanRoute;
+  };
 
   const toggleTheme = () => {
     setMode(resolvedMode === 'dark' ? 'light' : 'dark');
@@ -145,68 +156,248 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
           </View>
 
           <View className="flex-1 bg-surface-surface px-3 pt-4" style={{ gap: 6 }}>
-            <Pressable
-              onPress={() => navigateTo('/(tabs)')}
-              className="active:bg-surface-surfaceVariant flex-row items-center gap-3.5 rounded-full px-4 py-3.5">
-              <Icon as={Home} size={22} className="text-text-primary" />
-              <Text className="font-cairo text-[15px] font-semibold text-text-primary">
-                My Household
-              </Text>
-            </Pressable>
+            {(() => {
+              const isActive = checkActive('/(tabs)');
+              return (
+                <Pressable
+                  onPress={() => navigateTo('/(tabs)')}
+                  className={[
+                    'flex-row items-center gap-3.5 rounded-full px-4 py-3.5',
+                    isActive
+                      ? 'bg-brand-primary'
+                      : 'active:bg-surface-surfaceVariant bg-transparent',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}>
+                  <Icon
+                    as={Home}
+                    size={22}
+                    className={[isActive ? 'text-text-inverse' : 'text-text-primary']
+                      .filter(Boolean)
+                      .join(' ')}
+                  />
+                  <Text
+                    className={[
+                      'font-cairo text-[15px] font-semibold',
+                      isActive ? 'text-text-inverse' : 'text-text-primary',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}>
+                    My Household
+                  </Text>
+                </Pressable>
+              );
+            })()}
 
             {/* Shopping List Button */}
-            <Pressable
-              onPress={() => hasHousehold && navigateTo('/(households)/shopping-list')}
-              disabled={!hasHousehold}
-              style={{ opacity: !hasHousehold ? 0.4 : 1 }}
-              className="active:bg-surface-surfaceVariant flex-row items-center gap-3.5 rounded-full px-4 py-3.5">
-              <Icon as={ShoppingCart} size={22} className="text-text-primary" />
-              <Text className="font-cairo text-[15px] font-semibold text-text-primary">
-                Shopping List
-              </Text>
-            </Pressable>
+            {(() => {
+              const isActive = checkActive('/(households)/shopping-list');
+              return (
+                <Pressable
+                  onPress={() => hasHousehold && navigateTo('/(households)/shopping-list')}
+                  disabled={!hasHousehold}
+                  style={{ opacity: !hasHousehold ? 0.4 : 1 }}
+                  className={[
+                    'flex-row items-center gap-3.5 rounded-full px-4 py-3.5',
+                    isActive
+                      ? 'bg-brand-primary'
+                      : 'active:bg-surface-surfaceVariant bg-transparent',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}>
+                  <Icon
+                    as={ShoppingCart}
+                    size={22}
+                    className={[isActive ? 'text-text-inverse' : 'text-text-primary']
+                      .filter(Boolean)
+                      .join(' ')}
+                  />
+                  <Text
+                    className={[
+                      'font-cairo text-[15px] font-semibold',
+                      isActive ? 'text-text-inverse' : 'text-text-primary',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}>
+                    Shopping List
+                  </Text>
+                </Pressable>
+              );
+            })()}
 
-            <Pressable
-              onPress={() => hasHousehold && navigateTo('/(households)/family-management')}
-              disabled={!hasHousehold}
-              style={{ opacity: !hasHousehold ? 0.4 : 1 }}
-              className="active:bg-surface-surfaceVariant flex-row items-center gap-3.5 rounded-full px-4 py-3.5">
-              <Icon as={Users} size={22} className="text-text-primary" />
-              <Text className="font-cairo text-[15px] font-semibold text-text-primary">
-                Manage Family
-              </Text>
-            </Pressable>
+            {/* Household Budget Button */}
+            {(() => {
+              const isActive = checkActive('/(households)/budget');
+              return (
+                <Pressable
+                  onPress={() => hasHousehold && navigateTo('/(households)/budget')}
+                  disabled={!hasHousehold}
+                  style={{ opacity: !hasHousehold ? 0.4 : 1 }}
+                  className={[
+                    'flex-row items-center gap-3.5 rounded-full px-4 py-3.5',
+                    isActive
+                      ? 'bg-brand-primary'
+                      : 'active:bg-surface-surfaceVariant bg-transparent',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}>
+                  <Icon
+                    as={Wallet}
+                    size={22}
+                    className={[isActive ? 'text-text-inverse' : 'text-text-primary']
+                      .filter(Boolean)
+                      .join(' ')}
+                  />
+                  <Text
+                    className={[
+                      'font-cairo text-[15px] font-semibold',
+                      isActive ? 'text-text-inverse' : 'text-text-primary',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}>
+                    Household Budget
+                  </Text>
+                </Pressable>
+              );
+            })()}
 
-            <Pressable
-              onPress={() => hasHousehold && isManager && navigateTo('/(households)/invite')}
-              disabled={!hasHousehold || !isManager}
-              style={{ opacity: !hasHousehold || !isManager ? 0.4 : 1 }}
-              className="active:bg-surface-surfaceVariant flex-row items-center gap-3.5 rounded-full px-4 py-3.5">
-              <Icon as={Send} size={22} className="text-text-primary" />
-              <Text className="font-cairo text-[15px] font-semibold text-text-primary">
-                Sent Invitations
-              </Text>
-            </Pressable>
+            {(() => {
+              const isActive = checkActive('/(households)/family-management');
+              return (
+                <Pressable
+                  onPress={() => hasHousehold && navigateTo('/(households)/family-management')}
+                  disabled={!hasHousehold}
+                  style={{ opacity: !hasHousehold ? 0.4 : 1 }}
+                  className={[
+                    'flex-row items-center gap-3.5 rounded-full px-4 py-3.5',
+                    isActive
+                      ? 'bg-brand-primary'
+                      : 'active:bg-surface-surfaceVariant bg-transparent',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}>
+                  <Icon
+                    as={Users}
+                    size={22}
+                    className={[isActive ? 'text-text-inverse' : 'text-text-primary']
+                      .filter(Boolean)
+                      .join(' ')}
+                  />
+                  <Text
+                    className={[
+                      'font-cairo text-[15px] font-semibold',
+                      isActive ? 'text-text-inverse' : 'text-text-primary',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}>
+                    Manage Family
+                  </Text>
+                </Pressable>
+              );
+            })()}
 
-            <Pressable
-              onPress={() => !hasHousehold && navigateTo('/(households)/invitations')}
-              disabled={hasHousehold}
-              style={{ opacity: hasHousehold ? 0.4 : 1 }}
-              className="active:bg-surface-surfaceVariant flex-row items-center gap-3.5 rounded-full px-4 py-3.5">
-              <Icon as={Mail} size={22} className="text-text-primary" />
-              <Text className="font-cairo text-[15px] font-semibold text-text-primary">
-                Received Invitations
-              </Text>
-            </Pressable>
+            {(() => {
+              const isActive = checkActive('/(households)/invite');
+              return (
+                <Pressable
+                  onPress={() => hasHousehold && isManager && navigateTo('/(households)/invite')}
+                  disabled={!hasHousehold || !isManager}
+                  style={{ opacity: !hasHousehold || !isManager ? 0.4 : 1 }}
+                  className={[
+                    'flex-row items-center gap-3.5 rounded-full px-4 py-3.5',
+                    isActive
+                      ? 'bg-brand-primary'
+                      : 'active:bg-surface-surfaceVariant bg-transparent',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}>
+                  <Icon
+                    as={Send}
+                    size={22}
+                    className={[isActive ? 'text-text-inverse' : 'text-text-primary']
+                      .filter(Boolean)
+                      .join(' ')}
+                  />
+                  <Text
+                    className={[
+                      'font-cairo text-[15px] font-semibold',
+                      isActive ? 'text-text-inverse' : 'text-text-primary',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}>
+                    Sent Invitations
+                  </Text>
+                </Pressable>
+              );
+            })()}
 
-            <Pressable
-              onPress={() => navigateTo('/profile')}
-              className="active:bg-surface-surfaceVariant flex-row items-center gap-3.5 rounded-full px-4 py-3.5">
-              <Icon as={User} size={22} className="text-text-primary" />
-              <Text className="font-cairo text-[15px] font-semibold text-text-primary">
-                Profile & Settings
-              </Text>
-            </Pressable>
+            {(() => {
+              const isActive = checkActive('/(households)/invitations');
+              return (
+                <Pressable
+                  onPress={() => !hasHousehold && navigateTo('/(households)/invitations')}
+                  disabled={hasHousehold}
+                  style={{ opacity: hasHousehold ? 0.4 : 1 }}
+                  className={[
+                    'flex-row items-center gap-3.5 rounded-full px-4 py-3.5',
+                    isActive
+                      ? 'bg-brand-primary'
+                      : 'active:bg-surface-surfaceVariant bg-transparent',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}>
+                  <Icon
+                    as={Mail}
+                    size={22}
+                    className={[isActive ? 'text-text-inverse' : 'text-text-primary']
+                      .filter(Boolean)
+                      .join(' ')}
+                  />
+                  <Text
+                    className={[
+                      'font-cairo text-[15px] font-semibold',
+                      isActive ? 'text-text-inverse' : 'text-text-primary',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}>
+                    Received Invitations
+                  </Text>
+                </Pressable>
+              );
+            })()}
+
+            {(() => {
+              const isActive = checkActive('/profile');
+              return (
+                <Pressable
+                  onPress={() => navigateTo('/profile')}
+                  className={[
+                    'flex-row items-center gap-3.5 rounded-full px-4 py-3.5',
+                    isActive
+                      ? 'bg-brand-primary'
+                      : 'active:bg-surface-surfaceVariant bg-transparent',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}>
+                  <Icon
+                    as={User}
+                    size={22}
+                    className={[isActive ? 'text-text-inverse' : 'text-text-primary']
+                      .filter(Boolean)
+                      .join(' ')}
+                  />
+                  <Text
+                    className={[
+                      'font-cairo text-[15px] font-semibold',
+                      isActive ? 'text-text-inverse' : 'text-text-primary',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}>
+                    Profile & Settings
+                  </Text>
+                </Pressable>
+              );
+            })()}
 
             <Pressable
               onPress={toggleTheme}

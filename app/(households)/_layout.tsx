@@ -8,6 +8,7 @@ export default function HouseholdsLayout() {
       <Stack.Screen name="invite" />
       <Stack.Screen name="settings" />
       <Stack.Screen name="shopping-list" />
+      <Stack.Screen name="budget" />
     </Stack>
   );
 }
