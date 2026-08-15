@@ -3,7 +3,7 @@ import '@/global.css';
 import { AppDrawer } from '@/src/components/navigation/AppDrawer';
 import { useProtectedRoute } from '@/src/hooks/useProtectedRoute';
 import { initI18n } from '@/src/localization';
-import { ThemeProvider as HomePalThemeProvider } from '@/src/providers/ThemeProvider';
+import { ThemeProvider as HomePalThemeProvider, ThemeMode } from '@/src/providers/ThemeProvider';
 import { ToastProvider } from '@/src/providers/ToastProvider';
 import { store, useAppDispatch } from '@/src/store';
 import { bootstrapAuth } from '@/src/store/slices/authSlice';
@@ -18,15 +18,16 @@ import {
 import { PortalHost } from '@rn-primitives/portal';
 import { Stack } from 'expo-router';
 import { ThemeProvider as NavigationThemeProvider } from 'expo-router/react-navigation';
+import * as SecureStore from 'expo-secure-store';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'nativewind';
 import { useEffect, useState } from 'react';
-import { I18nManager, LogBox } from 'react-native';
+import { I18nManager, LogBox, useColorScheme as useRNColorScheme } from 'react-native';
 import { Provider } from 'react-redux';
 
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export { ErrorBoundary } from 'expo-router';
 
@@ -45,8 +46,11 @@ function SessionBootstrapper() {
 }
 
 export default function RootLayout() {
-  const { colorScheme } = useColorScheme();
+  const { colorScheme, setColorScheme } = useColorScheme();
   const [i18nInitialized, setI18nInitialized] = useState(false);
+  const [initialThemeMode, setInitialThemeMode] = useState<ThemeMode>('system');
+  const [themeLoaded, setThemeLoaded] = useState(false);
+  const rawSystemScheme = useRNColorScheme();
 
   const [fontsLoaded, fontError] = useFonts({
     Cairo_400Regular,
@@ -59,16 +63,30 @@ export default function RootLayout() {
     async function prepare() {
       try {
         await initI18n();
+        const savedTheme = await SecureStore.getItemAsync('HOMEPAL_THEME_MODE');
+
+        let resolvedInitial: ThemeMode = 'system';
+        if (savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'system') {
+          resolvedInitial = savedTheme as ThemeMode;
+        }
+
+        setInitialThemeMode(resolvedInitial);
+
+        // Pre-sync nativewind color scheme here so it's ready before render
+        const systemColorScheme = rawSystemScheme === 'dark' ? 'dark' : 'light';
+        const initialResolved = resolvedInitial === 'system' ? systemColorScheme : resolvedInitial;
+        setColorScheme(initialResolved as 'light' | 'dark');
       } catch (err) {
-        console.warn('[RootLayout] Error initializing i18n:', err);
+        console.warn('[RootLayout] Error initializing app:', err);
       } finally {
         setI18nInitialized(true);
+        setThemeLoaded(true);
       }
     }
     prepare();
-  }, []);
+  }, [rawSystemScheme, setColorScheme]);
 
-  const appIsReady = (fontsLoaded || fontError) && i18nInitialized;
+  const appIsReady = (fontsLoaded || fontError) && i18nInitialized && themeLoaded;
 
   useEffect(() => {
     if (appIsReady) {
@@ -81,7 +99,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider store={store}>
-        <HomePalThemeProvider>
+        <HomePalThemeProvider initialMode={initialThemeMode}>
           <ToastProvider>
             <NavigationThemeProvider value={NAV_THEME[colorScheme ?? 'light']}>
               <BottomSheetModalProvider>
