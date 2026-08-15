@@ -22,6 +22,7 @@ import {
   PantryNotificationModal,
 } from '../components';
 import { useTranslation } from 'react-i18next';
+import { ScannedItem } from '../components/AIScanItemRow';
 
 export default function PantryScreen() {
   const router = useRouter();
@@ -67,7 +68,7 @@ export default function PantryScreen() {
   const [scanStatus, setScanStatus] = useState<'loading' | 'success'>('loading');
   const [isSavingScanned, setIsSavingScanned] = useState(false);
   const imagePickerRef = useRef<BottomSheetModal>(null);
-  const [scannedItems, setScannedItems] = useState<any[]>([]);
+  const [scannedItems, setScannedItems] = useState<ScannedItem[]>([]);
   const [notification, setNotification] = useState({
     visible: false,
     type: 'success' as 'success' | 'error',
@@ -170,7 +171,7 @@ export default function PantryScreen() {
     }
   };
 
-  const handleAddScannedItems = async (scannedItems: any[]) => {
+  const handleAddScannedItems = async (scannedItems: Omit<ScannedItem, 'selected'>[]) => {
     setIsSavingScanned(true);
     try {
       const promises = scannedItems.map((scanned) => {

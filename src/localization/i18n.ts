@@ -8,10 +8,25 @@ import {
   DEFAULT_LANGUAGE,
   DEFAULT_NAMESPACE,
   LANGUAGE_STORAGE_KEY,
+  NAMESPACES,
   SupportedLanguage,
-  isRTL
+  isRTL,
 } from './config';
-import { dynamicBackendPlugin } from './locales';
+import { resources } from './locales';
+
+i18n.use(initReactI18next).init({
+  lng: DEFAULT_LANGUAGE,
+  fallbackLng: DEFAULT_LANGUAGE,
+  defaultNS: DEFAULT_NAMESPACE,
+  ns: NAMESPACES as unknown as string[],
+  resources,
+  interpolation: {
+    escapeValue: false,
+  },
+  react: {
+    useSuspense: false,
+  },
+});
 
 /**
  * Detect initial language preference based on:
@@ -57,21 +72,9 @@ export async function initI18n(): Promise<void> {
     I18nManager.forceRTL(shouldBeRTL);
   }
 
-  await i18n
-    .use(dynamicBackendPlugin)
-    .use(initReactI18next)
-    .init({
-      lng: initialLanguage,
-      fallbackLng: DEFAULT_LANGUAGE,
-      defaultNS: DEFAULT_NAMESPACE,
-      ns: [DEFAULT_NAMESPACE], // Load default namespace at init, others are loaded lazily on demand
-      interpolation: {
-        escapeValue: false, // React already escapes values
-      },
-      react: {
-        useSuspense: false,
-      },
-    });
+  if (i18n.language !== initialLanguage) {
+    await i18n.changeLanguage(initialLanguage);
+  }
 
   isInitialized = true;
 }

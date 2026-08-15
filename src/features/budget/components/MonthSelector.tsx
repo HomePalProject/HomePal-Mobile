@@ -3,6 +3,7 @@ import { View, Text, ActivityIndicator } from 'react-native';
 import { ChevronLeft, ChevronRight, Wallet } from 'lucide-react-native';
 import { Icon } from '@/src/components/ui/icon';
 import { AnimatedPressable } from '@/src/components/ui/animated-pressable';
+import { useTranslation } from 'react-i18next';
 
 interface MonthSelectorProps {
   currentDate: Date;
@@ -10,27 +11,28 @@ interface MonthSelectorProps {
   isLoading?: boolean;
 }
 
-const MONTHS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
+const MONTH_KEYS = [
+  'jan',
+  'feb',
+  'mar',
+  'apr',
+  'may',
+  'jun',
+  'jul',
+  'aug',
+  'sep',
+  'oct',
+  'nov',
+  'dec',
+] as const;
 
 export function MonthSelector({
   currentDate,
   onChangeDate,
   isLoading = false,
 }: MonthSelectorProps) {
-  const formattedDate = `${MONTHS[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+  const { t } = useTranslation('budget');
+  const formattedDate = `${t(`months.${MONTH_KEYS[currentDate.getMonth()]}`)} ${currentDate.getFullYear()}`;
 
   const handlePrevMonth = () => {
     if (isLoading) return;
@@ -58,7 +60,7 @@ export function MonthSelector({
           numberOfLines={1}
           adjustsFontSizeToFit={true}
           className="text-body flex-1 font-cairo font-bold text-brand-primary">
-          Monthly Household Budget
+          {t('monthlyHouseholdBudget', 'Monthly Household Budget')}
         </Text>
       </View>
 
@@ -68,7 +70,7 @@ export function MonthSelector({
           onPress={handlePrevMonth}
           disabled={isLoading}
           accessibilityRole="button"
-          accessibilityLabel="Previous Month"
+          accessibilityLabel={t('previousMonth', 'Previous Month')}
           pressScale={0.9}
           hapticStyle="light"
           className="items-center justify-center rounded-radius-full border border-surface-border bg-surface-surface p-spacing-8 disabled:opacity-50">
@@ -89,7 +91,7 @@ export function MonthSelector({
           onPress={handleNextMonth}
           disabled={isLoading}
           accessibilityRole="button"
-          accessibilityLabel="Next Month"
+          accessibilityLabel={t('nextMonth', 'Next Month')}
           pressScale={0.9}
           hapticStyle="light"
           className="items-center justify-center rounded-radius-full border border-surface-border bg-surface-surface p-spacing-8 disabled:opacity-50">

@@ -2,17 +2,21 @@ import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { Lightbulb, ShoppingCart } from 'lucide-react-native';
 import { Icon } from '@/src/components/ui/icon';
+import { useTranslation } from 'react-i18next';
 
 interface AISuggestionCardProps {
   suggestion?: string;
   onAddToList?: () => void;
 }
 
-const DEFAULT_SUGGESTION =
-  "Type an item name and we'll automatically select the best category and unit for you.";
-
 export function AISuggestionCard({ suggestion, onAddToList }: AISuggestionCardProps) {
-  const text = suggestion ?? DEFAULT_SUGGESTION;
+  const { t } = useTranslation('pantry');
+  const text =
+    suggestion ??
+    t(
+      'aiAutoCategorizeDesc',
+      "Type an item name and we'll automatically select the best category and unit for you."
+    );
   const hasAction = Boolean(suggestion && onAddToList);
 
   return (
@@ -23,7 +27,9 @@ export function AISuggestionCard({ suggestion, onAddToList }: AISuggestionCardPr
           <Icon as={Lightbulb} size={24} className="text-brand-accent" />
         </View>
         <Text className="font-cairo text-lg font-bold text-brand-primary">
-          {hasAction ? 'AI Suggestion' : 'Auto-Categorize'}
+          {hasAction
+            ? t('aiSuggestionTitle', 'AI Suggestion')
+            : t('aiAutoCategorizeTitle', 'Auto-Categorize')}
         </Text>
       </View>
 
@@ -36,9 +42,11 @@ export function AISuggestionCard({ suggestion, onAddToList }: AISuggestionCardPr
           onPress={onAddToList}
           className="mt-spacing-12 gap-spacing-6 flex-row items-center self-start active:opacity-70"
           accessibilityRole="button"
-          accessibilityLabel="Add suggestion to shopping list">
+          accessibilityLabel={t('addToList', 'Add to List')}>
           <Icon as={ShoppingCart} size={14} className="text-brand-secondary" />
-          <Text className="text-brand-secondary font-cairo text-base font-bold">Add to List</Text>
+          <Text className="text-brand-secondary font-cairo text-base font-bold">
+            {t('addToList', 'Add to List')}
+          </Text>
         </Pressable>
       ) : null}
     </View>

@@ -6,6 +6,7 @@ import { ProductCategoryResponse } from '@/src/types/api';
 import { CategoryRow, getCategoryIconConfig, CategoryIconConfig } from './CategoryRow';
 import { AppBottomSheet } from '@/src/components/ui/bottom-sheet';
 import { BottomSheetModal, BottomSheetFlatList, BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { useTranslation } from 'react-i18next';
 
 export { getCategoryIconConfig, CategoryIconConfig };
 
@@ -18,6 +19,7 @@ export interface CategorySelectorSheetProps {
 
 export const CategorySelectorSheet = forwardRef<BottomSheetModal, CategorySelectorSheetProps>(
   ({ categories, selectedId, onSelect, onClose }, ref) => {
+    const { t } = useTranslation('pantry');
     const [searchQuery, setSearchQuery] = useState('');
 
     const dismiss = () => {
@@ -41,7 +43,7 @@ export const CategorySelectorSheet = forwardRef<BottomSheetModal, CategorySelect
         {/* Header */}
         <View className="py-spacing-12 flex-row items-center justify-between px-spacing-16">
           <Text className="text-heading-3 font-cairo font-bold text-text-primary">
-            Select Category
+            {t('selectCategory', 'Select Category')}
           </Text>
 
           <Pressable
@@ -60,7 +62,7 @@ export const CategorySelectorSheet = forwardRef<BottomSheetModal, CategorySelect
           <BottomSheetTextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
-            placeholder="Search categories..."
+            placeholder={t('searchCategories', 'Search categories...')}
             className="text-body flex-1 font-cairo text-text-primary"
             autoCorrect={false}
           />
@@ -81,7 +83,9 @@ export const CategorySelectorSheet = forwardRef<BottomSheetModal, CategorySelect
           ItemSeparatorComponent={() => <View className="mx-spacing-16 h-px bg-surface-border" />}
           ListEmptyComponent={() => (
             <View className="items-center py-spacing-48">
-              <Text className="text-body font-cairo text-text-secondary">No categories found</Text>
+              <Text className="text-body font-cairo text-text-secondary">
+                {t('noCategoriesFound', 'No categories found')}
+              </Text>
             </View>
           )}
         />

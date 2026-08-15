@@ -9,8 +9,10 @@ import { Icon } from '@/src/components/ui/icon';
 import { Pressable } from 'react-native';
 import { router, Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 
 export default function FamilyManagementScreen() {
+  const { t } = useTranslation('households');
   const insets = useSafeAreaInsets();
   const {
     members: detailedMembers,
@@ -46,12 +48,12 @@ export default function FamilyManagementScreen() {
             <Icon as={ArrowLeft} directional size={24} className="text-text-primary" />
           </Pressable>
           <Text className="text-bodyLarge font-cairo font-bold text-brand-primary">
-            Family Management
+            {t('familyManagement.title', 'Family Management')}
           </Text>
         </View>
       </View>
 
-      <ScrollView className="flex-1" contentContainerStyle={{ padding: 20 }}>
+      <View className="flex-1 px-5 pt-5">
         <HouseholdMembersList
           members={detailedMembers}
           isAddFormOpen={isAddFormOpen}
@@ -67,7 +69,7 @@ export default function FamilyManagementScreen() {
           onCancelEdit={onCancelEdit}
           onSaveEdit={onSaveEdit}
         />
-      </ScrollView>
+      </View>
 
       {/* ── FAB: Invite Member ── */}
       <Pressable
@@ -83,10 +85,10 @@ export default function FamilyManagementScreen() {
           elevation: 8,
         }}
         accessibilityRole="button"
-        accessibilityLabel="Invite Member">
+        accessibilityLabel={t('familyManagement.inviteMember', 'Invite Member')}>
         <Icon as={Plus} size={22} color="#fff" />
         <Text className="font-cairo text-[14px] font-bold leading-[20px] tracking-[0.01em] text-white">
-          Invite Member
+          {t('familyManagement.inviteMember', 'Invite Member')}
         </Text>
       </Pressable>
     </SafeAreaView>

@@ -4,28 +4,28 @@ import { Calendar, ChevronLeft, ChevronRight, X } from 'lucide-react-native';
 import { TextField } from '@/src/components/ui/text-field';
 import { Button } from '@/src/components/ui/button';
 import { Icon } from '@/src/components/ui/icon';
+import { useTranslation } from 'react-i18next';
 
 interface AddExpenseFormProps {
   onAddExpense: (title: string, amount: number, date: string) => Promise<void>;
   isLoading?: boolean;
 }
 
-const MONTHS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
-
-const DAYS_OF_WEEK = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+const MONTH_KEYS = [
+  'jan',
+  'feb',
+  'mar',
+  'apr',
+  'may',
+  'jun',
+  'jul',
+  'aug',
+  'sep',
+  'oct',
+  'nov',
+  'dec',
+] as const;
+const DAY_KEYS = ['su', 'mo', 'tu', 'we', 'th', 'fr', 'sa'] as const;
 
 // Format date as YYYY-MM-DD
 const formatDateStr = (date: Date) => {
@@ -43,6 +43,7 @@ const formatDisplayDate = (dateStr: string) => {
 };
 
 export function AddExpenseForm({ onAddExpense, isLoading = false }: AddExpenseFormProps) {
+  const { t } = useTranslation('budget');
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [dateStr, setDateStr] = useState(() => formatDateStr(new Date()));
@@ -84,12 +85,12 @@ export function AddExpenseForm({ onAddExpense, isLoading = false }: AddExpenseFo
     const newErrors: { title?: string; amount?: string } = {};
 
     if (!title.trim()) {
-      newErrors.title = 'Expense title is required.';
+      newErrors.title = t('expenseTitleRequired', 'Expense title is required.');
     }
 
     const parsedAmount = parseFloat(amount.trim());
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
-      newErrors.amount = 'Please enter a valid amount greater than 0.';
+      newErrors.amount = t('invalidAmount', 'Please enter a valid amount greater than 0.');
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -118,19 +119,21 @@ export function AddExpenseForm({ onAddExpense, isLoading = false }: AddExpenseFo
 
   return (
     <View className="gap-spacing-16 rounded-radius-large border border-surface-border bg-surface-surface p-spacing-16 shadow-sm">
-      <Text className="font-cairo text-lg font-bold text-brand-primary">Log Household Expense</Text>
+      <Text className="font-cairo text-lg font-bold text-brand-primary">
+        {t('logExpense', 'Log Household Expense')}
+      </Text>
 
       <View className="h-[1px] bg-surface-divider" />
 
       {/* Expense Title */}
       <TextField
-        label="Expense Title"
+        label={t('expenseTitle', 'Expense Title')}
         value={title}
         onChangeText={(val) => {
           setTitle(val);
           if (errors.title) setErrors((prev) => ({ ...prev, title: undefined }));
         }}
-        placeholder="e.g. Electricity Bill, Groceries..."
+        placeholder={t('expenseTitlePlaceholder', 'e.g. Electricity Bill, Groceries...')}
         error={errors.title}
         editable={!isLoading}
       />
@@ -139,10 +142,10 @@ export function AddExpenseForm({ onAddExpense, isLoading = false }: AddExpenseFo
       <View className="flex-row gap-spacing-16">
         <View className="flex-1">
           <TextField
-            label="Amount (EGP)"
+            label={t('amountEgp', 'Amount (EGP)')}
             value={amount}
             onChangeText={handleAmountChange}
-            placeholder="0.00"
+            placeholder={t('amountZeroPlaceholder', '0.00')}
             keyboardType="decimal-pad"
             error={errors.amount}
             editable={!isLoading}
@@ -151,7 +154,7 @@ export function AddExpenseForm({ onAddExpense, isLoading = false }: AddExpenseFo
 
         <View className="flex-1">
           <Text className="mb-1.5 font-cairo text-[13px] font-semibold leading-[18px] text-text-primary">
-            Date
+            {t('date', 'Date')}
           </Text>
           <TouchableOpacity
             activeOpacity={0.7}
@@ -183,7 +186,9 @@ export function AddExpenseForm({ onAddExpense, isLoading = false }: AddExpenseFo
             disabled={isSubmitDisabled}
             isLoading={isLoading}
             className="mt-spacing-4">
-            <Text className="font-cairo text-base font-bold text-white">+ Add Expense</Text>
+            <Text className="font-cairo text-base font-bold text-white">
+              {t('addExpenseBtn', '+ Add Expense')}
+            </Text>
           </Button>
         );
       })()}
@@ -204,7 +209,9 @@ export function AddExpenseForm({ onAddExpense, isLoading = false }: AddExpenseFo
             className="w-full max-w-[340px] rounded-radius-large border border-surface-border bg-surface-surface p-spacing-24 shadow-xl">
             {/* Modal Header */}
             <View className="flex-row items-center justify-between border-b border-surface-border pb-spacing-16">
-              <Text className="font-cairo text-lg font-bold text-text-primary">Select Date</Text>
+              <Text className="font-cairo text-lg font-bold text-text-primary">
+                {t('selectDate', 'Select Date')}
+              </Text>
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => setShowDatePicker(false)}
@@ -230,7 +237,7 @@ export function AddExpenseForm({ onAddExpense, isLoading = false }: AddExpenseFo
                   </TouchableOpacity>
 
                   <Text className="text-body font-cairo font-bold text-brand-primary">
-                    {MONTHS[month]} {year}
+                    {t(`months.${MONTH_KEYS[month]}`)} {year}
                   </Text>
 
                   {isNextMonthInFuture ? (
@@ -250,10 +257,10 @@ export function AddExpenseForm({ onAddExpense, isLoading = false }: AddExpenseFo
             <View className="pb-spacing-8">
               {/* Days Grid Headers */}
               <View className="mb-spacing-8 flex-row justify-between">
-                {DAYS_OF_WEEK.map((day) => (
+                {DAY_KEYS.map((day) => (
                   <View key={day} className="w-10 items-center">
                     <Text className="text-caption font-cairo font-bold text-text-disabled">
-                      {day}
+                      {t(`daysOfWeek.${day}`)}
                     </Text>
                   </View>
                 ))}

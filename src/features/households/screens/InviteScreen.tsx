@@ -7,6 +7,7 @@ import { Icon } from '@/src/components/ui/icon';
 import { BackButton } from '@/src/components/ui/back-button';
 import { ProTipCard } from '@/src/components/ui/pro-tip-card';
 import { SentInvitation } from '../hooks/useInviteMember';
+import { useTranslation } from 'react-i18next';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 export interface InviteScreenProps {
@@ -37,6 +38,7 @@ interface InvitationCardProps {
 }
 
 function InvitationCard({ invitation, cancelingId, onCancel }: InvitationCardProps) {
+  const { t } = useTranslation('households');
   const recipient =
     invitation.invitedEmail || invitation.invitedUserName || invitation.token || 'User';
   const isAccepted = invitation.status === 'Accepted';
@@ -57,10 +59,10 @@ function InvitationCard({ invitation, cancelingId, onCancel }: InvitationCardPro
         shadowRadius: 6,
       }}>
       <Text className="font-cairo text-[14px] font-semibold leading-[20px] text-text-primary">
-        To: {recipient}
+        {t('invite.toUser', 'To: {{recipient}}', { recipient })}
       </Text>
       <Text className="mt-0.5 font-cairo text-[13px] leading-[18px] text-text-secondary">
-        Status: {invitation.status}
+        {t('invite.statusLabel', 'Status: {{status}}', { status: invitation.status })}
       </Text>
 
       {/* Conditionally render Action Button vs Muted Badge */}
@@ -84,14 +86,20 @@ function InvitationCard({ invitation, cancelingId, onCancel }: InvitationCardPro
           disabled={isCanceling}
           className={`mt-3 w-full flex-row items-center justify-center gap-2 rounded-xl bg-status-error py-3 active:opacity-80 ${isCanceling ? 'opacity-70' : ''}`}
           accessibilityRole="button"
-          accessibilityLabel={`Cancel invitation to ${recipient}`}>
+          accessibilityLabel={t('invite.cancelInvitation', 'Cancel invitation to {{recipient}}', {
+            recipient,
+          })}>
           {isCanceling ? (
             <>
               <ActivityIndicator size="small" color="#fff" />
-              <Text className="font-cairo text-[14px] font-bold text-white">Cancelling...</Text>
+              <Text className="font-cairo text-[14px] font-bold text-white">
+                {t('invite.cancelling', 'Cancelling...')}
+              </Text>
             </>
           ) : (
-            <Text className="font-cairo text-[14px] font-bold text-white">Cancel</Text>
+            <Text className="font-cairo text-[14px] font-bold text-white">
+              {t('invite.cancel', 'Cancel')}
+            </Text>
           )}
         </Pressable>
       )}
@@ -115,6 +123,7 @@ export function InviteScreen({
   onCancelInvite,
   onRefresh,
 }: InviteScreenProps) {
+  const { t } = useTranslation('households');
   const insets = useSafeAreaInsets();
 
   return (
@@ -128,7 +137,7 @@ export function InviteScreen({
 
         {/* Title */}
         <Text className="font-cairo text-[16px] font-bold text-text-primary">
-          Invite to Household
+          {t('invite.inviteToHousehold', 'Invite to Household')}
         </Text>
 
         {/* Right: Avatar */}
@@ -156,10 +165,13 @@ export function InviteScreen({
         {/* ── Hero Section ── */}
         <View style={{ gap: 6 }}>
           <Text className="font-cairo text-[24px] font-bold leading-[32px] text-brand-primary">
-            Grow your circle
+            {t('invite.growCircleTitle', 'Grow your circle')}
           </Text>
           <Text className="font-cairo text-[14px] leading-[22px] text-text-secondary">
-            Send an invitation to a family member or roommate using their email or HomePal username.
+            {t(
+              'invite.growCircleDesc',
+              'Send an invitation to a family member or roommate using their email or HomePal username.'
+            )}
           </Text>
         </View>
 
@@ -186,7 +198,7 @@ export function InviteScreen({
           }}>
           {/* Label */}
           <Text className="font-cairo text-[13px] font-semibold text-text-secondary">
-            Email or Username
+            {t('invite.emailOrUsername', 'Email or Username')}
           </Text>
 
           {/* Input with mail icon */}
@@ -197,7 +209,7 @@ export function InviteScreen({
             <TextInput
               value={inputValue}
               onChangeText={onInputChange}
-              placeholder="e.g., nora@example.com or @nora"
+              placeholder={t('invite.invitePlaceholder', 'e.g., nora@example.com or @nora')}
               placeholderTextColor="#A8A29B"
               autoCapitalize="none"
               autoCorrect={false}
@@ -220,16 +232,20 @@ export function InviteScreen({
             disabled={isSending}
             className={`h-[52px] w-full flex-row items-center justify-center gap-2 rounded-xl bg-brand-primary active:opacity-80 ${isSending ? 'opacity-50' : ''}`}
             accessibilityRole="button"
-            accessibilityLabel="Send Invitation">
+            accessibilityLabel={t('invite.sendInvitation', 'Send Invitation')}>
             {isSending ? (
               <>
                 <ActivityIndicator size="small" color="#fff" />
-                <Text className="font-cairo text-[15px] font-bold text-white">Sending...</Text>
+                <Text className="font-cairo text-[15px] font-bold text-white">
+                  {t('invite.sending', 'Sending...')}
+                </Text>
               </>
             ) : (
               <>
                 <Icon as={Send} size={18} color="#fff" />
-                <Text className="font-cairo text-[15px] font-bold text-white">Send Invitation</Text>
+                <Text className="font-cairo text-[15px] font-bold text-white">
+                  {t('invite.sendInvitation', 'Send Invitation')}
+                </Text>
               </>
             )}
           </Pressable>
@@ -241,12 +257,14 @@ export function InviteScreen({
             {/* Section Header */}
             <View className="flex-row items-center justify-between">
               <Text className="font-cairo text-[18px] font-bold leading-[26px] text-text-primary">
-                Household Sent Invitations
+                {t('invite.sentInvitations', 'Household Sent Invitations')}
               </Text>
               <Pressable
                 onPress={onRefresh}
                 className="rounded-full bg-brand-amber-300 px-3 py-1.5 active:opacity-70">
-                <Text className="font-cairo text-[12px] font-bold text-text-primary">Refresh</Text>
+                <Text className="font-cairo text-[12px] font-bold text-text-primary">
+                  {t('invite.refresh', 'Refresh')}
+                </Text>
               </Pressable>
             </View>
 
@@ -264,8 +282,11 @@ export function InviteScreen({
 
         {/* ── Pro Tip Card ── */}
         <ProTipCard
-          description="Once they accept the invite, you'll be able to share groceries, chore lists, and household bills instantly."
-          className="bg-brand-primary-container/15 border-brand-primary-container"
+          description={t(
+            'invite.inviteProTip',
+            "Once they accept the invite, you'll be able to share groceries, chore lists, and household bills instantly."
+          )}
+          className="border-brand-primary-container bg-brand-primary-container/15"
         />
       </ScrollView>
     </SafeAreaView>

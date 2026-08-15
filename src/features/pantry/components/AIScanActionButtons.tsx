@@ -1,5 +1,5 @@
-import React from 'react';
 import { View, Text, Pressable, ActivityIndicator } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface AIScanActionButtonsProps {
   hasSelections: boolean;
@@ -14,6 +14,7 @@ export function AIScanActionButtons({
   onAddPress,
   onCancelPress,
 }: AIScanActionButtonsProps) {
+  const { t } = useTranslation('pantry');
   return (
     <View className="mt-spacing-8 flex-col gap-spacing-16 border-t border-surface-border pt-spacing-16">
       <Pressable
@@ -24,12 +25,12 @@ export function AIScanActionButtons({
           isSaving || !hasSelections ? 'bg-brand-primary/50' : 'bg-brand-primary',
         ].join(' ')}
         accessibilityRole="button"
-        accessibilityLabel="Add selected items to pantry">
+        accessibilityLabel={t('addSelectedItems', 'Add Selected Items')}>
         {isSaving ? (
           <ActivityIndicator size="small" color="#FFFFFF" />
         ) : (
           <Text className="text-body font-cairo font-bold text-text-inverse">
-            Add Selected Items
+            {t('addSelectedItems', 'Add Selected Items')}
           </Text>
         )}
       </Pressable>
@@ -39,8 +40,10 @@ export function AIScanActionButtons({
         disabled={isSaving}
         className="w-full items-center justify-center rounded-radius-full border border-surface-border bg-surface-surface py-spacing-16 active:opacity-75 disabled:opacity-50"
         accessibilityRole="button"
-        accessibilityLabel="Cancel scanner">
-        <Text className="text-body font-cairo font-bold text-text-primary">Cancel</Text>
+        accessibilityLabel={t('cancel', 'Cancel')}>
+        <Text className="text-body font-cairo font-bold text-text-primary">
+          {t('cancel', 'Cancel')}
+        </Text>
       </Pressable>
     </View>
   );

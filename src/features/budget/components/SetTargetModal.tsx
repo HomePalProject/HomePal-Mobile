@@ -5,6 +5,7 @@ import { TextField } from '@/src/components/ui/text-field';
 import { Button } from '@/src/components/ui/button';
 import { AppBottomSheet } from '@/src/components/ui/bottom-sheet';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { useTranslation } from 'react-i18next';
 interface SetTargetModalProps {
   visible: boolean;
   onClose: () => void;
@@ -22,6 +23,7 @@ export function SetTargetModal({
   initialNotes,
   isLoading = false,
 }: SetTargetModalProps) {
+  const { t } = useTranslation('budget');
   const [amount, setAmount] = useState('');
   const [notes, setNotes] = useState('');
   const [validationError, setValidationError] = useState<string | undefined>(undefined);
@@ -41,7 +43,7 @@ export function SetTargetModal({
   const handleSave = async () => {
     const parsedAmount = parseFloat(amount.trim());
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
-      setValidationError('Please enter a valid amount greater than 0.');
+      setValidationError(t('invalidAmount', 'Please enter a valid amount greater than 0.'));
       return;
     }
     setValidationError(undefined);
@@ -61,28 +63,28 @@ export function SetTargetModal({
       snapPoints={['55%']}>
       <View className="px-spacing-24 pb-spacing-32">
         <Text className="mb-spacing-16 text-center font-cairo text-lg font-bold text-text-primary">
-          Set Monthly Budget
+          {t('setMonthlyBudget', 'Set Monthly Budget')}
         </Text>
 
         <View className="gap-spacing-16">
           <TextField
-            label="Target Amount (EGP)"
+            label={t('targetAmountEgp', 'Target Amount (EGP)')}
             value={amount}
             onChangeText={(val) => {
               setAmount(val);
               if (validationError) setValidationError(undefined);
             }}
             keyboardType="numeric"
-            placeholder="e.g. 5000"
+            placeholder={t('amountPlaceholder', 'e.g. 5000')}
             error={validationError}
             editable={!isLoading}
           />
 
           <TextField
-            label="Notes (Optional)"
+            label={t('notesOptional', 'Notes (Optional)')}
             value={notes}
             onChangeText={setNotes}
-            placeholder="e.g. Grocery limit, electric bills..."
+            placeholder={t('notesPlaceholder', 'e.g. Grocery limit, electric bills...')}
             multiline
             numberOfLines={3}
             inputClassName="h-[80px] py-spacing-8 text-start"
@@ -93,13 +95,13 @@ export function SetTargetModal({
 
         <View className="mt-spacing-16 gap-spacing-16">
           <Button onPress={handleSave} isLoading={isLoading}>
-            <Text className="text-white">Save Target</Text>
+            <Text className="text-white">{t('saveTarget', 'Save Target')}</Text>
           </Button>
           <Button
             variant="outline"
             onPress={() => bottomSheetRef.current?.dismiss()}
             disabled={isLoading}>
-            <Text className="text-text-primary">Cancel</Text>
+            <Text className="text-text-primary">{t('cancel', 'Cancel')}</Text>
           </Button>
         </View>
       </View>
