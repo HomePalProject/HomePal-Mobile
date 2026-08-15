@@ -3,6 +3,7 @@ import { View, Pressable, Modal, ScrollView } from 'react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { Calendar, ChevronLeft, ChevronRight, X } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 
 interface DatePickerProps {
   label?: string;
@@ -12,7 +13,7 @@ interface DatePickerProps {
   placeholder?: string;
 }
 
-const MONTHS = [
+const MONTHS_EN = [
   'January',
   'February',
   'March',
@@ -27,7 +28,23 @@ const MONTHS = [
   'December',
 ];
 
-const DAYS_OF_WEEK = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+const MONTHS_AR = [
+  'يناير',
+  'فبراير',
+  'مارس',
+  'أبريل',
+  'مايو',
+  'يونيو',
+  'يوليو',
+  'أغسطس',
+  'سبتمبر',
+  'أكتوبر',
+  'نوفمبر',
+  'ديسمبر',
+];
+
+const DAYS_OF_WEEK_EN = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+const DAYS_OF_WEEK_AR = ['أحد', 'إثنين', 'ثلاث', 'أربعاء', 'خميس', 'جمعة', 'سبت'];
 
 // Generate years from 1950 to current year - 13
 const CURRENT_YEAR = new Date().getFullYear();
@@ -40,6 +57,11 @@ export function DatePicker({
   error,
   placeholder = 'Select date (YYYY-MM-DD)',
 }: DatePickerProps) {
+  const { i18n } = useTranslation();
+  const isAr = i18n.language?.startsWith('ar');
+  const MONTHS = isAr ? MONTHS_AR : MONTHS_EN;
+  const DAYS_OF_WEEK = isAr ? DAYS_OF_WEEK_AR : DAYS_OF_WEEK_EN;
+
   const [modalVisible, setModalVisible] = useState(false);
   const [mode, setMode] = useState<'calendar' | 'years' | 'months'>('calendar');
 

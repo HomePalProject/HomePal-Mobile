@@ -47,7 +47,7 @@ export default function MealPlanDetailsScreen() {
               hitSlop={10}
               className="overflow-hidden rounded-full"
               android_ripple={{ color: 'rgba(150, 150, 150, 0.2)', borderless: true, radius: 24 }}>
-              <Icon as={ArrowLeft} size={24} className="mr-4 text-text-primary" />
+              <Icon as={ArrowLeft} size={24} className="me-4 text-text-primary" />
             </Pressable>
           ),
         }}

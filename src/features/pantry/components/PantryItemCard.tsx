@@ -4,7 +4,7 @@ import { Check, AlertTriangle, Package } from 'lucide-react-native';
 import { Icon } from '@/src/components/ui/icon';
 import { PantryItemResponse } from '@/src/types/api';
 import { env } from '@/src/config/env';
-import { router } from 'expo-router';
+import { router, Href } from 'expo-router';
 
 interface PantryItemCardProps {
   item: PantryItemResponse;
@@ -87,7 +87,7 @@ export function PantryItemCard({ item, onPress }: PantryItemCardProps) {
       </View>
 
       {/* Card Content (Title, Quantity, Badge) */}
-      <View className="ml-2 flex-1 gap-spacing-4">
+      <View className="ms-2 flex-1 gap-spacing-4">
         {/* Item Name */}
         <Text numberOfLines={1} className="text-body font-cairo font-bold text-text-primary">
           {item.name}

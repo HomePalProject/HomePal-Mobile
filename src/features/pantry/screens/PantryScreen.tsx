@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { View, RefreshControl, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, Href } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
 import { colors } from '@/src/theme/colors';
@@ -20,9 +20,11 @@ import {
   ImagePickerSheet,
   PantryNotificationModal,
 } from '../components';
+import { useTranslation } from 'react-i18next';
 
 export default function PantryScreen() {
   const router = useRouter();
+  const { t } = useTranslation('pantry');
   const {
     items,
     categories,
@@ -91,7 +93,7 @@ export default function PantryScreen() {
   };
 
   const handleAddItem = () => {
-    router.push('/add-pantry-item');
+    router.push('/add-pantry-item' as Href);
   };
 
   const startRealScan = async (imageUri: string) => {
@@ -115,8 +117,8 @@ export default function PantryScreen() {
       setNotification({
         visible: true,
         type: 'error',
-        title: 'Error',
-        message: 'Failed to scan image. Please try again.',
+        title: t('scanErrorTitle'),
+        message: t('scanErrorMsg'),
       });
     }
   };
@@ -131,8 +133,8 @@ export default function PantryScreen() {
       setNotification({
         visible: true,
         type: 'error',
-        title: 'Permission Denied',
-        message: 'Camera access is required to take photos.',
+        title: t('permissionDenied'),
+        message: t('cameraPermission'),
       });
       return;
     }
@@ -152,8 +154,8 @@ export default function PantryScreen() {
       setNotification({
         visible: true,
         type: 'error',
-        title: 'Permission Denied',
-        message: 'Media library access is required.',
+        title: t('permissionDenied'),
+        message: t('libraryPermission'),
       });
       return;
     }
@@ -199,15 +201,15 @@ export default function PantryScreen() {
       setNotification({
         visible: true,
         type: 'success',
-        title: 'Success',
-        message: 'Scanned items successfully added to your pantry.',
+        title: t('success'),
+        message: t('itemsAddedSuccess'),
       });
     } catch {
       setNotification({
         visible: true,
         type: 'error',
-        title: 'Error',
-        message: 'Failed to add some scanned items.',
+        title: t('addScannedErrorTitle'),
+        message: t('addScannedErrorMsg'),
       });
     } finally {
       setIsSavingScanned(false);

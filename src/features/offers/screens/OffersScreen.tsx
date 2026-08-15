@@ -7,6 +7,7 @@ import { Icon } from '@/src/components/ui/icon';
 import { useColorScheme } from 'nativewind';
 import { lightColors, darkColors } from '@/src/theme/colors';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 import { useOffers } from '../hooks/useOffers';
 import { useCategories } from '../hooks/useCategories';
@@ -21,6 +22,7 @@ export const OffersScreen = () => {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
   const themeColors = isDark ? darkColors : lightColors;
+  const { t } = useTranslation('offers');
 
   const { categories } = useCategories();
   const { supermarkets } = useSupermarkets();
@@ -46,14 +48,14 @@ export const OffersScreen = () => {
       return (
         <View className="mt-10 items-center justify-center">
           <ActivityIndicator size="large" className="text-brand-primary" />
-          <Text className="mt-4 font-cairo text-[16px] text-text-secondary">Loading offers...</Text>
+          <Text className="mt-4 font-cairo text-[16px] text-text-secondary">{t('loading')}</Text>
         </View>
       );
     }
     return (
       <View className="mt-10 items-center justify-center p-6">
         <Text className="text-center font-cairo text-[16px] text-text-secondary">
-          No active offers found matching filters.
+          {t('noActiveOffers')}
         </Text>
       </View>
     );
@@ -86,7 +88,7 @@ export const OffersScreen = () => {
             />
 
             <FilterList
-              title="CATEGORIES"
+              title={t('categories')}
               type="category"
               options={categoryOptions}
               selectedId={params.categoryId}
@@ -94,7 +96,7 @@ export const OffersScreen = () => {
             />
 
             <FilterList
-              title="SUPERMARKETS"
+              title={t('supermarkets')}
               type="supermarket"
               options={supermarketOptions}
               selectedId={params.supermarketId}
@@ -109,7 +111,7 @@ export const OffersScreen = () => {
                   className={params.activeOnly ? 'text-brand-primary' : 'text-text-disabled'}
                 />
                 <Text className="font-cairo text-[15px] font-bold text-text-primary">
-                  Active Deals Only
+                  {t('activeDealsOnly')}
                 </Text>
               </View>
               <Switch

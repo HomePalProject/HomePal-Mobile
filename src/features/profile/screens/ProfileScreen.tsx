@@ -13,23 +13,29 @@ import { useAppSelector, useAppDispatch } from '../../../store';
 import { openDrawer } from '../../../store/slices/uiSlice';
 import { logoutUser } from '../../../store/slices/authSlice';
 import { useTheme, ThemeMode } from '../../../providers/ThemeProvider';
+import { useLanguage } from '@/src/localization';
+import { LanguageSelectionModal } from '@/src/components/common/LanguageSelectionModal';
+import { useTranslation } from 'react-i18next';
 
 export default function ProfileScreen() {
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
   const [themeModalVisible, setThemeModalVisible] = useState(false);
+  const [languageModalVisible, setLanguageModalVisible] = useState(false);
   const dispatch = useAppDispatch();
   const { mode, setMode } = useTheme();
+  const { currentLanguage } = useLanguage();
   const insets = useSafeAreaInsets();
 
   const { fullName, email, profileImageUri, birthDate } = useAppSelector((state) => state.profile);
   const { showToast } = useToast();
 
+  const { t } = useTranslation(['profile', 'common']);
   const handleCopyEmail = async () => {
     if (email) {
       await Clipboard.setStringAsync(email);
       showToast({
-        title: 'Copied!',
-        message: 'Email address copied to clipboard.',
+        title: t('common:errors.copied', 'Copied!'),
+        message: t('common:errors.emailCopied', 'Email address copied to clipboard.'),
         type: 'success',
       });
     }
@@ -79,7 +85,7 @@ export default function ProfileScreen() {
             <Icon as={Menu} size={24} className="text-brand-primary" />
           </Pressable>
           <Text className="text-bodyLarge font-cairo font-bold text-brand-primary">
-            Profile Overview
+            {t('profile:overview')}
           </Text>
         </View>
       </View>
@@ -87,7 +93,7 @@ export default function ProfileScreen() {
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 48 }}>
         <View className="px-spacing-16 pb-spacing-24 pt-spacing-16">
           <View className="border-surface-border/80 relative min-h-[300px] items-center justify-center overflow-hidden rounded-radius-large border bg-surface-surface p-spacing-24 shadow-md">
-            <View className="absolute -right-16 -top-16 h-48 w-48 opacity-80">
+            <View className="absolute -end-16 -top-16 h-48 w-48 opacity-80">
               <Svg width="100%" height="100%" viewBox="0 0 200 200">
                 <Defs>
                   <RadialGradient
@@ -104,7 +110,7 @@ export default function ProfileScreen() {
                 <Circle cx="100" cy="100" r="100" fill="url(#greenGlow)" />
               </Svg>
             </View>
-            <View className="absolute -bottom-16 -left-16 h-40 w-40 opacity-80">
+            <View className="absolute -bottom-16 -start-16 h-40 w-40 opacity-80">
               <Svg width="100%" height="100%" viewBox="0 0 200 200">
                 <Defs>
                   <RadialGradient
@@ -150,7 +156,7 @@ export default function ProfileScreen() {
                   </Text>
                 )}
               </View>
-              <View className="absolute bottom-0 right-0 h-8 w-8 items-center justify-center rounded-radius-full border border-surface-border bg-brand-primary shadow">
+              <View className="absolute bottom-0 end-0 h-8 w-8 items-center justify-center rounded-radius-full border border-surface-border bg-brand-primary shadow">
                 <Pressable onPress={() => router.push('/edit-profile' as Href)}>
                   <SvgIcon name="edit-pencil" width={14} height={14} fill="#FAF8F3" />
                 </Pressable>
@@ -183,14 +189,14 @@ export default function ProfileScreen() {
               className="py-spacing-10 w-50 active:bg-brand-accent-container/80 h-12 justify-center rounded-radius-full bg-brand-accent-container px-spacing-24 shadow-sm"
               onPress={() => router.push('/edit-profile' as Href)}>
               <Text className="font-sm text-center font-cairo font-medium text-text-primary">
-                Edit Profile
+                {t('profile:editProfile')}
               </Text>
             </Pressable>
           </View>
         </View>
 
         {/* <View className="mb-spacing-32 px-spacing-16"> */}
-        {/* <Text className="text-bodyLarge mb-spacing-16 pl-spacing-4 font-cairo font-bold text-text-primary">
+        {/* <Text className="text-bodyLarge mb-spacing-16 ps-spacing-4 font-cairo font-bold text-text-primary">
             Your Impact
           </Text> */}
         {/* <View className="flex-row flex-wrap justify-between gap-y-spacing-16">
@@ -248,39 +254,31 @@ export default function ProfileScreen() {
 
         <View className="mb-spacing-24 px-spacing-16">
           <Text className="text-caption mb-spacing-8 pl-spacing-8 font-cairo font-bold uppercase tracking-widest text-text-secondary">
-            Preferences
+            {t('profile:preferences.title')}
           </Text>
           <View className="overflow-hidden rounded-radius-large border border-surface-border bg-surface-surface shadow-sm">
-            {/* <ProfileListItem
-              title="Notifications"
-              iconName="bell"
+            <ProfileListItem
+              title={t('profile:preferences.language')}
+              iconName="globe"
+              onPress={() => setLanguageModalVisible(true)}
               rightElement={
-                <Switch
-                  value={notificationsEnabled}
-                  onValueChange={setNotificationsEnabled}
-                  trackColor={{ false: '#E4E0DA', true: '#356859' }}
-                  thumbColor="#FFFFFF"
-                />
+                <View className="flex-row items-center gap-2">
+                  <Text className="text-bodySmall font-cairo font-bold text-brand-primary">
+                    {currentLanguage === 'ar' ? 'العربية' : 'English'}
+                  </Text>
+                  <Icon as={ChevronDown} size={16} className="text-brand-primary" />
+                </View>
               }
             />
             <ProfileListItem
-              title="Language"
-              iconName="globe"
-              rightElement={
-                <Text className="text-bodySmall font-cairo font-bold text-brand-primary">
-                  English (US)
-                </Text>
-              }
-            /> */}
-            <ProfileListItem
-              title="Theme Mode"
+              title={t('profile:preferences.themeMode')}
               iconName="moon"
               showDivider={false}
               onPress={() => setThemeModalVisible(true)}
               rightElement={
                 <View className="flex-row items-center gap-2">
                   <Text className="text-bodySmall font-cairo font-bold capitalize text-brand-primary">
-                    {mode}
+                    {mode === 'light' ? t('profile:preferences.lightMode') : mode === 'dark' ? t('profile:preferences.darkMode') : t('profile:preferences.systemDefault')}
                   </Text>
                   <Icon as={ChevronDown} size={16} className="text-brand-primary" />
                 </View>
@@ -291,11 +289,11 @@ export default function ProfileScreen() {
 
         <View className="mb-spacing-32 px-spacing-16">
           <Text className="text-caption mb-spacing-8 pl-spacing-8 font-cairo font-bold uppercase tracking-widest text-text-secondary">
-            Support
+            {t('profile:support.title')}
           </Text>
           <View className="overflow-hidden rounded-radius-large border border-surface-border bg-surface-surface shadow-sm">
-            <ProfileListItem title="Help Center" iconName="help" />
-            <ProfileListItem title="Privacy Policy" iconName="privacy" showDivider={false} />
+            <ProfileListItem title={t('profile:support.helpCenter')} iconName="help" />
+            <ProfileListItem title={t('profile:support.privacyPolicy')} iconName="privacy" showDivider={false} />
           </View>
         </View>
 
@@ -304,7 +302,7 @@ export default function ProfileScreen() {
             className="h-14 flex-row items-center justify-center gap-spacing-8 rounded-radius-large border border-brand-error/20 bg-status-error-container shadow-sm active:bg-brand-error/20"
             onPress={handleLogout}>
             <Icon as={LogOut} size={20} className="text-status-error" />
-            <Text className="text-bodyLarge font-cairo font-bold text-status-error">Log Out</Text>
+            <Text className="text-bodyLarge font-cairo font-bold text-status-error">{t('profile:logout.button')}</Text>
           </Pressable>
         </View>
       </ScrollView>
@@ -318,10 +316,10 @@ export default function ProfileScreen() {
             className="w-full max-w-[320px] rounded-radius-large border border-surface-border bg-surface-surface p-spacing-24 shadow-xl"
             onPress={(e) => e.stopPropagation()}>
             <Text className="text-bodyLarge mb-spacing-8 text-center font-cairo font-bold text-text-primary">
-              Confirm Logout
+              {t('profile:logout.confirmTitle')}
             </Text>
             <Text className="text-bodySmall mb-spacing-24 text-center font-cairo leading-[20px] text-text-secondary">
-              Are you sure you want to log out of HomePal?
+              {t('profile:logout.confirmMessage')}
             </Text>
 
             <View className="gap-y-spacing-16">
@@ -331,13 +329,13 @@ export default function ProfileScreen() {
                   dispatch(logoutUser());
                 }}
                 className="active:bg-brand-primaryPressed h-12 flex-row items-center justify-center rounded-radius-medium bg-brand-error shadow-sm">
-                <Text className="text-body font-cairo font-bold text-text-inverse">Log Out</Text>
+                <Text className="text-body font-cairo font-bold text-text-inverse">{t('profile:logout.button')}</Text>
               </Pressable>
 
               <Pressable
                 onPress={() => setLogoutModalVisible(false)}
                 className="bg-surface-surfaceVariant/60 active:bg-surface-border/40 h-12 flex-row items-center justify-center rounded-radius-medium border border-surface-border">
-                <Text className="text-body font-cairo font-bold text-text-secondary">Cancel</Text>
+                <Text className="text-body font-cairo font-bold text-text-secondary">{t('profile:cancel')}</Text>
               </Pressable>
             </View>
           </Pressable>
@@ -355,23 +353,29 @@ export default function ProfileScreen() {
             onPress={(e) => e.stopPropagation()}>
             <View className="mb-6 items-center">
               <View className="mb-4 h-1.5 w-12 rounded-full bg-surface-border" />
-              <Text className="font-cairo text-xl font-bold text-text-primary">Choose Theme</Text>
+              <Text className="font-cairo text-xl font-bold text-text-primary">{t('profile:themeModal.title')}</Text>
             </View>
 
             <View className="bg-surface-surfaceVariant overflow-hidden rounded-xl px-4">
-              {renderThemeOption('system', 'System Default')}
-              {renderThemeOption('light', 'Light Mode')}
-              {renderThemeOption('dark', 'Dark Mode')}
+              {renderThemeOption('system', t('profile:preferences.systemDefault'))}
+              {renderThemeOption('light', t('profile:preferences.lightMode'))}
+              {renderThemeOption('dark', t('profile:preferences.darkMode'))}
             </View>
 
             <Pressable
               onPress={() => setThemeModalVisible(false)}
               className="mt-6 h-12 flex-row items-center justify-center rounded-radius-medium bg-brand-primary shadow-sm active:opacity-90">
-              <Text className="text-body font-cairo font-bold text-white">Done</Text>
+              <Text className="text-body font-cairo font-bold text-white">{t('profile:themeModal.done')}</Text>
             </Pressable>
           </Pressable>
         </Pressable>
       </Modal>
+
+      {/* Language Selection Modal */}
+      <LanguageSelectionModal
+        visible={languageModalVisible}
+        onClose={() => setLanguageModalVisible(false)}
+      />
     </SafeAreaView>
   );
 }

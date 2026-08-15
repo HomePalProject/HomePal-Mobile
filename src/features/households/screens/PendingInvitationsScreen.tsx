@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, ScrollView, Pressable, Image, ActivityIndicator } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ArrowLeft, Check, X, Inbox, Home } from 'lucide-react-native';
+import { Check, X, Inbox, Home } from 'lucide-react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
+import { BackButton } from '@/src/components/ui/back-button';
 import { ProTipCard } from '@/src/components/ui/pro-tip-card';
 import { HouseholdInvitationResponse } from '@/src/types/api';
 import { useAppDispatch } from '@/src/store';
@@ -139,13 +140,7 @@ export function PendingInvitationsScreen({
         className="flex-row items-center justify-between border-b border-surface-divider bg-surface-surface px-5 pb-3 shadow-sm"
         style={{ paddingTop: Math.max(insets.top, 16) + 12 }}>
         {/* Back button */}
-        <Pressable
-          onPress={onBack}
-          className="active:bg-surface-surfaceVariant rounded-full p-2"
-          accessibilityRole="button"
-          accessibilityLabel="Go back">
-          <Icon as={ArrowLeft} size={24} className="text-text-primary" />
-        </Pressable>
+        <BackButton onPress={onBack} />
 
         {/* Title */}
         <Text className="font-cairo text-base font-bold text-text-primary">

@@ -2,10 +2,10 @@ import React from 'react';
 import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { ArrowLeft } from 'lucide-react-native';
-import { Icon } from '../../../components/ui/icon';
+import { BackButton } from '@/src/components/ui/back-button';
 import { useMemberPreferences } from '../hooks/useMemberPreferences';
 import { PreferenceChip } from '../components/PreferenceChip';
+import { useTranslation } from 'react-i18next';
 
 export interface MemberPreferencesScreenProps {
   memberId: string;
@@ -22,17 +22,14 @@ export function MemberPreferencesScreen({ memberId }: MemberPreferencesScreenPro
     isManager,
     togglePreference,
   } = useMemberPreferences(memberId);
+  const { t } = useTranslation('households');
 
   return (
     <SafeAreaView className="flex-1 bg-surface-background" edges={['top']}>
       {/* Header */}
       <View className="flex-row items-center justify-between p-spacing-16">
-        <TouchableOpacity
-          onPress={() => router.back()}
-          className="shadow-low h-10 w-10 items-center justify-center rounded-radius-full bg-surface-surface">
-          <Icon as={ArrowLeft} size={24} className="text-text-primary" />
-        </TouchableOpacity>
-        <Text className="font-cairo text-xl font-bold text-text-primary">Member Preferences</Text>
+        <BackButton onPress={() => router.back()} />
+        <Text className="font-cairo text-xl font-bold text-text-primary">{t('preferences.title')}</Text>
         <View className="w-10" />
       </View>
 
@@ -41,14 +38,14 @@ export function MemberPreferencesScreen({ memberId }: MemberPreferencesScreenPro
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#356859" />
           <Text className="mt-spacing-8 font-cairo text-base text-text-secondary">
-            Loading preferences...
+            {t('preferences.loading')}
           </Text>
         </View>
       ) : error && !targetMember ? (
         // Error / Not Found State
         <View className="flex-1 items-center justify-center p-spacing-16">
           <Text className="text-error-primary text-center font-cairo text-lg">
-            {error || 'Member not found.'}
+            {error || t('preferences.notFound')}
           </Text>
         </View>
       ) : (
@@ -66,7 +63,7 @@ export function MemberPreferencesScreen({ memberId }: MemberPreferencesScreenPro
               </Text>
               {!isManager ? (
                 <Text className="mt-spacing-4 font-cairo text-sm text-text-secondary">
-                  View-only mode (Manager required to edit)
+                  {t('preferences.viewOnly')}
                 </Text>
               ) : null}
             </View>
@@ -82,7 +79,7 @@ export function MemberPreferencesScreen({ memberId }: MemberPreferencesScreenPro
             {preferencesByCategory.length === 0 ? (
               <View className="items-center justify-center py-spacing-32">
                 <Text className="text-center font-cairo text-base text-text-secondary">
-                  No preference categories available from the server.
+                  {t('preferences.noCategories')}
                 </Text>
               </View>
             ) : null}

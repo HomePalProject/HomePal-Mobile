@@ -4,10 +4,12 @@ import { Menu, User } from 'lucide-react-native';
 import { Icon } from '@/src/components/ui/icon';
 import { useAppDispatch, useAppSelector } from '@/src/store';
 import { openDrawer } from '@/src/store/slices/uiSlice';
+import { useTranslation } from 'react-i18next';
 
 export function ShoppingListHeader() {
   const dispatch = useAppDispatch();
   const { fullName, profileImageUri } = useAppSelector((state) => state.profile);
+  const { t } = useTranslation('shopping');
 
   const nameParts = fullName.trim().split(/\s+/);
   const firstName = nameParts[0] || '';
@@ -28,7 +30,7 @@ export function ShoppingListHeader() {
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <Icon as={Menu} size={24} className="text-brand-primary" />
         </Pressable>
-        <Text className="font-cairo text-xl font-bold text-text-primary">Shopping List</Text>
+        <Text className="font-cairo text-xl font-bold text-text-primary">{t('headerTitle')}</Text>
       </View>
 
       <Pressable

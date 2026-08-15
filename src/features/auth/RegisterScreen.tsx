@@ -12,6 +12,7 @@ import { useAppDispatch, useAppSelector } from '@/src/store';
 import { clearError, saveTempRegistration } from '@/src/store/slices/authSlice';
 import { registerFormSchema } from '@/src/utils/validation';
 import { useGoogleAuth } from '@/src/hooks/useGoogleAuth';
+import { useTranslation } from 'react-i18next';
 import { ErrorBanner } from '@/src/components/common/ErrorBanner';
 import { AnimatedPressable } from '@/src/components/ui/animated-pressable';
 import * as Haptics from 'expo-haptics';
@@ -21,6 +22,7 @@ export const RegisterScreen: React.FC = () => {
   const dispatch = useAppDispatch();
   const { isLoading, error: authError } = useAppSelector((state) => state.auth);
   const { handleGoogleSignIn, isGoogleLoading } = useGoogleAuth();
+  const { t } = useTranslation(['auth', 'common']);
 
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
@@ -102,10 +104,10 @@ export const RegisterScreen: React.FC = () => {
             {/* Heading */}
             <View className="flex-col gap-1">
               <Text className="font-cairo text-[28px] font-bold leading-[36px] text-text-primary">
-                Join HomePal
+                {t('auth:register.title')}
               </Text>
               <Text className="font-cairo text-[15px] leading-[22px] text-text-secondary">
-                Manage your household efficiently.
+                {t('auth:register.subtitle')}
               </Text>
             </View>
 
@@ -119,12 +121,12 @@ export const RegisterScreen: React.FC = () => {
                 hapticStyle="light"
                 className="flex-1 items-center justify-center rounded-[8px] py-2.5">
                 <Text className="font-cairo text-[14px] font-medium text-text-secondary">
-                  Sign in
+                  {t('auth:login.signInBtn')}
                 </Text>
               </AnimatedPressable>
               <View className="flex-1 items-center justify-center rounded-[8px] bg-surface-surface py-2.5 shadow-sm">
                 <Text className="font-cairo text-[14px] font-bold text-text-primary">
-                  Create account
+                  {t('auth:login.createAccount')}
                 </Text>
               </View>
             </View>
@@ -135,8 +137,8 @@ export const RegisterScreen: React.FC = () => {
             {/* Form */}
             <View className="mt-2 flex-col gap-4">
               <TextField
-                label="Full Name"
-                placeholder="e.g. Sara Ahmed"
+                label={t('auth:register.fullNameLabel')}
+                placeholder={t('auth:register.fullNamePlaceholder')}
                 value={fullName}
                 onChangeText={(val) => {
                   setFullName(val);
@@ -147,8 +149,8 @@ export const RegisterScreen: React.FC = () => {
               />
 
               <TextField
-                label="Username"
-                placeholder="e.g. sara_ahmed"
+                label={t('auth:register.usernameLabel')}
+                placeholder={t('auth:register.usernamePlaceholder')}
                 value={username}
                 onChangeText={(val) => {
                   setUsername(val);
@@ -160,8 +162,8 @@ export const RegisterScreen: React.FC = () => {
               />
 
               <TextField
-                label="Email Address"
-                placeholder="e.g. sara@example.com"
+                label={t('auth:register.emailLabel')}
+                placeholder={t('auth:register.emailPlaceholder')}
                 value={email}
                 onChangeText={(val) => {
                   setEmail(val);
@@ -174,8 +176,8 @@ export const RegisterScreen: React.FC = () => {
               />
 
               <TextField
-                label="Password"
-                placeholder="Create a password (min 8 chars)"
+                label={t('auth:register.passwordLabel')}
+                placeholder={t('auth:register.passwordPlaceholder')}
                 value={password}
                 onChangeText={(val) => {
                   setPassword(val);
@@ -187,8 +189,8 @@ export const RegisterScreen: React.FC = () => {
               />
 
               <TextField
-                label="Confirm Password"
-                placeholder="Repeat your password"
+                label={t('auth:register.confirmPasswordLabel')}
+                placeholder={t('auth:register.confirmPasswordPlaceholder')}
                 value={confirmPassword}
                 onChangeText={(val) => {
                   setConfirmPassword(val);
@@ -209,9 +211,9 @@ export const RegisterScreen: React.FC = () => {
                   }}
                   error={errors.terms}>
                   <Text className="font-cairo text-[14px] text-text-secondary">
-                    I agree to the{' '}
+                    {t('auth:register.agreeTo')}
                     <Text className="font-cairo text-[14px] font-bold text-brand-primary">
-                      Terms and Conditions
+                      {t('auth:register.termsAndConditions')}
                     </Text>
                   </Text>
                 </Checkbox>
@@ -224,13 +226,13 @@ export const RegisterScreen: React.FC = () => {
                 isLoading={isLoading}
                 hapticStyle="medium"
                 className="mt-4 h-[56px] w-full rounded-full bg-brand-primary shadow-sm">
-                <Text className="font-cairo text-[16px] font-bold text-white">Continue</Text>
+                <Text className="font-cairo text-[16px] font-bold text-white">{t('auth:register.continueBtn')}</Text>
               </Button>
 
               {/* Divider */}
               <View className="my-2 flex-row items-center gap-4">
                 <View className="h-[1px] flex-1 bg-surface-border" />
-                <Text className="font-cairo text-[13px] text-text-disabled">or continue with</Text>
+                <Text className="font-cairo text-[13px] text-text-disabled">{t('auth:login.orContinueWith')}</Text>
                 <View className="h-[1px] flex-1 bg-surface-border" />
               </View>
 
@@ -243,7 +245,7 @@ export const RegisterScreen: React.FC = () => {
                 hapticStyle="light"
                 className="h-[52px] w-full flex-row items-center justify-center gap-3 rounded-[12px] border border-surface-border bg-surface-surface">
                 <Text className="font-cairo text-[15px] font-semibold text-text-primary">
-                  Continue with Google
+                  {t('auth:login.continueWithGoogle')}
                 </Text>
               </Button>
             </View>
@@ -252,14 +254,14 @@ export const RegisterScreen: React.FC = () => {
           {/* Footer */}
           <View className="mt-8 flex-row items-center justify-center pb-4">
             <Text className="font-cairo text-[14px] text-text-secondary">
-              Already have an account?{' '}
+              {t('auth:register.alreadyHaveAccount')}
             </Text>
             <Pressable
               onPress={() => {
                 if (authError) dispatch(clearError());
                 router.replace('/(auth)/login');
               }}>
-              <Text className="font-cairo text-[14px] font-bold text-brand-primary">Sign in</Text>
+              <Text className="font-cairo text-[14px] font-bold text-brand-primary">{t('auth:login.signInBtn')}</Text>
             </Pressable>
           </View>
         </ScrollView>

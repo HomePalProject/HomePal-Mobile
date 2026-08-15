@@ -11,10 +11,12 @@ import { Text } from '@/src/components/ui/text';
 
 import { useAppDispatch } from '@/src/store';
 import { openDrawer } from '@/src/store/slices/uiSlice';
+import { useTranslation } from 'react-i18next';
 
 export default function DashboardScreen() {
   const dispatch = useAppDispatch();
   const handleOpenDrawer = () => dispatch(openDrawer());
+  const { t } = useTranslation('home');
   const {
     isLoading,
     isFetchingHousehold,
@@ -48,7 +50,7 @@ export default function DashboardScreen() {
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#356859" />
           <Text className="mt-3 font-cairo text-[14px] text-text-secondary">
-            Loading dashboard...
+            {t('loading')}
           </Text>
         </View>
       ) : !hasHousehold ? (

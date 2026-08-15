@@ -19,6 +19,7 @@ import {
   ProductCategoryResponse,
   MeasuringUnitResponse,
 } from '@/src/types/api';
+import { useTranslation } from 'react-i18next';
 
 interface AddEditShoppingItemModalProps {
   visible: boolean;
@@ -42,6 +43,7 @@ export function AddEditShoppingItemModal({
   measuringUnits,
   isSaving,
 }: AddEditShoppingItemModalProps) {
+  const { t } = useTranslation('shopping');
   const [name, setName] = useState('');
   const [quantity, setQuantity] = useState('1');
   const [portionCount, setPortionCount] = useState('1');
@@ -136,7 +138,7 @@ export function AddEditShoppingItemModal({
           {/* Header */}
           <View className="relative mb-spacing-24 items-center">
             <Text className="font-cairo text-lg font-bold text-text-primary">
-              {isEditing ? 'Edit Shopping Item' : 'Add Shopping Item'}
+              {isEditing ? t('modal.editTitle') : t('modal.addTitle')}
             </Text>
           </View>
 
@@ -146,22 +148,21 @@ export function AddEditShoppingItemModal({
             {/* Product Name */}
             <View className="mb-spacing-16">
               <Text className="mb-spacing-4 text-center font-cairo text-xs font-bold text-text-primary">
-                Product Name
+                {t('modal.productName')}
               </Text>
               <TextInput
                 value={name}
                 onChangeText={setName}
-                placeholder="e.g. Fresh Milk, Olive Oil, Rice..."
+                placeholder={t('modal.productPlaceholder')}
                 placeholderTextColor="#A8A29B"
                 className="px-spacing-12 py-spacing-10 rounded-radius-medium border border-surface-border bg-surface-surface font-cairo text-sm text-text-primary"
               />
             </View>
 
-            {/* Portion Size / How Many / Unit — 3 columns */}
             <View className="relative z-20 mb-spacing-16 flex-row gap-spacing-8">
               <View className="flex-[0.8]">
                 <Text className="mb-spacing-4 text-center font-cairo text-xs font-bold text-text-primary">
-                  Portion Size
+                  {t('modal.portionSize')}
                 </Text>
                 <TextInput
                   value={quantity}
@@ -172,7 +173,7 @@ export function AddEditShoppingItemModal({
               </View>
               <View className="flex-[0.8]">
                 <Text className="mb-spacing-4 text-center font-cairo text-xs font-bold text-text-primary">
-                  How Many{'\n'}(Portions)
+                  {t('modal.howMany')}
                 </Text>
                 <TextInput
                   value={portionCount}
@@ -183,7 +184,7 @@ export function AddEditShoppingItemModal({
               </View>
               <View className="relative flex-[1.2]">
                 <Text className="mb-spacing-4 text-center font-cairo text-xs font-bold text-text-primary">
-                  Measuring Unit
+                  {t('modal.measuringUnit')}
                 </Text>
                 <Pressable
                   onPress={() => {
@@ -194,7 +195,7 @@ export function AddEditShoppingItemModal({
                   <Text
                     numberOfLines={1}
                     className="flex-1 font-cairo text-xs font-bold text-text-primary">
-                    {selectedUnit ? `${selectedUnit.name}` : 'Choose Unit...'}
+                    {selectedUnit ? `${selectedUnit.name}` : t('modal.chooseUnit')}
                   </Text>
                   <Icon as={ChevronDown} size={14} className="text-text-primary" />
                 </Pressable>
@@ -203,24 +204,23 @@ export function AddEditShoppingItemModal({
               </View>
             </View>
 
-            {/* Price / Category — 2 columns */}
             <View className="relative z-10 mb-spacing-16 flex-row gap-spacing-8">
               <View className="flex-1">
                 <Text className="mb-spacing-4 text-center font-cairo text-xs font-bold text-text-primary">
-                  Unit Price (EGP)
+                  {t('modal.unitPrice')}
                 </Text>
                 <TextInput
                   value={price}
                   onChangeText={handlePriceChange}
                   keyboardType="decimal-pad"
-                  placeholder="Optional"
+                  placeholder={t('modal.optional')}
                   placeholderTextColor="#A8A29B"
                   className="px-spacing-12 h-[44px] justify-center rounded-radius-medium border border-surface-border bg-surface-surface font-cairo text-sm text-text-primary"
                 />
               </View>
               <View className="relative flex-1">
                 <Text className="mb-spacing-4 text-center font-cairo text-xs font-bold text-text-primary">
-                  Category
+                  {t('modal.category')}
                 </Text>
                 <Pressable
                   onPress={() => {
@@ -231,7 +231,7 @@ export function AddEditShoppingItemModal({
                   <Text
                     numberOfLines={1}
                     className="flex-1 font-cairo text-xs font-bold text-text-primary">
-                    {selectedCategory ? selectedCategory.name : 'Choose Category...'}
+                    {selectedCategory ? selectedCategory.name : t('modal.chooseCategory')}
                   </Text>
                   <Icon as={ChevronDown} size={14} className="text-text-primary" />
                 </Pressable>
@@ -243,12 +243,12 @@ export function AddEditShoppingItemModal({
             {/* Notes */}
             <View className="mb-spacing-24">
               <Text className="mb-spacing-4 text-center font-cairo text-xs font-bold text-text-primary">
-                Notes
+                {t('modal.notes')}
               </Text>
               <TextInput
                 value={notes}
                 onChangeText={setNotes}
-                placeholder="Brand name, size, preference..."
+                placeholder={t('modal.notesPlaceholder')}
                 placeholderTextColor="#A8A29B"
                 className="px-spacing-12 h-[44px] justify-center rounded-radius-medium border border-surface-border bg-surface-surface font-cairo text-sm text-text-primary"
               />
@@ -260,7 +260,7 @@ export function AddEditShoppingItemModal({
             <Pressable
               onPress={onClose}
               className="flex-1 items-center justify-center rounded-radius-full border border-text-secondary bg-surface-background py-spacing-16 active:opacity-70">
-              <Text className="font-cairo text-sm font-bold text-brand-primary">Cancel</Text>
+              <Text className="font-cairo text-sm font-bold text-brand-primary">{t('modal.cancel')}</Text>
             </Pressable>
             <Pressable
               onPress={handleSave}
@@ -269,7 +269,7 @@ export function AddEditShoppingItemModal({
                 !name.trim() || isSaving ? 'bg-surface-border' : 'bg-brand-primary'
               }`}>
               <Text className="font-cairo text-sm font-bold text-text-inverse">
-                {isSaving ? 'Saving...' : 'Save Item'}
+                {isSaving ? t('modal.saving') : t('modal.saveItem')}
               </Text>
             </Pressable>
           </View>
@@ -290,7 +290,7 @@ export function AddEditShoppingItemModal({
             onPress={(e) => e.stopPropagation()}>
             <View className="flex-row items-center justify-between border-b border-surface-border px-6 py-4">
               <Text className="font-cairo text-[18px] font-bold text-text-primary">
-                Select Measuring Unit
+                {t('modal.selectUnit')}
               </Text>
               <Pressable
                 onPress={() => setShowUnitPicker(false)}
@@ -309,7 +309,7 @@ export function AddEditShoppingItemModal({
                 className="flex-row items-center justify-between border-b border-surface-border px-6 py-4 active:bg-surface-surface-variant">
                 <Text
                   className={`font-cairo text-[15px] ${!unitId ? 'font-bold text-brand-primary' : 'text-text-primary'}`}>
-                  -- No Unit --
+                  {t('modal.noUnit')}
                 </Text>
                 {!unitId && <Icon as={Check} size={18} className="text-brand-primary" />}
               </Pressable>
@@ -349,7 +349,7 @@ export function AddEditShoppingItemModal({
             onPress={(e) => e.stopPropagation()}>
             <View className="flex-row items-center justify-between border-b border-surface-border px-6 py-4">
               <Text className="font-cairo text-[18px] font-bold text-text-primary">
-                Select Category
+                {t('modal.selectCategory')}
               </Text>
               <Pressable
                 onPress={() => setShowCategoryPicker(false)}
@@ -368,7 +368,7 @@ export function AddEditShoppingItemModal({
                 className="flex-row items-center justify-between border-b border-surface-border px-6 py-4 active:bg-surface-surface-variant">
                 <Text
                   className={`font-cairo text-[15px] ${!categoryId ? 'font-bold text-brand-primary' : 'text-text-primary'}`}>
-                  -- No Category --
+                  {t('modal.noCategory')}
                 </Text>
                 {!categoryId && <Icon as={Check} size={18} className="text-brand-primary" />}
               </Pressable>

@@ -88,13 +88,13 @@ export function AIScanItemRow({
           <Text numberOfLines={1} className="text-body flex-1 font-cairo text-text-primary">
             {getCategoryName(item.categoryId)}
           </Text>
-          <Icon as={ChevronDown} size={16} className="ml-1 text-text-secondary" />
+          <Icon as={ChevronDown} size={16} className="ms-1 text-text-secondary" />
         </Pressable>
 
         <Pressable
           onPress={() => onOpenPicker(index, 'date')}
           className="h-12 flex-1 flex-row items-center justify-between rounded-radius-medium border border-surface-border bg-surface-surface px-spacing-16 active:opacity-85">
-          <Icon as={Calendar} size={16} className="mr-2 text-text-secondary" />
+          <Icon as={Calendar} size={16} className="me-2 text-text-secondary" />
           <Text numberOfLines={1} className="text-body flex-1 font-cairo text-text-primary">
             {item.expireDate ? formatDisplayDate(item.expireDate) : 'Date'}
           </Text>

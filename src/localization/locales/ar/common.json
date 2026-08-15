@@ -1,0 +1,60 @@
+{
+  "buttons": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "back": "رجوع",
+    "done": "تم",
+    "next": "التالي",
+    "skip": "تخطي",
+    "retry": "إعادة المحاولة",
+    "close": "إغلاق",
+    "add": "إضافة",
+    "remove": "إزالة",
+    "search": "بحث",
+    "loading": "جاري التحميل...",
+    "saveChanges": "حفظ التغييرات",
+    "ok": "موافق"
+  },
+  "labels": {
+    "searchPlaceholder": "بحث...",
+    "optional": "اختياري",
+    "required": "مطلوب",
+    "noData": "لا توجد بيانات متاحة",
+    "unknown": "غير معروف",
+    "systemDefault": "الافتراضي للنظام",
+    "lightMode": "الوضع الفاتح",
+    "darkMode": "الوضع الداكن",
+    "language": "اللغة",
+    "proTip": "نصيحة ممتازة"
+  },
+  "errors": {
+    "networkError": "تعذر الاتصال بخوادم هوم بال. يرجى التحقق من اتصال الإنترنت لديك.",
+    "unexpectedError": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
+    "sessionExpired": "انتهت الجلسة. يرجى تسجيل الدخول مرة أخرى.",
+    "requestFailed": "فشلت العملية",
+    "copied": "تم النسخ!",
+    "emailCopied": "تم نسخ عنوان البريد الإلكتروني إلى الحافظة."
+  },
+  "navigation": {
+    "home": "الرئيسية",
+    "pantry": "المخزن",
+    "meals": "الذوق والوجبات",
+    "offers": "العروض",
+    "profile": "الحساب",
+    "myHousehold": "منزلي",
+    "shoppingList": "قائمة التسوق",
+    "manageFamily": "إدارة العائلة",
+    "sentInvitations": "الدعوات المرسلة",
+    "receivedInvitations": "الدعوات الواردة",
+    "profileSettings": "الملف الشخصي والإعدادات",
+    "householdBudget": "ميزانية المنزل"
+  },
+  "logoutModal": {
+    "title": "تأكيد تسجيل الخروج",
+    "message": "هل أنت ألكيد من رغبتك في تسجيل الخروج من هوم بال؟",
+    "confirm": "تسجيل الخروج"
+  }
+}

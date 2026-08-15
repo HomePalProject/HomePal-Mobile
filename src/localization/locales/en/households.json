@@ -1,0 +1,25 @@
+{
+  "create": {
+    "title": "Create Household",
+    "welcome": "Welcome to HomePal",
+    "subtitle": "Set up your household to start managing your pantry, recipes, and budget together with your family.",
+    "identityPhase": "Identity & Location",
+    "nameLabel": "Household Name",
+    "namePlaceholder": "e.g., My Lovely Home",
+    "addressLabel": "Address",
+    "addressPlaceholder": "123 Street Name",
+    "governorateLabel": "Governorate",
+    "governoratePlaceholder": "e.g., Cairo",
+    "cityLabel": "City",
+    "cityPlaceholder": "e.g., Maadi",
+    "locationTip": "Providing your location helps us suggest local recipes and optimize your grocery budget based on regional market prices.",
+    "saveBtn": "Save & Register Household"
+  },
+  "preferences": {
+    "title": "Member Preferences",
+    "loading": "Loading preferences...",
+    "notFound": "Member not found.",
+    "viewOnly": "View-only mode (Manager required to edit)",
+    "noCategories": "No preference categories available from the server."
+  }
+}

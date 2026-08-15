@@ -1,0 +1,28 @@
+{
+  "loading": "Loading offers...",
+  "noActiveOffers": "No active offers found matching filters.",
+  "categories": "CATEGORIES",
+  "supermarkets": "SUPERMARKETS",
+  "activeDealsOnly": "Active Deals Only",
+  "headerTitle": "Supermarket Offers & Deals",
+  "searchPlaceholder": "Search offers or products...",
+  "details": {
+    "errorLoading": "Error loading offer details",
+    "goBack": "Go Back",
+    "backToOffers": "Back to Offers",
+    "title": "Offer Details",
+    "noImage": "No Image Available",
+    "off": "OFF",
+    "totalSavings": "Total Savings",
+    "specialDeal": "SPECIAL DEAL PRICE",
+    "originalPrice": "Original Price",
+    "supermarket": "Supermarket",
+    "verified": "Verified",
+    "visitWebsite": "Visit Website",
+    "validityPeriod": "Validity Period",
+    "now": "Now",
+    "endOfStock": "End of Stock",
+    "description": "Description",
+    "addToShoppingList": "Add to Shopping List"
+  }
+}

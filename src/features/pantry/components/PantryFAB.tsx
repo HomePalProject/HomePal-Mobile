@@ -60,7 +60,7 @@ export function PantryFAB({ onAddPress, onScanPress }: PantryFABProps) {
   };
 
   return (
-    <View className="absolute bottom-6 right-4 items-end gap-spacing-8">
+    <View className="absolute bottom-6 end-4 items-end gap-spacing-8">
       {/* Speed-dial: Scan Items or Receipt */}
       <Animated.View style={scanItemStyle} pointerEvents={isOpen ? 'auto' : 'none'}>
         <Pressable

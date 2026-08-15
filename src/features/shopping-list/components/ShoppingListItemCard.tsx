@@ -4,6 +4,7 @@ import { Check, Square, Pencil, Trash2, Tag, X } from 'lucide-react-native';
 import { Icon } from '@/src/components/ui/icon';
 import { ShoppingListItemResponse } from '@/src/types/api';
 import * as Haptics from 'expo-haptics';
+import { useTranslation } from 'react-i18next';
 
 interface ShoppingListItemCardProps {
   item: ShoppingListItemResponse;
@@ -18,6 +19,7 @@ export function ShoppingListItemCard({
   onEdit,
   onDelete,
 }: ShoppingListItemCardProps) {
+  const { t } = useTranslation('shopping');
   const unitStr = item.unitSymbol || item.unitName || '';
   const portionCount = item.portionCount || 1;
   const totalPrice =
@@ -80,14 +82,14 @@ export function ShoppingListItemCard({
             {/* Portion Count Badge */}
             <View className="rounded-full bg-brand-primary px-3 py-1">
               <Text className="font-cairo text-[11px] font-bold text-white">
-                x{portionCount} {portionCount === 1 ? 'portion' : 'portions'}
+                x{portionCount} {portionCount === 1 ? t('item.portion') : t('item.portions')}
               </Text>
             </View>
 
             {/* Unit Price */}
             {item.price ? (
               <Text className="mt-1 w-full font-cairo text-xs font-bold text-brand-accent">
-                {item.price} EGP / unit
+                {item.price} {t('item.egpPerUnit')}
               </Text>
             ) : null}
 
@@ -95,7 +97,7 @@ export function ShoppingListItemCard({
             <View className="mt-1 w-full flex-row items-center gap-2">
               {totalPrice ? (
                 <Text className="font-cairo text-xs font-black text-brand-primary">
-                  (Total: {totalPrice.toFixed(2)} EGP)
+                  ({t('item.total')}: {totalPrice.toFixed(2)} EGP)
                 </Text>
               ) : null}
               {item.categoryName ? (
@@ -109,7 +111,7 @@ export function ShoppingListItemCard({
             {item.offerId ? (
               <View className="gap-spacing-2 py-spacing-2 flex-row items-center rounded-radius-full bg-brand-accent-container px-spacing-8">
                 <Icon as={Tag} size={10} className="text-brand-accent" />
-                <Text className="font-cairo text-xs font-bold text-brand-accent">Deal Offer</Text>
+                <Text className="font-cairo text-xs font-bold text-brand-accent">{t('item.dealOffer')}</Text>
               </View>
             ) : null}
           </View>
@@ -121,7 +123,7 @@ export function ShoppingListItemCard({
             onPress={() => onEdit(item)}
             className="h-8 w-8 items-center justify-center rounded-full border border-surface-border bg-white active:opacity-70"
             hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}>
-            <Text className="font-cairo text-[10px] font-bold text-brand-primary">Edit</Text>
+            <Text className="font-cairo text-[10px] font-bold text-brand-primary">{t('item.edit')}</Text>
           </Pressable>
           <Pressable
             onPress={handleDelete}

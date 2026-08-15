@@ -57,7 +57,10 @@ const resolveImageUrl = (path?: string | null): string | null => {
 
 // ─── Screen Component ──────────────────────────────────────────────────────────
 
+import { useTranslation } from 'react-i18next';
+
 export default function AddEditPantryItemScreen() {
+  const { t } = useTranslation(['pantry', 'common']);
   const router = useRouter();
   const { itemId } = useLocalSearchParams<{ itemId?: string }>();
   const isEditMode = Boolean(itemId);
@@ -145,7 +148,10 @@ export default function AddEditPantryItemScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.back();
     } catch {
-      Alert.alert('Error', 'Failed to save item. Please try again.');
+      Alert.alert(
+        t('common:errors.requestFailed', 'Error'),
+        t('pantry:failedToSave', 'Failed to save item. Please try again.')
+      );
     }
   };
 
@@ -162,7 +168,10 @@ export default function AddEditPantryItemScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.replace('/(tabs)/pantry');
     } catch {
-      Alert.alert('Error', 'Failed to remove item. Please try again.');
+      Alert.alert(
+        t('common:errors.requestFailed', 'Error'),
+        t('pantry:failedToRemove', 'Failed to remove item. Please try again.')
+      );
     } finally {
       setIsDeleting(false);
     }

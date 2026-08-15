@@ -128,7 +128,7 @@ export default function OnboardingStep1Screen() {
                         {item.label}
                       </Text>
                       {isSelected && (
-                        <View className="ml-1 h-5 w-5 items-center justify-center rounded-full bg-brand-primary">
+                        <View className="ms-1 h-5 w-5 items-center justify-center rounded-full bg-brand-primary">
                           <Icon as={Check} size={12} className="text-white" />
                         </View>
                       )}

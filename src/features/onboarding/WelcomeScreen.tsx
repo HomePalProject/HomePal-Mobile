@@ -4,9 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Text } from '@/src/components/ui/text';
 import { Button } from '@/src/components/ui/button';
+import { useTranslation } from 'react-i18next';
 
 export const WelcomeScreen: React.FC = () => {
   const router = useRouter();
+  const { t } = useTranslation('auth');
 
   return (
     <SafeAreaView className="flex-1 bg-surface-background">
@@ -32,10 +34,10 @@ export const WelcomeScreen: React.FC = () => {
         {/* Typography Section */}
         <View className="flex-col gap-3 px-2 text-center">
           <Text className="text-center font-cairo text-[28px] font-bold leading-[36px] text-brand-primary">
-            Manage your home with ease.
+            {t('welcome.title')}
           </Text>
           <Text className="text-center font-cairo text-[16px] leading-[24px] text-text-secondary">
-            The calm way to handle groceries, meals, and budgets.
+            {t('welcome.subtitle')}
           </Text>
         </View>
 
@@ -44,14 +46,14 @@ export const WelcomeScreen: React.FC = () => {
           <Button
             onPress={() => router.push('/(auth)/register')}
             className="h-[56px] w-full rounded-full bg-brand-primary shadow-sm">
-            <Text className="font-cairo text-[16px] font-bold text-white">Get started</Text>
+            <Text className="font-cairo text-[16px] font-bold text-white">{t('welcome.getStarted')}</Text>
           </Button>
 
           <Pressable
             onPress={() => router.push('/(auth)/login')}
             className="h-[56px] w-full items-center justify-center rounded-full border-2 border-brand-primary bg-surface-surface active:bg-brand-primary-container">
             <Text className="font-cairo text-[16px] font-bold text-brand-primary">
-              I already have an account
+              {t('welcome.alreadyHaveAccount')}
             </Text>
           </Pressable>
         </View>

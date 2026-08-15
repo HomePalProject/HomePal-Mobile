@@ -25,7 +25,10 @@ import {
   ExpensesLogList,
 } from '@/src/features/budget/components';
 
+import { useTranslation } from 'react-i18next';
+
 export default function BudgetScreen() {
+  const { t } = useTranslation(['budget', 'common']);
   const { theme } = useTheme();
   const dispatch = useAppDispatch();
   const insets = useSafeAreaInsets();
@@ -105,9 +108,13 @@ export default function BudgetScreen() {
 
   useEffect(() => {
     if (error) {
-      Alert.alert('Error', error, [{ text: 'OK', onPress: () => clearError() }]);
+      Alert.alert(
+        t('common:errors.requestFailed', 'Error'),
+        error,
+        [{ text: t('common:buttons.ok', 'OK'), onPress: () => clearError() }]
+      );
     }
-  }, [error, clearError]);
+  }, [error, clearError, t]);
 
   return (
     <SafeAreaView className="flex-1 bg-surface-background" edges={['bottom', 'left', 'right']}>

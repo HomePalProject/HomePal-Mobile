@@ -94,7 +94,7 @@ export function ExpensesLogList({
               <View
                 key={expense.id}
                 className="flex-row items-center justify-between rounded-radius-large border border-surface-border p-spacing-16">
-                <View className="flex-1 pr-spacing-16">
+                <View className="flex-1 pe-spacing-16">
                   <Text className="text-body font-cairo font-bold text-text-primary">
                     {expense.title}
                   </Text>

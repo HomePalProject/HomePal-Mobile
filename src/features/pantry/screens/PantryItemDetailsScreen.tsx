@@ -1,33 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Pressable, Image, Alert, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import * as Haptics from 'expo-haptics';
+import { Icon } from '@/src/components/ui/icon';
+import { env } from '@/src/config/env';
 import { colors } from '@/src/theme/colors';
+import * as Haptics from 'expo-haptics';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import {
-  Calendar,
+  AlertTriangle,
   Box,
+  Calendar,
+  Check,
   Clock,
   History,
-  Trash2,
-  Check,
-  AlertTriangle,
   Minus,
-  Plus,
   Package,
+  Plus,
+  Trash2,
 } from 'lucide-react-native';
-import { Icon } from '@/src/components/ui/icon';
-import { usePantry } from '../hooks/usePantry';
-import { env } from '@/src/config/env';
-import { getCategoryIconConfig } from '../components/CategorySelectorSheet';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  PantryItemDetailsHeader,
   DeleteConfirmationModal,
-  PantryNotificationModal,
   PantryDetailRow,
+  PantryItemDetailsHeader,
+  PantryNotificationModal,
 } from '../components';
-import { PantryItemResponse } from '@/src/types/api';
+import { getCategoryIconConfig } from '../components/CategorySelectorSheet';
+import { usePantry } from '../hooks/usePantry';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 

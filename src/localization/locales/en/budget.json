@@ -1,0 +1,12 @@
+{
+  "title": "Household Budget",
+  "monthlyBudget": "Monthly Budget Target",
+  "totalSpent": "Total Spent",
+  "remaining": "Remaining",
+  "addExpense": "Add Expense",
+  "setTarget": "Set Budget Target",
+  "targetAmount": "Target Amount",
+  "expenseLog": "Expenses Log",
+  "noExpenses": "No expenses logged this month",
+  "currency": "EGP"
+}

@@ -4,11 +4,13 @@ import { useColorScheme } from 'nativewind';
 import { Home, Package, UtensilsCrossed, ShoppingCart, User, Tag } from 'lucide-react-native';
 import { Icon } from '@/src/components/ui/icon';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 
 export default function TabLayout() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation('common');
 
   return (
     <Tabs
@@ -32,35 +34,35 @@ export default function TabLayout() {
       <Tabs.Screen
         name="pantry"
         options={{
-          title: 'Pantry',
+          title: t('navigation.pantry'),
           tabBarIcon: ({ color, size }) => <Icon as={Package} size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="meals"
         options={{
-          title: 'Meals',
+          title: t('navigation.meals'),
           tabBarIcon: ({ color, size }) => <Icon as={UtensilsCrossed} size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: t('navigation.home'),
           tabBarIcon: ({ color, size }) => <Icon as={Home} size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="shop"
         options={{
-          title: 'Offers',
+          title: t('navigation.offers'),
           tabBarIcon: ({ color, size }) => <Icon as={Tag} size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
+          title: t('navigation.profile'),
           tabBarIcon: ({ color, size }) => <Icon as={User} size={size} color={color} />,
         }}
       />

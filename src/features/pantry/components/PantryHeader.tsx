@@ -4,6 +4,7 @@ import { User, Menu } from 'lucide-react-native';
 import { Icon } from '@/src/components/ui/icon';
 import { useAppDispatch, useAppSelector } from '@/src/store';
 import { openDrawer } from '@/src/store/slices/uiSlice';
+import { useTranslation } from 'react-i18next';
 
 interface PantryHeaderProps {
   onProfilePress?: () => void;
@@ -12,6 +13,7 @@ interface PantryHeaderProps {
 export function PantryHeader({ onProfilePress }: PantryHeaderProps) {
   const dispatch = useAppDispatch();
   const { fullName, profileImageUri } = useAppSelector((state) => state.profile);
+  const { t } = useTranslation('pantry');
 
   // Extract first initial
   const nameParts = fullName.trim().split(/\s+/);
@@ -34,7 +36,7 @@ export function PantryHeader({ onProfilePress }: PantryHeaderProps) {
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <Icon as={Menu} size={24} className="text-brand-primary" />
         </Pressable>
-        <Text className="font-cairo text-xl font-bold text-text-primary">Pantry</Text>
+        <Text className="font-cairo text-xl font-bold text-text-primary">{t('title')}</Text>
       </View>
 
       {/* Profile Button / User Avatar */}

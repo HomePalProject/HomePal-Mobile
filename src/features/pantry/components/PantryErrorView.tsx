@@ -12,7 +12,7 @@ export function PantryErrorView({ onRetry }: PantryErrorViewProps) {
     <View className="flex-1 items-center justify-center px-spacing-24">
       <View className="bg-surface-surfaceVariant relative mb-spacing-24 h-28 w-28 items-center justify-center rounded-radius-full">
         <Icon as={ImageIcon} size={48} className="text-text-disabled" />
-        <View className="absolute bottom-0 right-0 h-9 w-9 items-center justify-center rounded-radius-full border-2 border-surface-background bg-surface-surface shadow-sm">
+        <View className="absolute bottom-0 end-0 h-9 w-9 items-center justify-center rounded-radius-full border-2 border-surface-background bg-surface-surface shadow-sm">
           <Icon as={AlertTriangle} size={20} className="text-brand-error" />
         </View>
       </View>

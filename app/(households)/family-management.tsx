@@ -40,7 +40,7 @@ export default function FamilyManagementScreen() {
         <View className="flex-row items-center gap-1">
           <Pressable
             onPress={() => router.back()}
-            className="active:bg-surface-surfaceVariant mr-2 rounded-full p-2"
+            className="active:bg-surface-surfaceVariant me-2 rounded-full p-2"
             accessibilityRole="button"
             accessibilityLabel="Go back">
             <Icon as={ArrowLeft} size={24} className="text-text-primary" />
@@ -72,7 +72,7 @@ export default function FamilyManagementScreen() {
       {/* ── FAB: Invite Member ── */}
       <Pressable
         onPress={onInviteMember}
-        className="absolute right-6 z-50 flex-row items-center gap-2 rounded-full bg-brand-primary pl-5 pr-6 active:bg-brand-primary-pressed"
+        className="absolute end-6 z-50 flex-row items-center gap-2 rounded-full bg-brand-primary ps-5 pe-6 active:bg-brand-primary-pressed"
         style={{
           bottom: Math.max(insets.bottom + 24, 24),
           height: 56,

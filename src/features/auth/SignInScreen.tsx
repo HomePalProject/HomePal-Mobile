@@ -12,6 +12,7 @@ import { loginUser, clearError } from '@/src/store/slices/authSlice';
 import { loginFormSchema } from '@/src/utils/validation';
 import { toast } from '@/src/providers/ToastProvider';
 import { useGoogleAuth } from '@/src/hooks/useGoogleAuth';
+import { useTranslation } from 'react-i18next';
 import { ErrorBanner } from '@/src/components/common/ErrorBanner';
 import { AnimatedPressable } from '@/src/components/ui/animated-pressable';
 import * as Haptics from 'expo-haptics';
@@ -21,6 +22,7 @@ export const SignInScreen: React.FC = () => {
   const dispatch = useAppDispatch();
   const { isLoading, error: authError } = useAppSelector((state) => state.auth);
   const { handleGoogleSignIn, isGoogleLoading } = useGoogleAuth();
+  const { t } = useTranslation(['auth', 'common']);
 
   const [emailOrUsername, setEmailOrUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -35,7 +37,7 @@ export const SignInScreen: React.FC = () => {
       });
       setErrors(fieldErrors);
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      toast.error('Validation Error', 'Please check your inputs and try again.');
+      toast.error(t('auth:login.validationErrorTitle'), t('auth:login.validationErrorMsg'));
       return;
     }
 
@@ -45,10 +47,10 @@ export const SignInScreen: React.FC = () => {
     try {
       await dispatch(loginUser({ emailOrUsername: emailOrUsername.trim(), password })).unwrap();
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      toast.success('Welcome back!', 'You have signed in successfully.');
+      toast.success(t('auth:login.successTitle'), t('auth:login.successMsg'));
     } catch (err: any) {
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      toast.error('Sign In Failed', err.message || 'Invalid email or password.');
+      toast.error(t('auth:login.failedTitle'), err.message || t('auth:login.failedMsg'));
     }
   };
 
@@ -74,17 +76,17 @@ export const SignInScreen: React.FC = () => {
             {/* Heading */}
             <View className="flex-col gap-1">
               <Text className="font-cairo text-[28px] font-bold leading-[36px] text-text-primary">
-                Welcome back
+                {t('auth:login.title')}
               </Text>
               <Text className="font-cairo text-[15px] leading-[22px] text-text-secondary">
-                Sign in to keep your household on track.
+                {t('auth:login.subtitle')}
               </Text>
             </View>
 
             {/* Segmented Auth Toggle */}
             <View className="flex-row rounded-[12px] bg-surface-surface-variant p-1">
               <View className="flex-1 items-center justify-center rounded-[8px] border border-surface-border bg-surface-surface py-2.5">
-                <Text className="font-cairo text-[14px] font-bold text-text-primary">Sign in</Text>
+                <Text className="font-cairo text-[14px] font-bold text-text-primary">{t('auth:login.signInBtn')}</Text>
               </View>
               <AnimatedPressable
                 onPress={() => {
@@ -94,7 +96,7 @@ export const SignInScreen: React.FC = () => {
                 hapticStyle="light"
                 className="flex-1 items-center justify-center rounded-[8px] py-2.5">
                 <Text className="font-cairo text-[14px] font-medium text-text-secondary">
-                  Create account
+                  {t('auth:login.createAccount')}
                 </Text>
               </AnimatedPressable>
             </View>
@@ -105,8 +107,8 @@ export const SignInScreen: React.FC = () => {
             {/* Form */}
             <View className="mt-2 flex-col gap-4">
               <TextField
-                label="Email Address or Username"
-                placeholder="e.g. sara@example.com"
+                label={t('auth:login.emailLabel')}
+                placeholder={t('auth:login.emailPlaceholder')}
                 value={emailOrUsername}
                 onChangeText={(val) => {
                   setEmailOrUsername(val);
@@ -120,8 +122,8 @@ export const SignInScreen: React.FC = () => {
 
               <View className="flex-col gap-2">
                 <TextField
-                  label="Password"
-                  placeholder="Enter your password"
+                  label={t('auth:login.passwordLabel')}
+                  placeholder={t('auth:login.passwordPlaceholder')}
                   value={password}
                   onChangeText={(val) => {
                     setPassword(val);
@@ -135,7 +137,7 @@ export const SignInScreen: React.FC = () => {
                   onPress={() => router.push('/(auth)/forgot-password')}
                   className="self-end">
                   <Text className="font-cairo text-[13px] font-semibold text-brand-primary">
-                    Forgot password?
+                    {t('auth:login.forgotPassword')}
                   </Text>
                 </Pressable>
               </View>
@@ -148,7 +150,7 @@ export const SignInScreen: React.FC = () => {
                 hapticStyle="medium"
                 className="mt-2 h-[56px] w-full rounded-full bg-brand-primary">
                 <Text className="font-cairo text-[16px] font-bold text-white">
-                  {isLoading ? 'Signing in...' : 'Sign in'}
+                  {isLoading ? t('auth:login.signingInBtn') : t('auth:login.signInBtn')}
                 </Text>
               </Button>
             </View>
@@ -156,7 +158,7 @@ export const SignInScreen: React.FC = () => {
             {/* Divider */}
             <View className="my-2 flex-row items-center gap-3">
               <View className="h-[1px] flex-1 bg-surface-border" />
-              <Text className="font-cairo text-[13px] text-text-disabled">or continue with</Text>
+              <Text className="font-cairo text-[13px] text-text-disabled">{t('auth:login.orContinueWith')}</Text>
               <View className="h-[1px] flex-1 bg-surface-border" />
             </View>
 
@@ -169,20 +171,20 @@ export const SignInScreen: React.FC = () => {
               hapticStyle="light"
               className="h-[52px] w-full flex-row items-center justify-center gap-3 rounded-[12px] border border-surface-border bg-surface-surface">
               <Text className="font-cairo text-[15px] font-semibold text-text-primary">
-                Continue with Google
+                {t('auth:login.continueWithGoogle')}
               </Text>
             </Button>
           </View>
           {/* Footer */}
           <View className="mt-8 flex-row items-center justify-center pb-4">
-            <Text className="font-cairo text-[14px] text-text-secondary">New to HomePal? </Text>
+            <Text className="font-cairo text-[14px] text-text-secondary">{t('auth:login.newToHomePal')}</Text>
             <Pressable
               onPress={() => {
                 if (authError) dispatch(clearError());
                 router.replace('/(auth)/register');
               }}>
               <Text className="font-cairo text-[14px] font-bold text-brand-primary">
-                Create account
+                {t('auth:login.createAccount')}
               </Text>
             </Pressable>
           </View>

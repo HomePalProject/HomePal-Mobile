@@ -63,7 +63,7 @@ export function BudgetSummaryCards({
 
       {/* Remaining Balance Card */}
       <View className="shadow-inner flex-row items-center justify-between rounded-radius-medium bg-brand-primary p-spacing-16">
-        <View className="flex-1 pr-spacing-8">
+        <View className="flex-1 pe-spacing-8">
           <Text className="text-caption font-cairo font-semibold text-text-inverse opacity-80">
             Remaining Balance
           </Text>

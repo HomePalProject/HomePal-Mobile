@@ -1,13 +1,15 @@
 import React from 'react';
-import { View, ScrollView, Pressable, Image, TextInput } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, ScrollView, Pressable, Image, TextInput, I18nManager } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ArrowLeft, ArrowRight, Info } from 'lucide-react-native';
+import { ArrowRight, Info } from 'lucide-react-native';
 import { Text } from '@/src/components/ui/text';
 import { Button } from '@/src/components/ui/button';
 import { Icon } from '@/src/components/ui/icon';
+import { BackButton } from '@/src/components/ui/back-button';
 import { cn } from '@/src/utils';
 import { CreateHouseholdForm } from '../hooks/useCreateHousehold';
+import { useTranslation } from 'react-i18next';
 
 export interface CreateHouseholdScreenProps {
   formData: CreateHouseholdForm;
@@ -93,20 +95,19 @@ export function CreateHouseholdScreen({
   userAvatarUri,
   userInitials,
 }: CreateHouseholdScreenProps) {
+  const { t } = useTranslation('households');
+  const insets = useSafeAreaInsets();
+
   return (
-    <SafeAreaView className="flex-1 bg-surface-background" edges={['top', 'bottom']}>
+    <SafeAreaView className="flex-1 bg-surface-background" edges={['bottom', 'left', 'right']}>
       {/* ── Header ── white bg with subtle shadow, matching reference */}
-      <View className="z-10 h-16 w-full flex-row items-center justify-between bg-surface-surface px-6 shadow-sm">
+      <View
+        className="z-10 w-full flex-row items-center justify-between bg-surface-surface px-6 pb-3 shadow-sm"
+        style={{ paddingTop: Math.max(insets.top, 16) + 12 }}>
         <View className="flex-row items-center gap-4">
-          <Pressable
-            onPress={onBack}
-            className="active:bg-surface-surfaceVariant rounded-full p-1.5"
-            accessibilityRole="button"
-            accessibilityLabel="Go back">
-            <Icon as={ArrowLeft} size={26} className="text-text-primary" />
-          </Pressable>
+          <BackButton onPress={onBack} />
           <Text className="font-cairo text-[20px] font-bold text-text-primary">
-            Create Household
+            {t('create.title')}
           </Text>
         </View>
 
@@ -133,11 +134,10 @@ export function CreateHouseholdScreen({
         {/* Welcome Section */}
         <View style={{ gap: 8 }}>
           <Text className="font-cairo text-[24px] font-bold leading-[32px] text-text-primary">
-            Welcome to HomePal
+            {t('create.welcome')}
           </Text>
           <Text className="font-cairo text-[16px] leading-[24px] text-text-secondary">
-            Set up your household to start managing your pantry, recipes, and budget together with
-            your family.
+            {t('create.subtitle')}
           </Text>
         </View>
 
@@ -157,7 +157,7 @@ export function CreateHouseholdScreen({
               Phase 1
             </Text> */}
             <Text className="font-cairo text-[22px] font-bold text-white">
-              Identity &amp; Location
+              {t('create.identityPhase')}
             </Text>
           </LinearGradient>
         </View>
@@ -168,9 +168,9 @@ export function CreateHouseholdScreen({
           style={{ gap: 20 }}>
           {/* Household Name */}
           <FormField
-            label="Household Name"
+            label={t('create.nameLabel')}
             required
-            placeholder="e.g., My Lovely Home"
+            placeholder={t('create.namePlaceholder')}
             value={formData.name}
             onChangeText={(t) => onChangeField('name', t)}
             error={errors.name}
@@ -182,8 +182,8 @@ export function CreateHouseholdScreen({
 
           {/* Address */}
           <FormField
-            label="Address"
-            placeholder="123 Street Name"
+            label={t('create.addressLabel')}
+            placeholder={t('create.addressPlaceholder')}
             value={formData.address}
             onChangeText={(t) => onChangeField('address', t)}
             error={errors.address}
@@ -194,8 +194,8 @@ export function CreateHouseholdScreen({
 
           {/* Governorate */}
           <FormField
-            label="Governorate"
-            placeholder="e.g., Cairo"
+            label={t('create.governorateLabel')}
+            placeholder={t('create.governoratePlaceholder')}
             value={formData.governorate}
             onChangeText={(t) => onChangeField('governorate', t)}
             error={errors.governorate}
@@ -206,8 +206,8 @@ export function CreateHouseholdScreen({
 
           {/* City */}
           <FormField
-            label="City"
-            placeholder="e.g., Maadi"
+            label={t('create.cityLabel')}
+            placeholder={t('create.cityPlaceholder')}
             value={formData.city}
             onChangeText={(t) => onChangeField('city', t)}
             error={errors.city}
@@ -222,8 +222,7 @@ export function CreateHouseholdScreen({
               <Icon as={Info} size={20} className="text-brand-primary" />
             </View>
             <Text className="flex-1 font-cairo text-[13px] font-medium leading-[20px] text-text-secondary">
-              Providing your location helps us suggest local recipes and optimize your grocery
-              budget based on regional market prices.
+              {t('create.locationTip')}
             </Text>
           </View>
         </View>
@@ -236,9 +235,13 @@ export function CreateHouseholdScreen({
           isLoading={isLoading}
           className="h-14 w-full flex-row items-center justify-center gap-2 rounded-xl bg-brand-primary shadow-lg active:bg-brand-primary-pressed">
           <Text className="font-cairo text-[20px] font-semibold leading-[28px] text-white">
-            Save &amp; Register Household
+            {t('create.saveBtn')}
           </Text>
-          {!isLoading && <Icon as={ArrowRight} size={22} className="text-white" />}
+          {!isLoading && (
+            <View style={{ transform: [{ scaleX: I18nManager.isRTL ? -1 : 1 }] }}>
+              <Icon as={ArrowRight} size={22} className="text-white" />
+            </View>
+          )}
         </Button>
       </View>
     </SafeAreaView>
