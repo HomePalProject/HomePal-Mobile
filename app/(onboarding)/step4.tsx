@@ -101,7 +101,10 @@ export default function OnboardingStep4Screen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert(
         t('auth:missingCredentialsTitle', 'Missing Account Information'),
-        t('auth:missingCredentialsMsg', 'Your login credentials expired from temporary session. Please restart registration.'),
+        t(
+          'auth:missingCredentialsMsg',
+          'Your login credentials expired from temporary session. Please restart registration.'
+        ),
         [{ text: t('common:buttons.ok', 'OK'), onPress: () => router.replace('/(auth)/register') }]
       );
       return;
@@ -125,7 +128,10 @@ export default function OnboardingStep4Screen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       toast.success(
         t('auth:registrationSuccessful', 'Registration Successful 🎉'),
-        t('auth:checkEmailConfirmation', 'Please check your email for confirmation instructions to activate your account.')
+        t(
+          'auth:checkEmailConfirmation',
+          'Please check your email for confirmation instructions to activate your account.'
+        )
       );
       router.replace('/(auth)/login');
     } catch (err: any) {
@@ -154,7 +160,7 @@ export default function OnboardingStep4Screen() {
                 onPress={() => router.back()}
                 hapticStyle="light"
                 className="h-10 w-10 items-center justify-center rounded-full bg-surface-surface-variant">
-                <Icon as={ArrowLeft} size={20} className="text-text-primary" />
+                <Icon as={ArrowLeft} directional size={20} className="text-text-primary" />
               </AnimatedPressable>
               <Text className="font-cairo text-[14px] font-bold text-text-secondary">
                 Step 4 of 4

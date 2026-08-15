@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Gender, UpdateProfileRequest } from '../types/api';
 import { authService } from '../services/api/auth.service';
+import { authStorage } from '../services/storage/auth.storage';
 import { env } from '../config/env';
 
 /**
@@ -101,18 +102,56 @@ export const useProfileStore = create<ProfileState>((set) => ({
   fetchProfile: async () => {
     set({ isLoading: true, error: null });
     console.log('[useProfileStore] Fetching profile from backend...');
+
+    // Offline Hydration
+    try {
+      const cachedProfile = await authStorage.getUserProfile();
+      if (cachedProfile) {
+        console.log('[useProfileStore] Restoring profile from cache...');
+        const roles = cachedProfile.roles || [];
+        const isManager = roles.includes('Household Manager');
+        const isMember = roles.includes('Household Member');
+        const hasHousehold = isManager || isMember;
+
+        let parsedGender: any = cachedProfile.gender;
+        if (typeof parsedGender === 'string') {
+          if (parsedGender === 'Male') parsedGender = Gender.Male;
+          else if (parsedGender === 'Female') parsedGender = Gender.Female;
+          else if (!isNaN(parseInt(parsedGender, 10))) parsedGender = parseInt(parsedGender, 10);
+        }
+
+        set({
+          fullName: cachedProfile.fullName,
+          gender: parsedGender,
+          birthDate: cachedProfile.birthDate,
+          governorate: cachedProfile.governorate,
+          city: cachedProfile.city,
+          email: cachedProfile.email || 'noura@example.com',
+          profileImageUri: resolveProfileImageUri(cachedProfile),
+          roles,
+          hasHousehold,
+          isManager,
+        });
+      }
+    } catch (err) {
+      console.warn('[useProfileStore] Failed to load offline profile', err);
+    }
+
     try {
       const response = await authService.getMe();
       console.log('[useProfileStore] Profile fetch raw response:', response);
       if (response.success && response.data) {
         const data = response.data;
+        // Save the latest profile back to cache
+        await authStorage.setUserProfile(data);
+
         const roles = data.roles || [];
         const isManager = roles.includes('Household Manager');
         const isMember = roles.includes('Household Member');
         // We'll rely on useDashboard to verify actual household existence, but keep the claim if present.
         const hasHousehold = isManager || isMember;
 
-        let parsedGender = data.gender;
+        let parsedGender: any = data.gender;
         if (typeof parsedGender === 'string') {
           if (parsedGender === 'Male') parsedGender = Gender.Male;
           else if (parsedGender === 'Female') parsedGender = Gender.Female;
@@ -148,9 +187,10 @@ export const useProfileStore = create<ProfileState>((set) => ({
       const response = await authService.updateProfile(payload);
       if (response.success && response.data) {
         const data = response.data;
+        await authStorage.setUserProfile(data); // update cache
         set({
           fullName: data.fullName,
-          gender: data.gender,
+          gender: data.gender as any,
           birthDate: data.birthDate,
           governorate: data.governorate,
           city: data.city,
@@ -185,6 +225,11 @@ export const useProfileStore = create<ProfileState>((set) => ({
         const newUrl = resolveProfileImageUri(responseData);
         if (newUrl) {
           set({ profileImageUri: newUrl, isLoading: false });
+          // Optionally update cache, but we just updated the url
+          const cached = await authStorage.getUserProfile();
+          if (cached) {
+            await authStorage.setUserProfile({ ...cached, profileImageUrl: newUrl });
+          }
         } else {
           await state.fetchProfile();
         }
@@ -205,6 +250,10 @@ export const useProfileStore = create<ProfileState>((set) => ({
       console.log('[useProfileStore] Image delete response:', response);
       if (response.success) {
         set({ profileImageUri: null, isLoading: false });
+        const cached = await authStorage.getUserProfile();
+        if (cached) {
+          await authStorage.setUserProfile({ ...cached, profileImageUrl: null });
+        }
       } else {
         throw new Error(response.message || 'Failed to delete image');
       }

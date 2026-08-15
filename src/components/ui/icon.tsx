@@ -4,12 +4,18 @@ import type { LucideIcon, LucideProps } from 'lucide-react-native';
 import { cssInterop } from 'nativewind';
 import * as React from 'react';
 
+import { I18nManager } from 'react-native';
+
 type IconProps = LucideProps & {
   as: LucideIcon;
+  directional?: boolean;
 } & React.RefAttributes<LucideIcon>;
 
-function IconImpl({ as: IconComponent, ...props }: IconProps) {
-  return <IconComponent {...props} />;
+function IconImpl({ as: IconComponent, directional, style, ...props }: IconProps) {
+  const isRTL = I18nManager.isRTL;
+  const directionalStyle = directional && isRTL ? { transform: [{ scaleX: -1 }] } : {};
+
+  return <IconComponent style={[style, directionalStyle]} {...props} />;
 }
 
 cssInterop(IconImpl, {
@@ -34,7 +40,7 @@ cssInterop(IconImpl, {
  * import { ArrowRight } from 'lucide-react-native';
  * import { Icon } from '@/src/components/ui/icon';
  *
- * <Icon as={ArrowRight} className="text-red-500" size={16} />
+ * <Icon as={ArrowRight} directional className="text-red-500" size={16} />
  * ```
  *
  * @param {LucideIcon} as - The Lucide icon component to render.

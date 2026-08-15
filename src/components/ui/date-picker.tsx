@@ -161,7 +161,7 @@ export function DatePicker({
             {mode === 'calendar' && (
               <View className="flex-row items-center justify-between py-4">
                 <Pressable onPress={handlePrevMonth} className="p-2">
-                  <Icon as={ChevronLeft} size={22} className="text-text-primary" />
+                  <Icon as={ChevronLeft} directional size={22} className="text-text-primary" />
                 </Pressable>
 
                 <View className="flex-row gap-2">
@@ -182,7 +182,7 @@ export function DatePicker({
                 </View>
 
                 <Pressable onPress={handleNextMonth} className="p-2">
-                  <Icon as={ChevronRight} size={22} className="text-text-primary" />
+                  <Icon as={ChevronRight} directional size={22} className="text-text-primary" />
                 </Pressable>
               </View>
             )}

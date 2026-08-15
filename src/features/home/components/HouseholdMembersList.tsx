@@ -175,12 +175,12 @@ function CustomDatePicker({
             <Pressable
               onPress={prevMonth}
               className="active:bg-surface-surfaceVariant rounded-full p-1.5">
-              <Icon as={ChevronLeft} size={20} className="text-text-primary" />
+              <Icon as={ChevronLeft} directional size={20} className="text-text-primary" />
             </Pressable>
             <Pressable
               onPress={nextMonth}
               className="active:bg-surface-surfaceVariant rounded-full p-1.5">
-              <Icon as={ChevronRight} size={20} className="text-text-primary" />
+              <Icon as={ChevronRight} directional size={20} className="text-text-primary" />
             </Pressable>
           </View>
         )}
@@ -327,9 +327,9 @@ interface AddOfflineMemberFormProps {
 }
 
 function AddOfflineMemberForm({ onSubmit }: AddOfflineMemberFormProps) {
-  const [fullName, setFullName] = useState('Hamada');
-  const [gender, setGender] = useState('Male');
-  const [dob, setDob] = useState('06/19/2003');
+  const [fullName, setFullName] = useState('');
+  const [gender, setGender] = useState('');
+  const [dob, setDob] = useState('');
 
   const [isGenderPickerOpen, setIsGenderPickerOpen] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
@@ -376,7 +376,10 @@ function AddOfflineMemberForm({ onSubmit }: AddOfflineMemberFormProps) {
           <Pressable
             onPress={toggleGenderPicker}
             className="bg-surface-variant flex-row items-center justify-between rounded-xl border border-surface-border px-3.5 py-2.5 active:opacity-80">
-            <Text className="font-cairo text-[14px] text-text-primary">{gender}</Text>
+            <Text
+              className={`font-cairo text-[14px] ${gender ? 'text-text-primary' : 'text-text-disabled'}`}>
+              {gender || 'Select'}
+            </Text>
             <Icon as={ChevronDown} size={18} className="text-text-primary" />
           </Pressable>
         </View>
@@ -500,7 +503,7 @@ function MemberCard({
   if (isEditing) {
     return (
       <View
-        className="bg-surface-surfaceVariant/40 border-brand-primary/40 rounded-2xl border p-4"
+        className="bg-surface-surfaceVariant/40 rounded-2xl border border-brand-primary/40 p-4"
         style={{ gap: 14 }}>
         <Text className="font-cairo text-[15px] font-bold text-text-primary">
           Edit Member: {member.fullName}

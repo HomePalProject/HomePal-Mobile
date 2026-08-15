@@ -112,7 +112,7 @@ export function CreateHouseholdScreen({
         </View>
 
         {/* Avatar */}
-        <View className="border-brand-primary/10 h-10 w-10 overflow-hidden rounded-full border-2 bg-brand-primary-container">
+        <View className="h-10 w-10 overflow-hidden rounded-full border-2 border-brand-primary/10 bg-brand-primary-container">
           {userAvatarUri ? (
             <Image source={{ uri: userAvatarUri }} className="h-full w-full" resizeMode="cover" />
           ) : (
@@ -142,7 +142,7 @@ export function CreateHouseholdScreen({
         </View>
 
         {/* ── Image Phase Banner ── */}
-        <View className="bg-surface-surfaceVariant border-surface-border/30 h-48 w-full overflow-hidden rounded-2xl border shadow-sm">
+        <View className="bg-surface-surfaceVariant h-48 w-full overflow-hidden rounded-2xl border border-surface-border/30 shadow-sm">
           <Image
             source={require('../../../assets/images/household_creation_banner.jpg')}
             className="absolute h-full w-full opacity-90"
@@ -217,7 +217,7 @@ export function CreateHouseholdScreen({
           />
 
           {/* ── Info Tip ── */}
-          <View className="border-brand-primary/10 bg-brand-primary-container/40 mt-2 flex-row items-start gap-3 rounded-xl border p-4">
+          <View className="mt-2 flex-row items-start gap-3 rounded-xl border border-brand-primary/10 bg-brand-primary-container/40 p-4">
             <View className="mt-0.5">
               <Icon as={Info} size={20} className="text-brand-primary" />
             </View>
@@ -229,7 +229,7 @@ export function CreateHouseholdScreen({
       </ScrollView>
 
       {/* ── Sticky Footer — white/translucent bg, rounded-xl button matching reference ── */}
-      <View className="bg-surface-surface/80 w-full px-6 py-4">
+      <View className="w-full bg-surface-surface/80 px-6 py-4">
         <Button
           onPress={onSubmit}
           isLoading={isLoading}
@@ -239,7 +239,7 @@ export function CreateHouseholdScreen({
           </Text>
           {!isLoading && (
             <View style={{ transform: [{ scaleX: I18nManager.isRTL ? -1 : 1 }] }}>
-              <Icon as={ArrowRight} size={22} className="text-white" />
+              <Icon as={ArrowRight} directional size={22} className="text-white" />
             </View>
           )}
         </Button>

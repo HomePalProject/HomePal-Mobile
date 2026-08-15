@@ -37,7 +37,7 @@ export function MealPlansPagination({
           disabled={!hasPreviousPage || isLoading}
           className={`border-surface-outline flex-row items-center gap-1 overflow-hidden rounded-full border px-3 py-1.5 ${!hasPreviousPage || isLoading ? 'opacity-50' : ''}`}
           android_ripple={{ color: 'rgba(150, 150, 150, 0.2)' }}>
-          <Icon as={ChevronLeft} size={16} className="text-text-primary" />
+          <Icon as={ChevronLeft} directional size={16} className="text-text-primary" />
           <Text className="font-cairo text-sm font-semibold text-text-primary">Previous</Text>
         </Pressable>
 
@@ -50,7 +50,7 @@ export function MealPlansPagination({
           className={`border-surface-outline flex-row items-center gap-1 overflow-hidden rounded-full border px-3 py-1.5 ${!hasNextPage || isLoading ? 'opacity-50' : ''}`}
           android_ripple={{ color: 'rgba(150, 150, 150, 0.2)' }}>
           <Text className="font-cairo text-sm font-semibold text-text-primary">Next</Text>
-          <Icon as={ChevronRight} size={16} className="text-text-primary" />
+          <Icon as={ChevronRight} directional size={16} className="text-text-primary" />
         </Pressable>
       </View>
     </View>

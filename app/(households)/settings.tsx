@@ -45,7 +45,7 @@ export default function HouseholdSettingsRoute() {
           className="active:bg-surface-surfaceVariant rounded-full p-2"
           accessibilityRole="button"
           accessibilityLabel="Go back">
-          <Icon as={ArrowLeft} size={24} className="text-text-primary" />
+          <Icon as={ArrowLeft} directional size={24} className="text-text-primary" />
         </Pressable>
 
         <Text className="font-cairo text-[16px] font-bold text-text-primary">
@@ -194,12 +194,12 @@ export default function HouseholdSettingsRoute() {
           {/* Pro Tip Card */}
           <ProTipCard
             description="Updating your household details reflects across all members' dashboards instantly."
-            className="bg-brand-primary-container/15 border-brand-primary-container"
+            className="border-brand-primary-container bg-brand-primary-container/15"
           />
 
           {/* Danger Zone: Delete Household */}
           <View
-            className="bg-status-error-container/20 mt-4 rounded-2xl border border-status-error p-5"
+            className="mt-4 rounded-2xl border border-status-error bg-status-error-container/20 p-5"
             style={{ gap: 12 }}>
             <Text className="font-cairo text-[16px] font-bold text-status-error">Danger Zone</Text>
             <Text className="font-cairo text-[13px] leading-[20px] text-status-error">

@@ -11,7 +11,13 @@ interface BackButtonProps extends PressableProps {
   size?: number;
 }
 
-export function BackButton({ onPress, className, iconClassName, size = 26, ...props }: BackButtonProps) {
+export function BackButton({
+  onPress,
+  className,
+  iconClassName,
+  size = 26,
+  ...props
+}: BackButtonProps) {
   return (
     <Pressable
       onPress={onPress}
@@ -20,7 +26,12 @@ export function BackButton({ onPress, className, iconClassName, size = 26, ...pr
       accessibilityLabel="Go back"
       {...props}>
       <View style={{ transform: [{ scaleX: I18nManager.isRTL ? -1 : 1 }] }}>
-        <Icon as={ArrowLeft} size={size} className={cn('text-text-primary', iconClassName)} />
+        <Icon
+          as={ArrowLeft}
+          directional
+          size={size}
+          className={cn('text-text-primary', iconClassName)}
+        />
       </View>
     </Pressable>
   );

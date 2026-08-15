@@ -67,7 +67,7 @@ export default function ForgotPasswordScreen() {
             <Pressable
               onPress={() => router.back()}
               className="h-10 w-10 items-center justify-center rounded-full bg-surface-surface-variant">
-              <Icon as={ArrowLeft} size={20} className="text-text-primary" />
+              <Icon as={ArrowLeft} directional size={20} className="text-text-primary" />
             </Pressable>
           </View>
 
@@ -104,7 +104,9 @@ export default function ForgotPasswordScreen() {
               disabled={isLoading || !email.trim()}
               className="mt-4 h-[56px] w-full rounded-full bg-brand-primary">
               <Text className="font-cairo text-[16px] font-bold text-white">
-                {isLoading ? t('auth:forgotPassword.sendingResetLink') : t('auth:forgotPassword.sendResetLink')}
+                {isLoading
+                  ? t('auth:forgotPassword.sendingResetLink')
+                  : t('auth:forgotPassword.sendResetLink')}
               </Text>
             </Button>
           </View>

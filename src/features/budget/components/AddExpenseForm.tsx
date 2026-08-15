@@ -226,7 +226,7 @@ export function AddExpenseForm({ onAddExpense, isLoading = false }: AddExpenseFo
               return (
                 <View className="flex-row items-center justify-between py-spacing-16">
                   <TouchableOpacity onPress={handlePrevMonth} activeOpacity={0.7} className="p-2">
-                    <Icon as={ChevronLeft} size={22} className="text-text-primary" />
+                    <Icon as={ChevronLeft} directional size={22} className="text-text-primary" />
                   </TouchableOpacity>
 
                   <Text className="text-body font-cairo font-bold text-brand-primary">
@@ -235,11 +235,11 @@ export function AddExpenseForm({ onAddExpense, isLoading = false }: AddExpenseFo
 
                   {isNextMonthInFuture ? (
                     <View className="p-2 opacity-30">
-                      <Icon as={ChevronRight} size={22} className="text-text-primary" />
+                      <Icon as={ChevronRight} directional size={22} className="text-text-primary" />
                     </View>
                   ) : (
                     <TouchableOpacity onPress={handleNextMonth} activeOpacity={0.7} className="p-2">
-                      <Icon as={ChevronRight} size={22} className="text-text-primary" />
+                      <Icon as={ChevronRight} directional size={22} className="text-text-primary" />
                     </TouchableOpacity>
                   )}
                 </View>

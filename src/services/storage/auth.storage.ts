@@ -164,10 +164,14 @@ export const authStorage = {
         await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
         await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
         await SecureStore.deleteItemAsync(USER_PROFILE_KEY);
+        await SecureStore.deleteItemAsync('homepal_temp_reg');
+        await SecureStore.deleteItemAsync('homepal_onboarding_data');
       } else if (typeof localStorage !== 'undefined') {
         localStorage.removeItem(ACCESS_TOKEN_KEY);
         localStorage.removeItem(REFRESH_TOKEN_KEY);
         localStorage.removeItem(USER_PROFILE_KEY);
+        localStorage.removeItem('homepal_temp_reg');
+        localStorage.removeItem('homepal_onboarding_data');
       }
     } catch (error) {
       console.error('Error clearing auth tokens:', error);
@@ -209,6 +213,69 @@ export const authStorage = {
       }
     } catch (error) {
       console.error('Error getting user profile:', error);
+    }
+    return null;
+  },
+  /**
+   * Save temporary registration data (onboarding step 1 & 2).
+   */
+  setTempRegistration: async (data: any): Promise<void> => {
+    try {
+      const available = await isSecureStoreAvailable();
+      if (available) {
+        await SecureStore.setItemAsync('homepal_temp_reg', JSON.stringify(data));
+      } else if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('homepal_temp_reg', JSON.stringify(data));
+      }
+    } catch (error) {
+      console.error('Error saving temp registration:', error);
+    }
+  },
+
+  getTempRegistration: async (): Promise<any | null> => {
+    try {
+      const available = await isSecureStoreAvailable();
+      let serialized: string | null = null;
+      if (available) {
+        serialized = await SecureStore.getItemAsync('homepal_temp_reg');
+      } else if (typeof localStorage !== 'undefined') {
+        serialized = localStorage.getItem('homepal_temp_reg');
+      }
+      if (serialized) return JSON.parse(serialized);
+    } catch (error) {
+      console.error('Error getting temp registration:', error);
+    }
+    return null;
+  },
+
+  /**
+   * Save onboarding preferences (step 3 & 4).
+   */
+  setOnboardingData: async (data: any): Promise<void> => {
+    try {
+      const available = await isSecureStoreAvailable();
+      if (available) {
+        await SecureStore.setItemAsync('homepal_onboarding_data', JSON.stringify(data));
+      } else if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('homepal_onboarding_data', JSON.stringify(data));
+      }
+    } catch (error) {
+      console.error('Error saving onboarding data:', error);
+    }
+  },
+
+  getOnboardingData: async (): Promise<any | null> => {
+    try {
+      const available = await isSecureStoreAvailable();
+      let serialized: string | null = null;
+      if (available) {
+        serialized = await SecureStore.getItemAsync('homepal_onboarding_data');
+      } else if (typeof localStorage !== 'undefined') {
+        serialized = localStorage.getItem('homepal_onboarding_data');
+      }
+      if (serialized) return JSON.parse(serialized);
+    } catch (error) {
+      console.error('Error getting onboarding data:', error);
     }
     return null;
   },

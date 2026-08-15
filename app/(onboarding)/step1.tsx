@@ -67,7 +67,7 @@ export default function OnboardingStep1Screen() {
               onPress={() => router.back()}
               hapticStyle="light"
               className="h-10 w-10 items-center justify-center rounded-full bg-surface-surface-variant">
-              <Icon as={ArrowLeft} size={20} className="text-text-primary" />
+              <Icon as={ArrowLeft} directional size={20} className="text-text-primary" />
             </AnimatedPressable>
             <Text className="font-cairo text-[14px] font-bold text-text-secondary">
               Step 1 of 4

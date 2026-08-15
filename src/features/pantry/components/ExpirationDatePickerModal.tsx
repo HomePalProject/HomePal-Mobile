@@ -142,7 +142,7 @@ export const ExpirationDatePickerModal = forwardRef<
         {mode === 'calendar' && (
           <View className="flex-row items-center justify-between py-4">
             <Pressable onPress={handlePrevMonth} className="p-2 active:opacity-60">
-              <Icon as={ChevronLeft} size={22} className="text-text-primary" />
+              <Icon as={ChevronLeft} directional size={22} className="text-text-primary" />
             </Pressable>
 
             <View className="flex-row gap-2">
@@ -163,7 +163,7 @@ export const ExpirationDatePickerModal = forwardRef<
             </View>
 
             <Pressable onPress={handleNextMonth} className="p-2 active:opacity-60">
-              <Icon as={ChevronRight} size={22} className="text-text-primary" />
+              <Icon as={ChevronRight} directional size={22} className="text-text-primary" />
             </Pressable>
           </View>
         )}

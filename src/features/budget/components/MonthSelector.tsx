@@ -72,7 +72,7 @@ export function MonthSelector({
           pressScale={0.9}
           hapticStyle="light"
           className="items-center justify-center rounded-radius-full border border-surface-border bg-surface-surface p-spacing-8 disabled:opacity-50">
-          <Icon as={ChevronLeft} size={16} className="text-text-primary" />
+          <Icon as={ChevronLeft} directional size={16} className="text-text-primary" />
         </AnimatedPressable>
 
         <View className="items-center justify-center px-spacing-4">
@@ -93,7 +93,7 @@ export function MonthSelector({
           pressScale={0.9}
           hapticStyle="light"
           className="items-center justify-center rounded-radius-full border border-surface-border bg-surface-surface p-spacing-8 disabled:opacity-50">
-          <Icon as={ChevronRight} size={16} className="text-text-primary" />
+          <Icon as={ChevronRight} directional size={16} className="text-text-primary" />
         </AnimatedPressable>
       </View>
     </View>
