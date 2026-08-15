@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   TextInput,
@@ -37,6 +37,7 @@ import {
   FieldLabel,
 } from '../components';
 import { ProductCategoryResponse, MeasuringUnitResponse } from '@/src/types/api';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -85,9 +86,10 @@ export default function AddEditPantryItemScreen() {
   const [selectedCategory, setSelectedCategory] = useState<ProductCategoryResponse | null>(null);
   const [selectedUnit, setSelectedUnit] = useState<MeasuringUnitResponse | null>(null);
 
-  const [isCategorySheetOpen, setIsCategorySheetOpen] = useState(false);
-  const [isUnitSheetOpen, setIsUnitSheetOpen] = useState(false);
-  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const categorySheetRef = useRef<BottomSheetModal>(null);
+  const unitSheetRef = useRef<BottomSheetModal>(null);
+  const datePickerRef = useRef<BottomSheetModal>(null);
+  const imagePickerRef = useRef<BottomSheetModal>(null);
   const [deleteVisible, setDeleteVisible] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -95,7 +97,6 @@ export default function AddEditPantryItemScreen() {
   const [isScanModalVisible, setIsScanModalVisible] = useState(false);
   const [scanStatus, setScanStatus] = useState<'loading' | 'success'>('loading');
   const [isSavingScanned, setIsSavingScanned] = useState(false);
-  const [isImagePickerVisible, setIsImagePickerVisible] = useState(false);
   const [scannedItems, setScannedItems] = useState<any[]>([]);
   const [notification, setNotification] = useState({
     visible: false,
@@ -205,7 +206,7 @@ export default function AddEditPantryItemScreen() {
   };
 
   const handleScanItem = () => {
-    setIsImagePickerVisible(true);
+    imagePickerRef.current?.present();
   };
 
   const handleTakePhoto = async () => {
@@ -346,7 +347,7 @@ export default function AddEditPantryItemScreen() {
                 value={selectedUnit?.name}
                 placeholder="Select"
                 leadingIcon={Ruler}
-                onPress={() => setIsUnitSheetOpen(true)}
+                onPress={() => unitSheetRef.current?.present()}
                 accessibilityLabel="Select measuring unit"
               />
             </View>
@@ -364,12 +365,15 @@ export default function AddEditPantryItemScreen() {
             activeIconColor={
               selectedCategory ? getCategoryIconConfig(selectedCategory.name).color : undefined
             }
-            onPress={() => setIsCategorySheetOpen(true)}
+            onPress={() => categorySheetRef.current?.present()}
             accessibilityLabel="Select category"
           />
 
           {/* Expiration Date */}
-          <ExpirationDateField value={expireDate} onPress={() => setIsDatePickerVisible(true)} />
+          <ExpirationDateField
+            value={expireDate}
+            onPress={() => datePickerRef.current?.present()}
+          />
 
           {/* Remove Button */}
           {isEditMode ? (
@@ -396,27 +400,20 @@ export default function AddEditPantryItemScreen() {
 
       {/* Sheets & Pickers */}
       <CategorySelectorSheet
-        visible={isCategorySheetOpen}
+        ref={categorySheetRef}
         categories={categories}
         selectedId={selectedCategory?.id}
         onSelect={setSelectedCategory}
-        onClose={() => setIsCategorySheetOpen(false)}
       />
 
       <UnitSelectorSheet
-        visible={isUnitSheetOpen}
+        ref={unitSheetRef}
         units={measuringUnits}
         selectedId={selectedUnit?.id}
         onSelect={setSelectedUnit}
-        onClose={() => setIsUnitSheetOpen(false)}
       />
 
-      <ExpirationDatePickerModal
-        visible={isDatePickerVisible}
-        value={expireDate}
-        onChange={setExpireDate}
-        onClose={() => setIsDatePickerVisible(false)}
-      />
+      <ExpirationDatePickerModal ref={datePickerRef} value={expireDate} onChange={setExpireDate} />
 
       <DeleteConfirmationModal
         visible={deleteVisible}
@@ -438,8 +435,7 @@ export default function AddEditPantryItemScreen() {
       />
 
       <ImagePickerSheet
-        visible={isImagePickerVisible}
-        onClose={() => setIsImagePickerVisible(false)}
+        ref={imagePickerRef}
         onTakePhoto={handleTakePhoto}
         onChooseFromGallery={handleChooseFromGallery}
       />

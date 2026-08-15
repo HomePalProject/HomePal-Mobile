@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, ScrollView, Pressable, Image, Modal } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, Href } from 'expo-router';
@@ -16,11 +16,12 @@ import { useTheme, ThemeMode } from '../../../providers/ThemeProvider';
 import { useLanguage } from '@/src/localization';
 import { LanguageSelectionModal } from '@/src/components/common/LanguageSelectionModal';
 import { useTranslation } from 'react-i18next';
-
+import { AppBottomSheet } from '@/src/components/ui/bottom-sheet';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 export default function ProfileScreen() {
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
-  const [themeModalVisible, setThemeModalVisible] = useState(false);
-  const [languageModalVisible, setLanguageModalVisible] = useState(false);
+  const themeBottomSheetRef = useRef<BottomSheetModal>(null);
+  const languageBottomSheetRef = useRef<BottomSheetModal>(null);
   const dispatch = useAppDispatch();
   const { mode, setMode } = useTheme();
   const { currentLanguage } = useLanguage();
@@ -59,7 +60,7 @@ export default function ProfileScreen() {
         key={optionMode}
         onPress={() => {
           setMode(optionMode);
-          setThemeModalVisible(false);
+          themeBottomSheetRef.current?.dismiss();
         }}
         className="flex-row items-center justify-between border-b border-surface-border py-4">
         <Text
@@ -92,7 +93,7 @@ export default function ProfileScreen() {
 
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 48 }}>
         <View className="px-spacing-16 pb-spacing-24 pt-spacing-16">
-          <View className="border-surface-border/80 relative min-h-[300px] items-center justify-center overflow-hidden rounded-radius-large border bg-surface-surface p-spacing-24 shadow-md">
+          <View className="relative min-h-[300px] items-center justify-center overflow-hidden rounded-radius-large border border-surface-border/80 bg-surface-surface p-spacing-24 shadow-md">
             <View className="absolute -end-16 -top-16 h-48 w-48 opacity-80">
               <Svg width="100%" height="100%" viewBox="0 0 200 200">
                 <Defs>
@@ -186,7 +187,7 @@ export default function ProfileScreen() {
             )}
 
             <Pressable
-              className="py-spacing-10 w-50 active:bg-brand-accent-container/80 h-12 justify-center rounded-radius-full bg-brand-accent-container px-spacing-24 shadow-sm"
+              className="py-spacing-10 w-50 h-12 justify-center rounded-radius-full bg-brand-accent-container px-spacing-24 shadow-sm active:bg-brand-accent-container/80"
               onPress={() => router.push('/edit-profile' as Href)}>
               <Text className="font-sm text-center font-cairo font-medium text-text-primary">
                 {t('profile:editProfile')}
@@ -260,7 +261,7 @@ export default function ProfileScreen() {
             <ProfileListItem
               title={t('profile:preferences.language')}
               iconName="globe"
-              onPress={() => setLanguageModalVisible(true)}
+              onPress={() => languageBottomSheetRef.current?.present()}
               rightElement={
                 <View className="flex-row items-center gap-2">
                   <Text className="text-bodySmall font-cairo font-bold text-brand-primary">
@@ -274,11 +275,15 @@ export default function ProfileScreen() {
               title={t('profile:preferences.themeMode')}
               iconName="moon"
               showDivider={false}
-              onPress={() => setThemeModalVisible(true)}
+              onPress={() => themeBottomSheetRef.current?.present()}
               rightElement={
                 <View className="flex-row items-center gap-2">
                   <Text className="text-bodySmall font-cairo font-bold capitalize text-brand-primary">
-                    {mode === 'light' ? t('profile:preferences.lightMode') : mode === 'dark' ? t('profile:preferences.darkMode') : t('profile:preferences.systemDefault')}
+                    {mode === 'light'
+                      ? t('profile:preferences.lightMode')
+                      : mode === 'dark'
+                        ? t('profile:preferences.darkMode')
+                        : t('profile:preferences.systemDefault')}
                   </Text>
                   <Icon as={ChevronDown} size={16} className="text-brand-primary" />
                 </View>
@@ -293,7 +298,11 @@ export default function ProfileScreen() {
           </Text>
           <View className="overflow-hidden rounded-radius-large border border-surface-border bg-surface-surface shadow-sm">
             <ProfileListItem title={t('profile:support.helpCenter')} iconName="help" />
-            <ProfileListItem title={t('profile:support.privacyPolicy')} iconName="privacy" showDivider={false} />
+            <ProfileListItem
+              title={t('profile:support.privacyPolicy')}
+              iconName="privacy"
+              showDivider={false}
+            />
           </View>
         </View>
 
@@ -302,7 +311,9 @@ export default function ProfileScreen() {
             className="h-14 flex-row items-center justify-center gap-spacing-8 rounded-radius-large border border-brand-error/20 bg-status-error-container shadow-sm active:bg-brand-error/20"
             onPress={handleLogout}>
             <Icon as={LogOut} size={20} className="text-status-error" />
-            <Text className="text-bodyLarge font-cairo font-bold text-status-error">{t('profile:logout.button')}</Text>
+            <Text className="text-bodyLarge font-cairo font-bold text-status-error">
+              {t('profile:logout.button')}
+            </Text>
           </Pressable>
         </View>
       </ScrollView>
@@ -329,13 +340,17 @@ export default function ProfileScreen() {
                   dispatch(logoutUser());
                 }}
                 className="active:bg-brand-primaryPressed h-12 flex-row items-center justify-center rounded-radius-medium bg-brand-error shadow-sm">
-                <Text className="text-body font-cairo font-bold text-text-inverse">{t('profile:logout.button')}</Text>
+                <Text className="text-body font-cairo font-bold text-text-inverse">
+                  {t('profile:logout.button')}
+                </Text>
               </Pressable>
 
               <Pressable
                 onPress={() => setLogoutModalVisible(false)}
-                className="bg-surface-surfaceVariant/60 active:bg-surface-border/40 h-12 flex-row items-center justify-center rounded-radius-medium border border-surface-border">
-                <Text className="text-body font-cairo font-bold text-text-secondary">{t('profile:cancel')}</Text>
+                className="bg-surface-surfaceVariant/60 h-12 flex-row items-center justify-center rounded-radius-medium border border-surface-border active:bg-surface-border/40">
+                <Text className="text-body font-cairo font-bold text-text-secondary">
+                  {t('profile:cancel')}
+                </Text>
               </Pressable>
             </View>
           </Pressable>
@@ -343,39 +358,32 @@ export default function ProfileScreen() {
       </Modal>
 
       {/* Theme Selection Modal */}
-      <Modal visible={themeModalVisible} transparent animationType="fade">
-        <Pressable
-          className="flex-1 justify-end bg-black/50"
-          onPress={() => setThemeModalVisible(false)}>
+      <AppBottomSheet ref={themeBottomSheetRef} enablePanDownToClose>
+        <View className="px-6 pb-6">
+          <View className="mb-6 items-center">
+            <Text className="font-cairo text-xl font-bold text-text-primary">
+              {t('profile:themeModal.title')}
+            </Text>
+          </View>
+
+          <View className="bg-surface-surfaceVariant overflow-hidden rounded-xl px-4">
+            {renderThemeOption('system', t('profile:preferences.systemDefault'))}
+            {renderThemeOption('light', t('profile:preferences.lightMode'))}
+            {renderThemeOption('dark', t('profile:preferences.darkMode'))}
+          </View>
+
           <Pressable
-            className="w-full rounded-t-3xl border-t border-surface-border bg-surface-surface px-6 pt-6 shadow-xl"
-            style={{ paddingBottom: insets.bottom + 24 }}
-            onPress={(e) => e.stopPropagation()}>
-            <View className="mb-6 items-center">
-              <View className="mb-4 h-1.5 w-12 rounded-full bg-surface-border" />
-              <Text className="font-cairo text-xl font-bold text-text-primary">{t('profile:themeModal.title')}</Text>
-            </View>
-
-            <View className="bg-surface-surfaceVariant overflow-hidden rounded-xl px-4">
-              {renderThemeOption('system', t('profile:preferences.systemDefault'))}
-              {renderThemeOption('light', t('profile:preferences.lightMode'))}
-              {renderThemeOption('dark', t('profile:preferences.darkMode'))}
-            </View>
-
-            <Pressable
-              onPress={() => setThemeModalVisible(false)}
-              className="mt-6 h-12 flex-row items-center justify-center rounded-radius-medium bg-brand-primary shadow-sm active:opacity-90">
-              <Text className="text-body font-cairo font-bold text-white">{t('profile:themeModal.done')}</Text>
-            </Pressable>
+            onPress={() => themeBottomSheetRef.current?.dismiss()}
+            className="mt-6 h-12 flex-row items-center justify-center rounded-radius-medium bg-brand-primary shadow-sm active:opacity-90">
+            <Text className="text-body font-cairo font-bold text-white">
+              {t('profile:themeModal.done')}
+            </Text>
           </Pressable>
-        </Pressable>
-      </Modal>
+        </View>
+      </AppBottomSheet>
 
       {/* Language Selection Modal */}
-      <LanguageSelectionModal
-        visible={languageModalVisible}
-        onClose={() => setLanguageModalVisible(false)}
-      />
+      <LanguageSelectionModal ref={languageBottomSheetRef} />
     </SafeAreaView>
   );
 }

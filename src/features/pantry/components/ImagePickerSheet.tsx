@@ -1,32 +1,23 @@
-import React from 'react';
-import { View, Text, Pressable, Modal } from 'react-native';
+import React, { forwardRef } from 'react';
+import { View, Text, Pressable } from 'react-native';
 import { Camera, Image as ImageIcon } from 'lucide-react-native';
 import { Icon } from '@/src/components/ui/icon';
+import { AppBottomSheet } from '@/src/components/ui/bottom-sheet';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 
 interface ImagePickerSheetProps {
-  visible: boolean;
-  onClose: () => void;
+  onClose?: () => void;
   onTakePhoto: () => void;
   onChooseFromGallery: () => void;
 }
 
-export function ImagePickerSheet({
-  visible,
-  onClose,
-  onTakePhoto,
-  onChooseFromGallery,
-}: ImagePickerSheetProps) {
-  return (
-    <Modal animationType="slide" transparent={true} visible={visible} onRequestClose={onClose}>
-      <View className="flex-1 justify-end bg-black/50">
-        {/* Backdrop Dismiss pressable wrapper */}
-        <Pressable className="absolute inset-0" onPress={onClose} />
+export const ImagePickerSheet = forwardRef<BottomSheetModal, ImagePickerSheetProps>(
+  ({ onClose, onTakePhoto, onChooseFromGallery }, ref) => {
+    const bottomSheetRef = ref as React.RefObject<BottomSheetModal>;
 
-        {/* Bottom Sheet Container */}
-        <View className="w-full items-center rounded-t-[32px] bg-surface-surface px-spacing-24 pb-spacing-32 pt-spacing-16 shadow-lg">
-          {/* Drag Handle */}
-          <View className="mb-spacing-24 h-1.5 w-12 rounded-full bg-surface-border" />
-
+    return (
+      <AppBottomSheet ref={ref} onDismiss={onClose} enablePanDownToClose snapPoints={['35%']}>
+        <View className="px-spacing-24 pb-spacing-32">
           {/* Title */}
           <Text className="mb-spacing-20 text-center font-cairo text-base font-bold text-text-primary">
             Scan Receipt or Items
@@ -37,7 +28,7 @@ export function ImagePickerSheet({
             {/* Take photo option */}
             <Pressable
               onPress={() => {
-                onClose();
+                bottomSheetRef.current?.dismiss();
                 onTakePhoto();
               }}
               className="bg-surface-surfaceVariant w-full flex-row items-center gap-spacing-8 rounded-radius-medium p-spacing-16 active:opacity-75"
@@ -52,7 +43,7 @@ export function ImagePickerSheet({
             {/* Choose from gallery option */}
             <Pressable
               onPress={() => {
-                onClose();
+                bottomSheetRef.current?.dismiss();
                 onChooseFromGallery();
               }}
               className="bg-surface-surfaceVariant w-full flex-row items-center gap-spacing-8 rounded-radius-medium p-spacing-16 active:opacity-75"
@@ -68,7 +59,7 @@ export function ImagePickerSheet({
 
             {/* Cancel Button */}
             <Pressable
-              onPress={onClose}
+              onPress={() => bottomSheetRef.current?.dismiss()}
               className="py-spacing-14 mt-spacing-8 h-12 w-full items-center justify-center rounded-radius-full border border-surface-border bg-surface-surface active:opacity-75"
               accessibilityRole="button"
               accessibilityLabel="Cancel photo picker">
@@ -76,7 +67,9 @@ export function ImagePickerSheet({
             </Pressable>
           </View>
         </View>
-      </View>
-    </Modal>
-  );
-}
+      </AppBottomSheet>
+    );
+  }
+);
+
+ImagePickerSheet.displayName = 'ImagePickerSheet';

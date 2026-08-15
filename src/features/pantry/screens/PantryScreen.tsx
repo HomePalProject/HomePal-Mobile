@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { View, RefreshControl, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, Href } from 'expo-router';
@@ -65,7 +66,7 @@ export default function PantryScreen() {
   const [isScanModalVisible, setIsScanModalVisible] = useState(false);
   const [scanStatus, setScanStatus] = useState<'loading' | 'success'>('loading');
   const [isSavingScanned, setIsSavingScanned] = useState(false);
-  const [isImagePickerVisible, setIsImagePickerVisible] = useState(false);
+  const imagePickerRef = useRef<BottomSheetModal>(null);
   const [scannedItems, setScannedItems] = useState<any[]>([]);
   const [notification, setNotification] = useState({
     visible: false,
@@ -124,7 +125,7 @@ export default function PantryScreen() {
   };
 
   const handleScanItem = () => {
-    setIsImagePickerVisible(true);
+    imagePickerRef.current?.present();
   };
 
   const handleTakePhoto = async () => {
@@ -281,8 +282,7 @@ export default function PantryScreen() {
       />
 
       <ImagePickerSheet
-        visible={isImagePickerVisible}
-        onClose={() => setIsImagePickerVisible(false)}
+        ref={imagePickerRef}
         onTakePhoto={handleTakePhoto}
         onChooseFromGallery={handleChooseFromGallery}
       />
