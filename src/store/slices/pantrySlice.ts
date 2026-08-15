@@ -7,6 +7,7 @@ import {
   UpdatePantryItemRequest,
 } from '@/src/types/api';
 import { pantryService, categoryService, unitService } from '@/src/services';
+import { baseApi } from '@/src/services/api/baseApi';
 
 export interface PantryState {
   items: PantryItemResponse[];
@@ -42,9 +43,10 @@ export const fetchPantryData = createAsyncThunk(
 
 export const addPantryItemThunk = createAsyncThunk(
   'pantry/addPantryItem',
-  async (payload: CreatePantryItemRequest, { rejectWithValue }) => {
+  async (payload: CreatePantryItemRequest, { dispatch, rejectWithValue }) => {
     try {
       const newItem = await pantryService.createPantryItem(payload);
+      dispatch(baseApi.util.invalidateTags(['Overview']));
       return newItem;
     } catch (error: any) {
       return rejectWithValue(error?.message || 'Failed to add pantry item');
@@ -56,10 +58,11 @@ export const updatePantryItemThunk = createAsyncThunk(
   'pantry/updatePantryItem',
   async (
     { id, payload }: { id: string; payload: UpdatePantryItemRequest },
-    { rejectWithValue }
+    { dispatch, rejectWithValue }
   ) => {
     try {
       const updatedItem = await pantryService.updatePantryItem(id, payload);
+      dispatch(baseApi.util.invalidateTags(['Overview']));
       return updatedItem;
     } catch (error: any) {
       return rejectWithValue(error?.message || 'Failed to update pantry item');
@@ -69,9 +72,10 @@ export const updatePantryItemThunk = createAsyncThunk(
 
 export const deletePantryItemThunk = createAsyncThunk(
   'pantry/deletePantryItem',
-  async (id: string, { rejectWithValue }) => {
+  async (id: string, { dispatch, rejectWithValue }) => {
     try {
       await pantryService.deletePantryItem(id);
+      dispatch(baseApi.util.invalidateTags(['Overview']));
       return id;
     } catch (error: any) {
       return rejectWithValue(error?.message || 'Failed to delete pantry item');

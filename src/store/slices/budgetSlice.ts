@@ -6,6 +6,7 @@ import {
   SetMonthlyBudgetRequest,
   CreateExpenseRequest,
 } from '@/src/services';
+import { baseApi } from '@/src/services/api/baseApi';
 
 export interface BudgetState {
   summary: MonthlyBudgetSummaryResponse | null;
@@ -50,10 +51,11 @@ export const fetchBudgetSummary = createAsyncThunk(
  */
 export const setBudgetTarget = createAsyncThunk(
   'budget/setBudgetTarget',
-  async (payload: SetMonthlyBudgetRequest, { rejectWithValue }) => {
+  async (payload: SetMonthlyBudgetRequest, { dispatch, rejectWithValue }) => {
     try {
       const response = await budgetService.setBudgetTarget(payload);
       if (response.success && response.data) {
+        dispatch(baseApi.util.invalidateTags(['Overview']));
         return response.data;
       }
       return rejectWithValue(response.message || 'Failed to set budget target');
@@ -86,10 +88,11 @@ export const fetchExpenses = createAsyncThunk(
  */
 export const createExpense = createAsyncThunk(
   'budget/createExpense',
-  async (payload: CreateExpenseRequest, { rejectWithValue }) => {
+  async (payload: CreateExpenseRequest, { dispatch, rejectWithValue }) => {
     try {
       const response = await budgetService.createExpense(payload);
       if (response.success && response.data) {
+        dispatch(baseApi.util.invalidateTags(['Overview']));
         return response.data;
       }
       return rejectWithValue(response.message || 'Failed to create expense');
@@ -104,10 +107,11 @@ export const createExpense = createAsyncThunk(
  */
 export const deleteExpense = createAsyncThunk(
   'budget/deleteExpense',
-  async (id: string, { rejectWithValue }) => {
+  async (id: string, { dispatch, rejectWithValue }) => {
     try {
       const response = await budgetService.deleteExpense(id);
       if (response.success) {
+        dispatch(baseApi.util.invalidateTags(['Overview']));
         return id;
       }
       return rejectWithValue(response.message || 'Failed to delete expense');
