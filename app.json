@@ -42,7 +42,8 @@
       "expo-status-bar",
       "expo-font",
       "expo-secure-store",
-      "@react-native-google-signin/google-signin/app.plugin.js"
+      "@react-native-google-signin/google-signin/app.plugin.js",
+      "expo-sharing"
     ],
     "experiments": {
       "typedRoutes": true

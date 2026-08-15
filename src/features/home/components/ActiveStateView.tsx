@@ -19,6 +19,8 @@ import {
   LucideIcon,
 } from 'lucide-react-native';
 import { useRouter, Href } from 'expo-router';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { cn } from '@/src/utils';
@@ -29,6 +31,7 @@ import { useTheme } from '@/src/providers/ThemeProvider';
 import { AnimatedPressable } from '@/src/components/ui/animated-pressable';
 import { OverviewStatCards } from './OverviewStatCards';
 import { OverviewCharts } from './OverviewCharts';
+import { generateOverviewReportHtml } from '@/src/utils/overviewReportHtml';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 export interface ActiveStateViewProps {
@@ -159,6 +162,21 @@ export function ActiveStateView({
   const { theme } = useTheme();
   const { overviewData, isLoading, isFetching, refetch } = useOverview();
 
+  const handlePrint = async () => {
+    if (!overviewData) return;
+    try {
+      const html = generateOverviewReportHtml(overviewData);
+      const { uri } = await Print.printToFileAsync({ html });
+      await Sharing.shareAsync(uri, {
+        mimeType: 'application/pdf',
+        dialogTitle: 'Share Household Overview Report',
+        UTI: 'com.adobe.pdf',
+      });
+    } catch (error) {
+      console.error('Failed to generate report PDF', error);
+    }
+  };
+
   return (
     <View className="flex-1">
       <ScrollView
@@ -268,10 +286,11 @@ export function ActiveStateView({
             </AnimatedPressable>
 
             <AnimatedPressable
-              onPress={() => {}}
+              onPress={handlePrint}
+              disabled={isLoading || isFetching || !overviewData}
               pressScale={0.93}
               hapticStyle="light"
-              className="flex-1 flex-row items-center justify-center gap-x-spacing-8 rounded-radius-medium border border-surface-border bg-surface-surface py-spacing-8">
+              className="flex-1 flex-row items-center justify-center gap-x-spacing-8 rounded-radius-medium border border-surface-border bg-surface-surface py-spacing-8 disabled:opacity-50">
               <Icon as={Printer} size={16} className="text-text-primary" />
               <Text className="font-cairo text-sm font-semibold text-text-primary">Print</Text>
             </AnimatedPressable>
