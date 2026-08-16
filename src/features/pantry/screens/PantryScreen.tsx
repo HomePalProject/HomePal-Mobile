@@ -38,6 +38,7 @@ export default function PantryScreen() {
     editItem,
     clearError,
     scanPantryImage,
+    isInitialized,
   } = usePantry();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -219,7 +220,8 @@ export default function PantryScreen() {
   };
 
   const renderContent = () => {
-    if (isLoading) {
+    // Show skeleton if we are currently fetching data OR if we have never successfully fetched data yet
+    if (!isInitialized || isLoading) {
       return <PantrySkeleton />;
     }
 
