@@ -1,12 +1,37 @@
 import React from 'react';
-import { View, ScrollView, Pressable, Image, RefreshControl } from 'react-native';
-import { Home, MapPin, Users, Send, Inbox, Plus, Settings, LucideIcon } from 'lucide-react-native';
+import {
+  View,
+  ScrollView,
+  Pressable,
+  Image,
+  RefreshControl,
+  ActivityIndicator,
+} from 'react-native';
+import {
+  Home,
+  MapPin,
+  Users,
+  Send,
+  Inbox,
+  Plus,
+  Settings,
+  Printer,
+  LucideIcon,
+} from 'lucide-react-native';
 import { useRouter, Href } from 'expo-router';
+import * as Print from 'expo-print';
+import * as Sharing from 'expo-sharing';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { cn } from '@/src/utils';
 import { useAppSelector } from '@/src/store';
 import { HouseholdMember, HouseholdStats } from '../hooks/useActiveDashboard';
+import { useOverview } from '@/src/features/overview/hooks/useOverview';
+import { useTheme } from '@/src/providers/ThemeProvider';
+import { AnimatedPressable } from '@/src/components/ui/animated-pressable';
+import { OverviewStatCards } from './OverviewStatCards';
+import { OverviewCharts } from './OverviewCharts';
+import { generateOverviewReportHtml } from '@/src/utils/overviewReportHtml';
 import { useTranslation } from 'react-i18next';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -136,6 +161,23 @@ export function ActiveStateView({
 }: ActiveStateViewProps) {
   const { isManager } = useAppSelector((state) => state.profile);
   const router = useRouter();
+  const { theme } = useTheme();
+  const { overviewData, isLoading, isFetching, refetch } = useOverview();
+
+  const handlePrint = async () => {
+    if (!overviewData) return;
+    try {
+      const html = generateOverviewReportHtml(overviewData);
+      const { uri } = await Print.printToFileAsync({ html });
+      await Sharing.shareAsync(uri, {
+        mimeType: 'application/pdf',
+        dialogTitle: 'Share Household Overview Report',
+        UTI: 'com.adobe.pdf',
+      });
+    } catch (error) {
+      console.error('Failed to generate report PDF', error);
+    }
+  };
   const { t } = useTranslation('home');
 
   return (
@@ -152,8 +194,8 @@ export function ActiveStateView({
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={onRefresh}
-            colors={['#356859']}
-            tintColor="#356859"
+            colors={[theme.colors.brand.primary]}
+            tintColor={theme.colors.brand.primary}
             progressViewOffset={50}
           />
         }
@@ -223,34 +265,53 @@ export function ActiveStateView({
           </View>
         </View>
 
-        {/* ── 2. Quick Stats — Horizontal ScrollView ── */}
-        {/* <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ gap: 16, paddingVertical: 8 }}>
-          <StatCard
-            icon={Users}
-            iconBgClass="bg-brand-primary-container"
-            iconColorClass="text-brand-primary"
-            label="Total Members"
-            value={stats.totalMembers}
-          />
-          <StatCard
-            icon={Send}
-            iconBgClass="bg-brand-accent-container"
-            iconColorClass="text-brand-accent"
-            label="Sent Invitations"
-            value={stats.sentInvitations}
-            onPress={onInviteMember}
-          />
-          <StatCard
-            icon={Inbox}
-            iconBgClass="bg-brand-primary-container"
-            iconColorClass="text-brand-primary"
-            label="Received Invitations"
-            value={stats.receivedInvitations}
-          />
-        </ScrollView> */}
+        {/* ── 3. Household Overview Section ── */}
+        <View className="gap-y-spacing-16 rounded-radius-large border border-surface-border bg-surface-surface p-spacing-16">
+          <View style={{ gap: 4 }}>
+            <Text className="font-cairo text-lg font-bold text-text-primary">
+              Household Overview
+            </Text>
+            <Text className="font-cairo text-sm text-text-secondary">
+              Your household activity, spending, shopping and inventory at a glance.
+            </Text>
+          </View>
+
+          <View className="flex-row gap-x-spacing-8">
+            <AnimatedPressable
+              onPress={() => refetch()}
+              disabled={isLoading || isFetching}
+              pressScale={0.93}
+              hapticStyle="light"
+              className="flex-1 items-center justify-center rounded-radius-medium bg-brand-accent py-spacing-8 disabled:opacity-50">
+              <Text className="font-cairo text-sm font-bold text-brand-primary">
+                {isFetching ? 'Refreshing...' : 'Refresh'}
+              </Text>
+            </AnimatedPressable>
+
+            <AnimatedPressable
+              onPress={handlePrint}
+              disabled={isLoading || isFetching || !overviewData}
+              pressScale={0.93}
+              hapticStyle="light"
+              className="flex-1 flex-row items-center justify-center gap-x-spacing-8 rounded-radius-medium border border-surface-border bg-surface-surface py-spacing-8 disabled:opacity-50">
+              <Icon as={Printer} size={16} className="text-text-primary" />
+              <Text className="font-cairo text-sm font-semibold text-text-primary">Print</Text>
+            </AnimatedPressable>
+          </View>
+        </View>
+
+        {isLoading ? (
+          <View className="items-center justify-center py-12">
+            <ActivityIndicator size="large" color={theme.colors.brand.primary} />
+          </View>
+        ) : (
+          overviewData && (
+            <View className="gap-y-spacing-24">
+              <OverviewStatCards kpis={overviewData.kpis} />
+              <OverviewCharts data={overviewData} />
+            </View>
+          )
+        )}
       </ScrollView>
     </View>
   );

@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import authReducer, { forceLogout } from '@/src/store/slices/authSlice';
 import { registerOnUnauthorizedCallback } from '@/src/services/api/client';
+import { baseApi } from '@/src/services/api/baseApi';
 
 import uiReducer from '@/src/store/slices/uiSlice';
 import profileReducer from '@/src/store/slices/profileSlice';
@@ -19,11 +20,12 @@ export const store = configureStore({
     shoppingList: shoppingListReducer,
     budget: budgetReducer,
     mealPlans: mealPlansReducer,
+    [baseApi.reducerPath]: baseApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }),
+    }).concat(baseApi.middleware),
 });
 
 // Register callback so Axios interceptor can dispatch logout on 401 token refresh failure
