@@ -5,6 +5,7 @@ import { toast } from '@/src/providers/ToastProvider';
 import { householdService } from '@/src/services/api/household.service';
 import { ApiError } from '@/src/services/api/client';
 import { HouseholdDto } from '@/src/types/api';
+import i18n from '@/src/localization/i18n';
 
 export function useHouseholdSettings() {
   const router = useRouter();
@@ -47,7 +48,10 @@ export function useHouseholdSettings() {
 
   const handleUpdate = async () => {
     if (!name.trim()) {
-      toast.error('Validation Error', 'Household Name is required.');
+      toast.error(
+        i18n.t('common:errors.requestFailed', 'Error'),
+        i18n.t('households:householdNameRequired', 'Household Name is required.')
+      );
       return;
     }
 
@@ -60,14 +64,17 @@ export function useHouseholdSettings() {
         city: city.trim() || null,
       });
 
-      toast.success('Household Updated!', 'Your household settings have been saved.');
+      toast.success(
+        i18n.t('common:buttons.saveChanges', 'Saved!'),
+        i18n.t('households:settingsSaved', 'Your household settings have been saved.')
+      );
       router.back();
     } catch (error: any) {
       const message =
         error instanceof ApiError
           ? error.message
-          : error?.message || 'Failed to update household settings.';
-      toast.error('Error', message);
+          : error?.message || i18n.t('common:errors.unexpectedError');
+      toast.error(i18n.t('common:errors.requestFailed'), message);
     } finally {
       setIsUpdating(false);
     }
@@ -75,25 +82,28 @@ export function useHouseholdSettings() {
 
   const handleDelete = () => {
     Alert.alert(
-      'Delete Household',
-      'Are you sure you want to delete this household? This action cannot be undone and will remove all member access.',
+      i18n.t('households:deleteConfirmTitle', 'Delete Household'),
+      i18n.t('households:deleteConfirmMessage', 'Are you sure you want to delete this household? This action cannot be undone.'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: i18n.t('common:buttons.cancel', 'Cancel'), style: 'cancel' },
         {
-          text: 'Delete Household',
+          text: i18n.t('households:deleteHousehold', 'Delete Household'),
           style: 'destructive',
           onPress: async () => {
             setIsDeleting(true);
             try {
               await householdService.deleteHousehold();
-              toast.success('Household Deleted', 'Your household has been permanently removed.');
+              toast.success(
+                i18n.t('households:deleteConfirmTitle'),
+                i18n.t('households:householdRemoved', 'Your household has been removed.')
+              );
               router.replace('/(tabs)');
             } catch (error: any) {
               const message =
                 error instanceof ApiError
                   ? error.message
-                  : error?.message || 'Failed to delete household.';
-              toast.error('Error', message);
+                  : error?.message || i18n.t('common:errors.unexpectedError');
+              toast.error(i18n.t('common:errors.requestFailed'), message);
             } finally {
               setIsDeleting(false);
             }

@@ -34,6 +34,8 @@ import { useColorScheme } from 'nativewind';
 import { lightColors, darkColors } from '@/src/theme/colors';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
+import { useDrawerStore } from '@/src/store/useDrawerStore';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
@@ -53,6 +55,7 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
 
   const { resolvedMode, setMode } = useTheme();
+  const { t } = useTranslation('common');
 
   const checkActive = (route: string) => {
     const cleanPathname = pathname.replace(/\/\([^)]+\)/g, '');
@@ -66,20 +69,16 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
     return cleanPathname === cleanRoute;
   };
 
-  const toggleTheme = () => {
-    setMode(resolvedMode === 'dark' ? 'light' : 'dark');
-  };
-
-  const isOpen = useAppSelector((state) => state.ui.isDrawerOpen);
-
-  const handleCloseDrawer = () => dispatch(closeDrawer());
-
+  const isOpen = useDrawerStore((state) => state.isOpen);
+  const handleCloseDrawer = useDrawerStore((state) => state.closeDrawer);
   const { fullName, email, profileImageUri, hasHousehold, isManager } = useAppSelector(
     (state) => state.profile
   );
 
-  const slideAnim = useRef(new Animated.Value(-DRAWER_WIDTH)).current;
+  const isRTL = I18nManager.isRTL;
+  const closedPosition = isRTL ? DRAWER_WIDTH : -DRAWER_WIDTH;
 
+  const slideAnim = useRef(new Animated.Value(closedPosition)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -92,8 +91,7 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
     } else {
       Animated.parallel([
         Animated.timing(slideAnim, {
-          toValue: -DRAWER_WIDTH,
-
+          toValue: closedPosition,
           duration: 250,
 
           useNativeDriver: true,
@@ -102,7 +100,7 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
         Animated.timing(opacityAnim, { toValue: 0, duration: 250, useNativeDriver: true }),
       ]).start();
     }
-  }, [isOpen, slideAnim, opacityAnim]);
+  }, [isOpen, slideAnim, opacityAnim, closedPosition]);
 
   const userInitial = fullName ? fullName.trim()[0]?.toUpperCase() : 'M';
 
@@ -164,6 +162,7 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
 
               bottom: 0,
 
+              start: 0,
               width: DRAWER_WIDTH,
 
               transform: [{ translateX: slideAnim }],
@@ -240,7 +239,7 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
                     ]
                       .filter(Boolean)
                       .join(' ')}>
-                    My Household
+                    {t('navigation.myHousehold')}
                   </Text>
                 </Pressable>
               );
@@ -286,7 +285,7 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
                     ]
                       .filter(Boolean)
                       .join(' ')}>
-                    Shopping List
+                    {t('navigation.shoppingList')}
                   </Text>
                 </Pressable>
               );
@@ -332,7 +331,7 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
                     ]
                       .filter(Boolean)
                       .join(' ')}>
-                    Household Budget
+                    {t('navigation.householdBudget')}
                   </Text>
                 </Pressable>
               );
@@ -376,7 +375,7 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
                     ]
                       .filter(Boolean)
                       .join(' ')}>
-                    Manage Family
+                    {t('navigation.manageFamily')}
                   </Text>
                 </Pressable>
               );
@@ -420,7 +419,7 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
                     ]
                       .filter(Boolean)
                       .join(' ')}>
-                    Sent Invitations
+                    {t('navigation.sentInvitations')}
                   </Text>
                 </Pressable>
               );
@@ -464,7 +463,7 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
                     ]
                       .filter(Boolean)
                       .join(' ')}>
-                    Received Invitations
+                    {t('navigation.receivedInvitations')}
                   </Text>
                 </Pressable>
               );
@@ -504,7 +503,7 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
                     ]
                       .filter(Boolean)
                       .join(' ')}>
-                    Profile & Settings
+                    {t('navigation.profileSettings')}
                   </Text>
                 </Pressable>
               );
@@ -594,6 +593,9 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
           </Pressable>
         </Modal>
       )}
+          </View>
+        </Animated.View>
+      </Animated.View>
     </View>
   );
 }

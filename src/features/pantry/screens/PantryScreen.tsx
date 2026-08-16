@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { View, RefreshControl, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, Href } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
 import { colors } from '@/src/theme/colors';
@@ -20,9 +21,12 @@ import {
   ImagePickerSheet,
   PantryNotificationModal,
 } from '../components';
+import { useTranslation } from 'react-i18next';
+import { ScannedItem } from '../components/AIScanItemRow';
 
 export default function PantryScreen() {
   const router = useRouter();
+  const { t } = useTranslation('pantry');
   const {
     items,
     categories,
@@ -34,6 +38,7 @@ export default function PantryScreen() {
     editItem,
     clearError,
     scanPantryImage,
+    isInitialized,
   } = usePantry();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -63,8 +68,8 @@ export default function PantryScreen() {
   const [isScanModalVisible, setIsScanModalVisible] = useState(false);
   const [scanStatus, setScanStatus] = useState<'loading' | 'success'>('loading');
   const [isSavingScanned, setIsSavingScanned] = useState(false);
-  const [isImagePickerVisible, setIsImagePickerVisible] = useState(false);
-  const [scannedItems, setScannedItems] = useState<any[]>([]);
+  const imagePickerRef = useRef<BottomSheetModal>(null);
+  const [scannedItems, setScannedItems] = useState<ScannedItem[]>([]);
   const [notification, setNotification] = useState({
     visible: false,
     type: 'success' as 'success' | 'error',
@@ -91,7 +96,7 @@ export default function PantryScreen() {
   };
 
   const handleAddItem = () => {
-    router.push('/add-pantry-item');
+    router.push('/add-pantry-item' as Href);
   };
 
   const startRealScan = async (imageUri: string) => {
@@ -115,14 +120,14 @@ export default function PantryScreen() {
       setNotification({
         visible: true,
         type: 'error',
-        title: 'Error',
-        message: 'Failed to scan image. Please try again.',
+        title: t('scanErrorTitle'),
+        message: t('scanErrorMsg'),
       });
     }
   };
 
   const handleScanItem = () => {
-    setIsImagePickerVisible(true);
+    imagePickerRef.current?.present();
   };
 
   const handleTakePhoto = async () => {
@@ -131,8 +136,8 @@ export default function PantryScreen() {
       setNotification({
         visible: true,
         type: 'error',
-        title: 'Permission Denied',
-        message: 'Camera access is required to take photos.',
+        title: t('permissionDenied'),
+        message: t('cameraPermission'),
       });
       return;
     }
@@ -152,8 +157,8 @@ export default function PantryScreen() {
       setNotification({
         visible: true,
         type: 'error',
-        title: 'Permission Denied',
-        message: 'Media library access is required.',
+        title: t('permissionDenied'),
+        message: t('libraryPermission'),
       });
       return;
     }
@@ -167,7 +172,7 @@ export default function PantryScreen() {
     }
   };
 
-  const handleAddScannedItems = async (scannedItems: any[]) => {
+  const handleAddScannedItems = async (scannedItems: Omit<ScannedItem, 'selected'>[]) => {
     setIsSavingScanned(true);
     try {
       const promises = scannedItems.map((scanned) => {
@@ -199,15 +204,15 @@ export default function PantryScreen() {
       setNotification({
         visible: true,
         type: 'success',
-        title: 'Success',
-        message: 'Scanned items successfully added to your pantry.',
+        title: t('success'),
+        message: t('itemsAddedSuccess'),
       });
     } catch {
       setNotification({
         visible: true,
         type: 'error',
-        title: 'Error',
-        message: 'Failed to add some scanned items.',
+        title: t('addScannedErrorTitle'),
+        message: t('addScannedErrorMsg'),
       });
     } finally {
       setIsSavingScanned(false);
@@ -215,7 +220,8 @@ export default function PantryScreen() {
   };
 
   const renderContent = () => {
-    if (isLoading) {
+    // Show skeleton if we are currently fetching data OR if we have never successfully fetched data yet
+    if (!isInitialized || isLoading) {
       return <PantrySkeleton />;
     }
 
@@ -279,8 +285,7 @@ export default function PantryScreen() {
       />
 
       <ImagePickerSheet
-        visible={isImagePickerVisible}
-        onClose={() => setIsImagePickerVisible(false)}
+        ref={imagePickerRef}
         onTakePhoto={handleTakePhoto}
         onChooseFromGallery={handleChooseFromGallery}
       />

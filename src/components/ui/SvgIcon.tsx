@@ -1,5 +1,13 @@
 import React from 'react';
+import { I18nManager, View } from 'react-native';
 import { SvgXml } from 'react-native-svg';
+
+export const DIRECTIONAL_ICONS = new Set([
+  'chevron-right-thick',
+  'chevron-right-thin',
+  'arrow-right-settings',
+  'arrow-left',
+]);
 
 export const SVG_XMLS = {
   'arrow-left':
@@ -99,5 +107,12 @@ export function SvgIcon({ name, width, height, fill, stroke, className }: SvgIco
     xml = xml.replace(/stroke="[^"]*"/g, `stroke="${stroke}"`);
   }
 
-  return <SvgXml xml={xml} width={width} height={height} className={className} />;
+  const shouldMirror = I18nManager.isRTL && DIRECTIONAL_ICONS.has(name);
+  const iconContent = <SvgXml xml={xml} width={width} height={height} className={className} />;
+
+  if (shouldMirror) {
+    return <View style={{ transform: [{ scaleX: -1 }] }}>{iconContent}</View>;
+  }
+
+  return iconContent;
 }

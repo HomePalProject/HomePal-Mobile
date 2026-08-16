@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { TextInput, View, TextInputProps, Pressable } from 'react-native';
+import { TextInput, View, TextInputProps, Pressable, I18nManager } from 'react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { Eye, EyeOff } from 'lucide-react-native';
 import { cn } from '@/src/utils';
+import { useColorScheme } from 'nativewind';
+import { lightColors, darkColors } from '@/src/theme/colors';
 
 export interface TextFieldProps extends TextInputProps {
   label?: string;
@@ -30,6 +32,9 @@ export const TextField = React.forwardRef<TextInput, TextFieldProps>(
   ) => {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const isSecure = secureTextEntry && !isPasswordVisible;
+    const { colorScheme } = useColorScheme();
+    const isDark = colorScheme === 'dark';
+    const themeColors = isDark ? darkColors : lightColors;
 
     return (
       <View className={cn('w-full flex-col gap-1.5', containerClassName, className)}>
@@ -49,19 +54,22 @@ export const TextField = React.forwardRef<TextInput, TextFieldProps>(
             ref={ref}
             secureTextEntry={isSecure}
             placeholderTextColor={placeholderTextColor}
+            cursorColor={themeColors.brand.primary}
+            selectionColor={themeColors.brand.primaryContainer}
             className={cn(
               'h-[52px] w-full rounded-[8px] border border-surface-border bg-surface-surface px-[16px] font-cairo text-[16px] leading-[24px] text-text-primary focus:border-brand-primary',
-              secureTextEntry && 'pr-[48px]',
+              secureTextEntry && 'pe-[48px]',
               error && 'border-brand-error focus:border-brand-error',
               inputClassName
             )}
+            style={[{ textAlign: I18nManager.isRTL ? 'right' : 'left' }, props.style]}
             {...props}
           />
 
           {secureTextEntry ? (
             <Pressable
               onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-              className="absolute right-0 h-[52px] w-[48px] items-center justify-center"
+              className="absolute end-0 h-[52px] w-[48px] items-center justify-center"
               accessibilityRole="button"
               accessibilityLabel={isPasswordVisible ? 'Hide password' : 'Show password'}>
               <Icon

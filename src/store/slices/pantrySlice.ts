@@ -14,6 +14,7 @@ export interface PantryState {
   categories: ProductCategoryResponse[];
   measuringUnits: MeasuringUnitResponse[];
   isLoading: boolean;
+  isInitialized: boolean;
   error: string | null;
 }
 
@@ -22,6 +23,7 @@ const initialState: PantryState = {
   categories: [],
   measuringUnits: [],
   isLoading: false,
+  isInitialized: false,
   error: null,
 };
 
@@ -100,12 +102,14 @@ const pantrySlice = createSlice({
       })
       .addCase(fetchPantryData.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.isInitialized = true;
         state.items = action.payload.items;
         state.categories = action.payload.categories;
         state.measuringUnits = action.payload.measuringUnits;
       })
       .addCase(fetchPantryData.rejected, (state, action) => {
         state.isLoading = false;
+        state.isInitialized = true;
         state.error =
           (action.payload as string) || action.error.message || 'Failed to fetch pantry data';
       })

@@ -1,0 +1,16 @@
+{
+  "tabTitle": "Meal Plans",
+  "historyTitle": "Meal Plans History",
+  "refresh": "Refresh",
+  "noHistory": "No meal plans found.",
+  "latestPlan": "Latest Meal Plan",
+  "estTotalCost": "Est. Total Cost",
+  "noActivePlan": "No active meal plan found for your household.",
+  "deleteModal": {
+    "title": "Delete Meal Plan",
+    "message": "Are you sure you want to delete this meal plan? This action cannot be undone.",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "deleting": "Deleting..."
+  }
+}

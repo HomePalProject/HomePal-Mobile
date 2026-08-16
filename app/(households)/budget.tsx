@@ -15,7 +15,7 @@ import { useTheme } from '@/src/providers/ThemeProvider';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { useAppDispatch } from '@/src/store';
-import { openDrawer } from '@/src/store/slices/uiSlice';
+
 import { useBudget } from '@/src/features/budget/hooks/useBudget';
 import {
   MonthSelector,
@@ -25,9 +25,14 @@ import {
   ExpensesLogList,
 } from '@/src/features/budget/components';
 
+import { useTranslation } from 'react-i18next';
+import { useDrawerStore } from '@/src/store/useDrawerStore';
+
 export default function BudgetScreen() {
+  const { t } = useTranslation(['budget', 'common']);
   const { theme } = useTheme();
   const dispatch = useAppDispatch();
+  const openDrawer = useDrawerStore((state) => state.openDrawer);
   const insets = useSafeAreaInsets();
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [targetModalVisible, setTargetModalVisible] = useState(false);
@@ -105,9 +110,11 @@ export default function BudgetScreen() {
 
   useEffect(() => {
     if (error) {
-      Alert.alert('Error', error, [{ text: 'OK', onPress: () => clearError() }]);
+      Alert.alert(t('common:errors.requestFailed', 'Error'), error, [
+        { text: t('common:buttons.ok', 'OK'), onPress: () => clearError() },
+      ]);
     }
-  }, [error, clearError]);
+  }, [error, clearError, t]);
 
   return (
     <SafeAreaView className="flex-1 bg-surface-background" edges={['bottom', 'left', 'right']}>
@@ -117,7 +124,7 @@ export default function BudgetScreen() {
         style={{ paddingTop: Math.max(insets.top, 16) + 12 }}>
         <View className="flex-row items-center gap-3">
           <Pressable
-            onPress={() => dispatch(openDrawer())}
+            onPress={() => openDrawer()}
             className="rounded-full p-1.5 active:opacity-70"
             accessibilityRole="button"
             accessibilityLabel="Open Navigation Drawer">

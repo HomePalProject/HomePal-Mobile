@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { useAppDispatch } from '@/src/store';
-import { openDrawer } from '@/src/store/slices/uiSlice';
+import { useDrawerStore } from '@/src/store/useDrawerStore';
 
 export interface DashboardHeaderProps {
   firstInitial: string;
@@ -26,7 +26,7 @@ export function DashboardHeader({
     if (onAvatarPress) {
       onAvatarPress();
     } else {
-      dispatch(openDrawer());
+      useDrawerStore.getState().openDrawer();
     }
   };
 
@@ -48,7 +48,7 @@ export function DashboardHeader({
         {/* User Avatar */}
         <Pressable
           onPress={handleOpenDrawer}
-          className="border-brand-primary/20 h-10 w-10 items-center justify-center overflow-hidden rounded-radius-full border bg-brand-primary-container active:opacity-70">
+          className="h-10 w-10 items-center justify-center overflow-hidden rounded-radius-full border border-brand-primary/20 bg-brand-primary-container active:opacity-70">
           {profileImageUri ? (
             <Image source={{ uri: profileImageUri }} className="h-full w-full" />
           ) : (

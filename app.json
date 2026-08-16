@@ -7,7 +7,9 @@
     "icon": "./assets/images/icon.png",
     "scheme": "homepal",
     "userInterfaceStyle": "automatic",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -42,8 +44,10 @@
       "expo-status-bar",
       "expo-font",
       "expo-secure-store",
-      "@react-native-google-signin/google-signin/app.plugin.js",
-      "expo-sharing"
+"@react-native-google-signin/google-signin",
+"expo-sharing",
+"expo-localization",
+"expo-updates"
     ],
     "experiments": {
       "typedRoutes": true

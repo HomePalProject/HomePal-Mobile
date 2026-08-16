@@ -3,6 +3,8 @@ import { View, Pressable, Modal, ScrollView } from 'react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { Calendar, ChevronLeft, ChevronRight, X } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import { getMonthNames, getWeekdayNames } from '@/src/utils/dateNames';
 
 interface DatePickerProps {
   label?: string;
@@ -11,23 +13,6 @@ interface DatePickerProps {
   error?: string;
   placeholder?: string;
 }
-
-const MONTHS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
-
-const DAYS_OF_WEEK = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
 // Generate years from 1950 to current year - 13
 const CURRENT_YEAR = new Date().getFullYear();
@@ -40,6 +25,11 @@ export function DatePicker({
   error,
   placeholder = 'Select date (YYYY-MM-DD)',
 }: DatePickerProps) {
+  const { i18n } = useTranslation();
+
+  const MONTHS = getMonthNames(i18n.language);
+  const DAYS_OF_WEEK = getWeekdayNames(i18n.language);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [mode, setMode] = useState<'calendar' | 'years' | 'months'>('calendar');
 
@@ -139,7 +129,7 @@ export function DatePicker({
             {mode === 'calendar' && (
               <View className="flex-row items-center justify-between py-4">
                 <Pressable onPress={handlePrevMonth} className="p-2">
-                  <Icon as={ChevronLeft} size={22} className="text-text-primary" />
+                  <Icon as={ChevronLeft} directional size={22} className="text-text-primary" />
                 </Pressable>
 
                 <View className="flex-row gap-2">
@@ -160,7 +150,7 @@ export function DatePicker({
                 </View>
 
                 <Pressable onPress={handleNextMonth} className="p-2">
-                  <Icon as={ChevronRight} size={22} className="text-text-primary" />
+                  <Icon as={ChevronRight} directional size={22} className="text-text-primary" />
                 </Pressable>
               </View>
             )}

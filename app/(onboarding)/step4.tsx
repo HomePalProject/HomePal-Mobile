@@ -43,7 +43,10 @@ const ALLERGIES = [
   'Wheat',
 ];
 
+import { useTranslation } from 'react-i18next';
+
 export default function OnboardingStep4Screen() {
+  const { t } = useTranslation(['onboarding', 'auth', 'common']);
   const router = useRouter();
   const dispatch = useAppDispatch();
   const {
@@ -97,9 +100,12 @@ export default function OnboardingStep4Screen() {
     if (!tempRegistration?.email || !tempRegistration?.username || !tempRegistration?.password) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert(
-        'Missing Account Information',
-        'Your login credentials expired from temporary session. Please restart registration.',
-        [{ text: 'OK', onPress: () => router.replace('/(auth)/register') }]
+        t('auth:missingCredentialsTitle', 'Missing Account Information'),
+        t(
+          'auth:missingCredentialsMsg',
+          'Your login credentials expired from temporary session. Please restart registration.'
+        ),
+        [{ text: t('common:buttons.ok', 'OK'), onPress: () => router.replace('/register') }]
       );
       return;
     }
@@ -121,13 +127,19 @@ export default function OnboardingStep4Screen() {
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       toast.success(
-        'Registration Successful 🎉',
-        'Please check your email for confirmation instructions to activate your account.'
+        t('auth:registrationSuccessful', 'Registration Successful 🎉'),
+        t(
+          'auth:checkEmailConfirmation',
+          'Please check your email for confirmation instructions to activate your account.'
+        )
       );
-      router.replace('/(auth)/login');
+      router.replace('/login');
     } catch (err: any) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-      toast.error('Registration Failed', err.message || 'Could not create account.');
+      toast.error(
+        t('auth:registrationFailed', 'Registration Failed'),
+        err.message || t('common:errors.unexpectedError')
+      );
     }
   };
 
@@ -148,7 +160,7 @@ export default function OnboardingStep4Screen() {
                 onPress={() => router.back()}
                 hapticStyle="light"
                 className="h-10 w-10 items-center justify-center rounded-full bg-surface-surface-variant">
-                <Icon as={ArrowLeft} size={20} className="text-text-primary" />
+                <Icon as={ArrowLeft} directional size={20} className="text-text-primary" />
               </AnimatedPressable>
               <Text className="font-cairo text-[14px] font-bold text-text-secondary">
                 Step 4 of 4

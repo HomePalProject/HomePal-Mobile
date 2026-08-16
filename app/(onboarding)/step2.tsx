@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -25,6 +26,7 @@ const POPULAR_GOVERNORATES = [
 ];
 
 export default function OnboardingStep2Screen() {
+  const { t } = useTranslation(['common']);
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { tempRegistration } = useAppSelector((state) => state.auth);
@@ -94,7 +96,7 @@ export default function OnboardingStep2Screen() {
                 onPress={() => router.back()}
                 hapticStyle="light"
                 className="h-10 w-10 items-center justify-center rounded-full bg-surface-surface-variant">
-                <Icon as={ArrowLeft} size={20} className="text-text-primary" />
+                <Icon as={ArrowLeft} directional size={20} className="text-text-primary" />
               </AnimatedPressable>
               <Text className="font-cairo text-[14px] font-bold text-text-secondary">
                 Step 2 of 4
@@ -212,7 +214,9 @@ export default function OnboardingStep2Screen() {
               onPress={handleNext}
               hapticStyle="medium"
               className="h-[56px] w-full rounded-full bg-brand-primary">
-              <Text className="font-cairo text-[16px] font-bold text-white">Continue</Text>
+              <Text className="font-cairo text-[16px] font-bold text-white">
+                {t('common:buttons.continue', 'Continue')}
+              </Text>
             </Button>
           </View>
         </View>

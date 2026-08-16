@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, Modal } from 'react-native';
 import { Trash2 } from 'lucide-react-native';
 import { Icon } from '@/src/components/ui/icon';
+import { useTranslation } from 'react-i18next';
 
 interface DeleteConfirmationModalProps {
   visible: boolean;
@@ -16,6 +17,8 @@ export function DeleteConfirmationModal({
   onCancel,
   isLoading,
 }: DeleteConfirmationModalProps) {
+  const { t } = useTranslation('pantry');
+
   return (
     <Modal animationType="fade" transparent={true} visible={visible} onRequestClose={onCancel}>
       <View className="flex-1 items-center justify-center bg-black/50 px-spacing-24">
@@ -27,13 +30,15 @@ export function DeleteConfirmationModal({
 
           {/* Title */}
           <Text className="text-heading-3 mb-spacing-8 text-center font-cairo font-bold text-text-primary">
-            Remove Item?
+            {t('removeItemTitle', 'Remove Item?')}
           </Text>
 
           {/* Description Text */}
           <Text className="text-body mb-spacing-24 text-center font-cairo leading-[22px] text-text-secondary">
-            Are you sure you want to remove this item from your pantry? This action cannot be
-            undone.
+            {t(
+              'removeItemDesc',
+              'Are you sure you want to remove this item from your pantry? This action cannot be undone.'
+            )}
           </Text>
 
           {/* Action Buttons Column */}
@@ -46,9 +51,9 @@ export function DeleteConfirmationModal({
                 isLoading ? 'opacity-55' : ''
               }`}
               accessibilityRole="button"
-              accessibilityLabel="Confirm removal">
+              accessibilityLabel={t('remove', 'Remove')}>
               <Text className="text-body font-cairo font-bold text-white">
-                {isLoading ? 'Removing...' : 'Remove'}
+                {isLoading ? t('removing', 'Removing...') : t('remove', 'Remove')}
               </Text>
             </Pressable>
 
@@ -58,8 +63,10 @@ export function DeleteConfirmationModal({
               disabled={isLoading}
               className="py-spacing-12 h-8 w-full items-center justify-center rounded-radius-full border border-surface-border bg-surface-surface active:scale-95 active:opacity-75"
               accessibilityRole="button"
-              accessibilityLabel="Cancel removal">
-              <Text className="text-body font-cairo font-bold text-text-primary">Cancel</Text>
+              accessibilityLabel={t('cancel', 'Cancel')}>
+              <Text className="text-body font-cairo font-bold text-text-primary">
+                {t('cancel', 'Cancel')}
+              </Text>
             </Pressable>
           </View>
         </View>

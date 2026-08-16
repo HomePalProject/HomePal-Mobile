@@ -27,9 +27,13 @@ export interface Supermarket {
 export interface Offer {
   id: string;
   title: string;
+  name?: string;
   description?: string | null;
   originalPrice: number;
   discountedPrice: number;
+  quantity?: number | null;
+  unitName?: string | null;
+  isVerified?: boolean;
   validFrom?: string | null;
   validTo?: string | null;
   categoryId?: string | null;

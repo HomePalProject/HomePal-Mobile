@@ -11,7 +11,10 @@ import { authService } from '@/src/services/api/auth.service';
 import { emailSchema } from '@/src/utils/validation';
 import { toast } from '@/src/providers/ToastProvider';
 
+import { useTranslation } from 'react-i18next';
+
 export default function ForgotPasswordScreen() {
+  const { t } = useTranslation(['auth', 'common']);
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [error, setError] = useState<string | undefined>();
@@ -31,18 +34,18 @@ export default function ForgotPasswordScreen() {
       const response = await authService.forgotPassword({ email: email.trim() });
       if (response.success || response.status === 'Success' || response.status === 'OK') {
         toast.success(
-          'Reset Link Sent',
-          'We have sent password reset instructions to your email inbox.'
+          t('auth:forgotPassword.resetSuccessTitle'),
+          t('auth:forgotPassword.resetSuccessMsg')
         );
         router.back();
       } else {
-        const msg = response.message || 'Unable to send reset instructions. Please try again.';
-        toast.error('Request Failed', msg);
+        const msg = response.message || t('common:errors.requestFailed');
+        toast.error(t('common:errors.requestFailed'), msg);
         setError(msg);
       }
     } catch (err: any) {
-      const msg = err.message || 'An unexpected error occurred while requesting password reset.';
-      toast.error('Error', msg);
+      const msg = err.message || t('common:errors.unexpectedError');
+      toast.error(t('common:errors.requestFailed'), msg);
       setError(msg);
     } finally {
       setIsLoading(false);
@@ -64,7 +67,7 @@ export default function ForgotPasswordScreen() {
             <Pressable
               onPress={() => router.back()}
               className="h-10 w-10 items-center justify-center rounded-full bg-surface-surface-variant">
-              <Icon as={ArrowLeft} size={20} className="text-text-primary" />
+              <Icon as={ArrowLeft} directional size={20} className="text-text-primary" />
             </Pressable>
           </View>
 
@@ -74,19 +77,18 @@ export default function ForgotPasswordScreen() {
               <Icon as={KeyRound} size={36} className="text-brand-primary" />
             </View>
             <Text className="text-center font-cairo text-[26px] font-bold text-text-primary">
-              Forgot Password?
+              {t('auth:forgotPassword.title')}
             </Text>
             <Text className="mt-2 px-4 text-center font-cairo text-[15px] leading-[22px] text-text-secondary">
-              No worries! Enter your registered email address below and we'll send you instructions
-              to reset your password.
+              {t('auth:forgotPassword.subtitle')}
             </Text>
           </View>
 
           {/* Form */}
           <View className="mt-8 flex-col gap-4">
             <TextField
-              label="Email Address"
-              placeholder="e.g. sara@example.com"
+              label={t('auth:forgotPassword.emailLabel')}
+              placeholder={t('auth:forgotPassword.emailPlaceholder')}
               value={email}
               onChangeText={(val) => {
                 setEmail(val);
@@ -102,7 +104,9 @@ export default function ForgotPasswordScreen() {
               disabled={isLoading || !email.trim()}
               className="mt-4 h-[56px] w-full rounded-full bg-brand-primary">
               <Text className="font-cairo text-[16px] font-bold text-white">
-                {isLoading ? 'Sending Reset Link...' : 'Send Reset Link'}
+                {isLoading
+                  ? t('auth:forgotPassword.sendingResetLink')
+                  : t('auth:forgotPassword.sendResetLink')}
               </Text>
             </Button>
           </View>

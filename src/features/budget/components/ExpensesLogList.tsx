@@ -4,6 +4,7 @@ import { Trash2 } from 'lucide-react-native';
 import { Icon } from '@/src/components/ui/icon';
 import { useTheme } from '@/src/providers/ThemeProvider';
 import { ExpenseResponse } from '@/src/services';
+import { useTranslation } from 'react-i18next';
 
 interface ExpensesLogListProps {
   expenses: ExpenseResponse[];
@@ -57,6 +58,7 @@ export function ExpensesLogList({
   isDeletingId = null,
   isLoading = false,
 }: ExpensesLogListProps) {
+  const { t } = useTranslation('budget');
   const { theme } = useTheme();
   const itemCount = expenses.length;
 
@@ -64,10 +66,12 @@ export function ExpensesLogList({
     <View className="gap-spacing-16 rounded-radius-large border border-surface-border bg-surface-surface p-spacing-16 shadow-sm">
       {/* Header & Item Count Badge */}
       <View className="flex-row items-center justify-between">
-        <Text className="font-cairo text-lg font-bold text-brand-primary">Expenses Log</Text>
+        <Text className="font-cairo text-lg font-bold text-brand-primary">
+          {t('expenseLog', 'Expenses Log')}
+        </Text>
         <View className="bg-surface-surfaceVariant rounded-radius-full border border-surface-border px-spacing-8 py-spacing-4">
           <Text className="text-caption font-cairo font-semibold text-text-secondary">
-            {itemCount} {itemCount === 1 ? 'item' : 'items'}
+            {t('itemsCount', '{{count}} items', { count: itemCount })}
           </Text>
         </View>
       </View>
@@ -82,7 +86,7 @@ export function ExpensesLogList({
         /* Empty State */
         <View className="items-center justify-center py-spacing-32">
           <Text className="text-body text-center font-cairo font-medium text-text-secondary">
-            No expenses recorded for this month yet.
+            {t('noExpenses', 'No expenses recorded for this month yet.')}
           </Text>
         </View>
       ) : (
@@ -94,7 +98,7 @@ export function ExpensesLogList({
               <View
                 key={expense.id}
                 className="flex-row items-center justify-between rounded-radius-large border border-surface-border p-spacing-16">
-                <View className="flex-1 pr-spacing-16">
+                <View className="flex-1 pe-spacing-16">
                   <Text className="text-body font-cairo font-bold text-text-primary">
                     {expense.title}
                   </Text>
@@ -112,7 +116,9 @@ export function ExpensesLogList({
                     onPress={() => onDeleteExpense(expense.id)}
                     disabled={isDeleting || isLoading}
                     accessibilityRole="button"
-                    accessibilityLabel={`Delete expense ${expense.title}`}
+                    accessibilityLabel={t('deleteExpenseLabel', 'Delete expense {{title}}', {
+                      title: expense.title,
+                    })}
                     className="active:bg-surface-surfaceVariant h-10 w-10 items-center justify-center rounded-radius-full disabled:opacity-50">
                     {isDeleting ? (
                       <ActivityIndicator size="small" color={theme.colors.brand.error} />

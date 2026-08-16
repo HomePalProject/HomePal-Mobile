@@ -3,6 +3,7 @@ import { View, Text, Pressable, TextInput } from 'react-native';
 import { Check, Calendar, ChevronDown } from 'lucide-react-native';
 import { Icon } from '@/src/components/ui/icon';
 import { formatDisplayDate } from './ExpirationDatePickerModal';
+import { useTranslation } from 'react-i18next';
 
 export interface ScannedItem {
   name: string;
@@ -32,6 +33,7 @@ export function AIScanItemRow({
   getCategoryName,
   getUnitName,
 }: AIScanItemRowProps) {
+  const { t } = useTranslation('pantry');
   const isSelected = item.selected;
 
   return (
@@ -55,7 +57,7 @@ export function AIScanItemRow({
           value={item.name}
           onChangeText={(t) => onUpdateField(index, 'name', t)}
           className="text-body h-12 flex-1 rounded-radius-medium border border-surface-border bg-surface-surface px-spacing-16 font-cairo text-text-primary"
-          placeholder="Item Name"
+          placeholder={t('itemNamePlaceholder', 'Item Name')}
         />
       </View>
 
@@ -88,15 +90,15 @@ export function AIScanItemRow({
           <Text numberOfLines={1} className="text-body flex-1 font-cairo text-text-primary">
             {getCategoryName(item.categoryId)}
           </Text>
-          <Icon as={ChevronDown} size={16} className="ml-1 text-text-secondary" />
+          <Icon as={ChevronDown} size={16} className="ms-1 text-text-secondary" />
         </Pressable>
 
         <Pressable
           onPress={() => onOpenPicker(index, 'date')}
           className="h-12 flex-1 flex-row items-center justify-between rounded-radius-medium border border-surface-border bg-surface-surface px-spacing-16 active:opacity-85">
-          <Icon as={Calendar} size={16} className="mr-2 text-text-secondary" />
+          <Icon as={Calendar} size={16} className="me-2 text-text-secondary" />
           <Text numberOfLines={1} className="text-body flex-1 font-cairo text-text-primary">
-            {item.expireDate ? formatDisplayDate(item.expireDate) : 'Date'}
+            {item.expireDate ? formatDisplayDate(item.expireDate) : t('date', 'Date')}
           </Text>
         </Pressable>
       </View>

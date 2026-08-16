@@ -4,8 +4,9 @@ import { Menu } from 'lucide-react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { useAppSelector, useAppDispatch } from '@/src/store';
-import { openDrawer } from '@/src/store/slices/uiSlice';
+
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDrawerStore } from '@/src/store/useDrawerStore';
 
 export interface TabHeaderProps {
   title?: string;
@@ -15,7 +16,7 @@ export interface TabHeaderProps {
 export function TabHeader({ title = 'HomePal', onNotificationPress }: TabHeaderProps) {
   const dispatch = useAppDispatch();
   const { fullName, profileImageUri } = useAppSelector((state) => state.profile);
-  const handleOpenDrawer = () => dispatch(openDrawer());
+  const handleOpenDrawer = useDrawerStore((state) => state.openDrawer);
   const insets = useSafeAreaInsets();
 
   const firstInitial = fullName ? fullName.trim()[0]?.toUpperCase() : 'H';
@@ -36,7 +37,7 @@ export function TabHeader({ title = 'HomePal', onNotificationPress }: TabHeaderP
 
         <Pressable
           onPress={handleOpenDrawer}
-          className="border-brand-primary/20 h-10 w-10 items-center justify-center overflow-hidden rounded-full border bg-brand-primary-container active:opacity-70">
+          className="h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-brand-primary/20 bg-brand-primary-container active:opacity-70">
           {profileImageUri ? (
             <Image source={{ uri: profileImageUri }} className="h-full w-full" />
           ) : (

@@ -9,8 +9,10 @@ import { Icon } from '@/src/components/ui/icon';
 import { Pressable } from 'react-native';
 import { router, Href } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 
 export default function FamilyManagementScreen() {
+  const { t } = useTranslation('households');
   const insets = useSafeAreaInsets();
   const {
     members: detailedMembers,
@@ -40,18 +42,18 @@ export default function FamilyManagementScreen() {
         <View className="flex-row items-center gap-1">
           <Pressable
             onPress={() => router.back()}
-            className="active:bg-surface-surfaceVariant mr-2 rounded-full p-2"
+            className="active:bg-surface-surfaceVariant me-2 rounded-full p-2"
             accessibilityRole="button"
             accessibilityLabel="Go back">
-            <Icon as={ArrowLeft} size={24} className="text-text-primary" />
+            <Icon as={ArrowLeft} directional size={24} className="text-text-primary" />
           </Pressable>
           <Text className="text-bodyLarge font-cairo font-bold text-brand-primary">
-            Family Management
+            {t('familyManagement.title', 'Family Management')}
           </Text>
         </View>
       </View>
 
-      <ScrollView className="flex-1" contentContainerStyle={{ padding: 20 }}>
+      <View className="flex-1 px-5 pt-5">
         <HouseholdMembersList
           members={detailedMembers}
           isAddFormOpen={isAddFormOpen}
@@ -67,12 +69,12 @@ export default function FamilyManagementScreen() {
           onCancelEdit={onCancelEdit}
           onSaveEdit={onSaveEdit}
         />
-      </ScrollView>
+      </View>
 
       {/* ── FAB: Invite Member ── */}
       <Pressable
         onPress={onInviteMember}
-        className="absolute right-6 z-50 flex-row items-center gap-2 rounded-full bg-brand-primary pl-5 pr-6 active:bg-brand-primary-pressed"
+        className="absolute end-6 z-50 flex-row items-center gap-2 rounded-full bg-brand-primary pe-6 ps-5 active:bg-brand-primary-pressed"
         style={{
           bottom: Math.max(insets.bottom + 24, 24),
           height: 56,
@@ -83,10 +85,10 @@ export default function FamilyManagementScreen() {
           elevation: 8,
         }}
         accessibilityRole="button"
-        accessibilityLabel="Invite Member">
+        accessibilityLabel={t('familyManagement.inviteMember', 'Invite Member')}>
         <Icon as={Plus} size={22} color="#fff" />
         <Text className="font-cairo text-[14px] font-bold leading-[20px] tracking-[0.01em] text-white">
-          Invite Member
+          {t('familyManagement.inviteMember', 'Invite Member')}
         </Text>
       </Pressable>
     </SafeAreaView>

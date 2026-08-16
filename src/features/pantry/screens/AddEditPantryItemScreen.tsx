@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   TextInput,
@@ -18,6 +18,7 @@ import { Box, Ruler, Trash2 } from 'lucide-react-native';
 import { getCategoryIconConfig } from '../components/CategorySelectorSheet';
 import { Icon } from '@/src/components/ui/icon';
 import { usePantry } from '../hooks/usePantry';
+import { useAddEditPantryItemForm } from '../hooks/useAddEditPantryItemForm';
 import { env } from '@/src/config/env';
 import * as ImagePicker from 'expo-image-picker';
 import {
@@ -37,6 +38,7 @@ import {
   FieldLabel,
 } from '../components';
 import { ProductCategoryResponse, MeasuringUnitResponse } from '@/src/types/api';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -57,7 +59,11 @@ const resolveImageUrl = (path?: string | null): string | null => {
 
 // ─── Screen Component ──────────────────────────────────────────────────────────
 
+import { useTranslation } from 'react-i18next';
+import { ScannedItem } from '../components/AIScanItemRow';
+
 export default function AddEditPantryItemScreen() {
+  const { t } = useTranslation(['pantry', 'common']);
   const router = useRouter();
   const { itemId } = useLocalSearchParams<{ itemId?: string }>();
   const isEditMode = Boolean(itemId);
@@ -75,16 +81,24 @@ export default function AddEditPantryItemScreen() {
 
   const currentItem = items.find((i) => i.id === itemId);
 
-  // ─── States ─────────────────────────────────────────────────────────────────
-  const [name, setName] = useState('');
-  const [quantity, setQuantity] = useState(1);
-  const [expireDate, setExpireDate] = useState(''); // Stores YYYY-MM-DD
-  const [selectedCategory, setSelectedCategory] = useState<ProductCategoryResponse | null>(null);
-  const [selectedUnit, setSelectedUnit] = useState<MeasuringUnitResponse | null>(null);
+  const {
+    name,
+    setName,
+    quantity,
+    setQuantity,
+    expireDate,
+    setExpireDate,
+    selectedCategory,
+    setSelectedCategory,
+    selectedUnit,
+    setSelectedUnit,
+    isFormValid,
+  } = useAddEditPantryItemForm(isEditMode, currentItem, categories, measuringUnits);
 
-  const [isCategorySheetOpen, setIsCategorySheetOpen] = useState(false);
-  const [isUnitSheetOpen, setIsUnitSheetOpen] = useState(false);
-  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const categorySheetRef = useRef<BottomSheetModal>(null);
+  const unitSheetRef = useRef<BottomSheetModal>(null);
+  const datePickerRef = useRef<BottomSheetModal>(null);
+  const imagePickerRef = useRef<BottomSheetModal>(null);
   const [deleteVisible, setDeleteVisible] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -92,8 +106,7 @@ export default function AddEditPantryItemScreen() {
   const [isScanModalVisible, setIsScanModalVisible] = useState(false);
   const [scanStatus, setScanStatus] = useState<'loading' | 'success'>('loading');
   const [isSavingScanned, setIsSavingScanned] = useState(false);
-  const [isImagePickerVisible, setIsImagePickerVisible] = useState(false);
-  const [scannedItems, setScannedItems] = useState<any[]>([]);
+  const [scannedItems, setScannedItems] = useState<ScannedItem[]>([]);
   const [notification, setNotification] = useState({
     visible: false,
     type: 'success' as 'success' | 'error',
@@ -101,27 +114,7 @@ export default function AddEditPantryItemScreen() {
     message: '',
   });
 
-  // Populate Edit Mode Details
-  useEffect(() => {
-    if (isEditMode && currentItem) {
-      setName(currentItem.name);
-      setQuantity(currentItem.quantity);
-      if (currentItem.expireDate) {
-        setExpireDate(currentItem.expireDate.split('T')[0]);
-      }
-
-      const matchedCategory = categories.find((c) => c.id === currentItem.categoryId);
-      if (matchedCategory) setSelectedCategory(matchedCategory);
-
-      const matchedUnit = measuringUnits.find((u) => u.id === currentItem.measuringUnitId);
-      if (matchedUnit) setSelectedUnit(matchedUnit);
-    }
-  }, [isEditMode, currentItem, categories, measuringUnits]);
-
   const imageUri = selectedCategory ? resolveImageUrl(selectedCategory.imagePath) : null;
-
-  const isFormValid =
-    name.trim().length > 0 && quantity > 0 && selectedCategory !== null && selectedUnit !== null;
 
   // ─── Handlers ──────────────────────────────────────────────────────────────
 
@@ -145,7 +138,10 @@ export default function AddEditPantryItemScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.back();
     } catch {
-      Alert.alert('Error', 'Failed to save item. Please try again.');
+      Alert.alert(
+        t('common:errors.requestFailed', 'Error'),
+        t('pantry:failedToSave', 'Failed to save item. Please try again.')
+      );
     }
   };
 
@@ -162,7 +158,10 @@ export default function AddEditPantryItemScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.replace('/(tabs)/pantry');
     } catch {
-      Alert.alert('Error', 'Failed to remove item. Please try again.');
+      Alert.alert(
+        t('common:errors.requestFailed', 'Error'),
+        t('pantry:failedToRemove', 'Failed to remove item. Please try again.')
+      );
     } finally {
       setIsDeleting(false);
     }
@@ -196,7 +195,7 @@ export default function AddEditPantryItemScreen() {
   };
 
   const handleScanItem = () => {
-    setIsImagePickerVisible(true);
+    imagePickerRef.current?.present();
   };
 
   const handleTakePhoto = async () => {
@@ -241,7 +240,7 @@ export default function AddEditPantryItemScreen() {
     }
   };
 
-  const handleAddScannedItems = async (itemsList: any[]) => {
+  const handleAddScannedItems = async (itemsList: Omit<ScannedItem, 'selected'>[]) => {
     setIsSavingScanned(true);
     try {
       const promises = itemsList.map((scanned) => {
@@ -306,17 +305,22 @@ export default function AddEditPantryItemScreen() {
           showsVerticalScrollIndicator={false}>
           <PantryImagePicker
             imageUri={imageUri}
-            onPickerPress={() => Alert.alert('Category Image', 'Linked to the selected category.')}
+            onPickerPress={() =>
+              Alert.alert(
+                t('categoryImageTitle', 'Category Image'),
+                t('categoryImageMsg', 'Linked to the selected category.')
+              )
+            }
             onScanPress={handleScanItem}
           />
 
           {/* Item Name */}
           <View>
-            <FieldLabel label="Item Name" required />
+            <FieldLabel label={t('itemName', 'Item Name')} required />
             <TextInput
               value={name}
               onChangeText={setName}
-              placeholder="e.g. Olive Oil"
+              placeholder={t('itemNamePlaceholder', 'e.g., Whole Milk')}
               returnKeyType="next"
               className="text-body h-14 rounded-radius-medium border border-surface-border bg-surface-surface px-spacing-16 font-cairo text-text-primary"
               placeholderTextColor={colors.text.secondary}
@@ -327,17 +331,17 @@ export default function AddEditPantryItemScreen() {
           {/* Quantity + Unit */}
           <View className="flex-row gap-spacing-8">
             <View className="flex-1">
-              <FieldLabel label="Quantity" required />
+              <FieldLabel label={t('quantity', 'Quantity')} required />
               <QuantityStepper value={quantity} onChange={setQuantity} min={0} />
             </View>
 
             <View className="flex-1">
               <FormDropdown
-                label="Unit"
+                label={t('unit', 'Unit')}
                 value={selectedUnit?.name}
-                placeholder="Select"
+                placeholder={t('select', 'Select')}
                 leadingIcon={Ruler}
-                onPress={() => setIsUnitSheetOpen(true)}
+                onPress={() => unitSheetRef.current?.present()}
                 accessibilityLabel="Select measuring unit"
               />
             </View>
@@ -345,9 +349,9 @@ export default function AddEditPantryItemScreen() {
 
           {/* Category */}
           <FormDropdown
-            label="Category"
+            label={t('category', 'Category')}
             value={selectedCategory?.name}
-            placeholder="Select a category"
+            placeholder={t('selectCategoryPrompt', 'Select a category')}
             leadingIcon={Box}
             activeIcon={
               selectedCategory ? getCategoryIconConfig(selectedCategory.name).icon : undefined
@@ -355,12 +359,15 @@ export default function AddEditPantryItemScreen() {
             activeIconColor={
               selectedCategory ? getCategoryIconConfig(selectedCategory.name).color : undefined
             }
-            onPress={() => setIsCategorySheetOpen(true)}
+            onPress={() => categorySheetRef.current?.present()}
             accessibilityLabel="Select category"
           />
 
           {/* Expiration Date */}
-          <ExpirationDateField value={expireDate} onPress={() => setIsDatePickerVisible(true)} />
+          <ExpirationDateField
+            value={expireDate}
+            onPress={() => datePickerRef.current?.present()}
+          />
 
           {/* Remove Button */}
           {isEditMode ? (
@@ -370,7 +377,9 @@ export default function AddEditPantryItemScreen() {
               accessibilityRole="button"
               accessibilityLabel="Remove item from pantry">
               <Icon as={Trash2} size={18} className="text-status-error" />
-              <Text className="text-body font-cairo font-bold text-status-error">Remove Item</Text>
+              <Text className="text-body font-cairo font-bold text-status-error">
+                {t('removeItem', 'Remove Item')}
+              </Text>
             </Pressable>
           ) : null}
         </ScrollView>
@@ -387,27 +396,20 @@ export default function AddEditPantryItemScreen() {
 
       {/* Sheets & Pickers */}
       <CategorySelectorSheet
-        visible={isCategorySheetOpen}
+        ref={categorySheetRef}
         categories={categories}
         selectedId={selectedCategory?.id}
         onSelect={setSelectedCategory}
-        onClose={() => setIsCategorySheetOpen(false)}
       />
 
       <UnitSelectorSheet
-        visible={isUnitSheetOpen}
+        ref={unitSheetRef}
         units={measuringUnits}
         selectedId={selectedUnit?.id}
         onSelect={setSelectedUnit}
-        onClose={() => setIsUnitSheetOpen(false)}
       />
 
-      <ExpirationDatePickerModal
-        visible={isDatePickerVisible}
-        value={expireDate}
-        onChange={setExpireDate}
-        onClose={() => setIsDatePickerVisible(false)}
-      />
+      <ExpirationDatePickerModal ref={datePickerRef} value={expireDate} onChange={setExpireDate} />
 
       <DeleteConfirmationModal
         visible={deleteVisible}
@@ -429,8 +431,7 @@ export default function AddEditPantryItemScreen() {
       />
 
       <ImagePickerSheet
-        visible={isImagePickerVisible}
-        onClose={() => setIsImagePickerVisible(false)}
+        ref={imagePickerRef}
         onTakePhoto={handleTakePhoto}
         onChooseFromGallery={handleChooseFromGallery}
       />

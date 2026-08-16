@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { AnimatedPressable } from '@/src/components/ui/animated-pressable';
+import { useTranslation } from 'react-i18next';
 
 interface BudgetSummaryCardsProps {
   targetAmount: number;
@@ -30,6 +31,7 @@ export function BudgetSummaryCards({
   onSetTargetPress,
   isLoading = false,
 }: BudgetSummaryCardsProps) {
+  const { t } = useTranslation('budget');
   return (
     <View className="gap-spacing-16 rounded-radius-large border border-surface-border bg-surface-surface p-spacing-16 shadow-sm">
       {/* Target & Spent Cards Row */}
@@ -37,7 +39,7 @@ export function BudgetSummaryCards({
         {/* Budget Target Card */}
         <View className="bg-surface-surfaceVariant flex-1 flex-col justify-center rounded-radius-medium border border-surface-border p-spacing-16">
           <Text className="text-caption font-cairo font-semibold text-text-secondary">
-            Budget Target
+            {t('budgetTarget', 'Budget Target')}
           </Text>
           <Text
             className="mt-spacing-8 w-full font-cairo text-xl font-bold text-brand-primary"
@@ -50,7 +52,7 @@ export function BudgetSummaryCards({
         {/* Total Spent Card */}
         <View className="bg-surface-surfaceVariant flex-1 flex-col justify-center rounded-radius-medium border border-surface-border p-spacing-16">
           <Text className="text-caption font-cairo font-semibold text-text-secondary">
-            Total Spent
+            {t('totalSpent', 'Total Spent')}
           </Text>
           <Text
             className="mt-spacing-8 w-full font-cairo text-xl font-bold text-brand-accent"
@@ -63,9 +65,9 @@ export function BudgetSummaryCards({
 
       {/* Remaining Balance Card */}
       <View className="shadow-inner flex-row items-center justify-between rounded-radius-medium bg-brand-primary p-spacing-16">
-        <View className="flex-1 pr-spacing-8">
+        <View className="flex-1 pe-spacing-8">
           <Text className="text-caption font-cairo font-semibold text-text-inverse opacity-80">
-            Remaining Balance
+            {t('remainingBalance', 'Remaining Balance')}
           </Text>
           <Text
             className={`mt-spacing-4 font-cairo text-[22px] font-bold ${
@@ -81,11 +83,13 @@ export function BudgetSummaryCards({
           onPress={onSetTargetPress}
           disabled={isLoading}
           accessibilityRole="button"
-          accessibilityLabel="Set Budget Target"
+          accessibilityLabel={t('setTarget', 'Set Budget Target')}
           pressScale={0.93}
           hapticStyle="medium"
           className="rounded-radius-full bg-brand-accent px-spacing-16 py-spacing-8 disabled:opacity-50">
-          <Text className="font-cairo text-sm font-bold text-brand-primary">Set Target</Text>
+          <Text className="font-cairo text-sm font-bold text-brand-primary">
+            {t('setTargetBtn', 'Set Target')}
+          </Text>
         </AnimatedPressable>
       </View>
     </View>
