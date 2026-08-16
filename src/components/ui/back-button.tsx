@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, PressableProps } from 'react-native';
-import { ArrowLeft } from 'lucide-react-native';
+import { ArrowLeft, ArrowRight } from 'lucide-react-native';
+import { I18nManager } from 'react-native';
 import { Icon } from '@/src/components/ui/icon';
 import { cn } from '@/src/utils';
 
@@ -25,12 +26,8 @@ export function BackButton({
       accessibilityRole="button"
       accessibilityLabel="Go back"
       {...props}>
-      {/* `directional` is the only flip. Wrapping this in a View that also applies
-          scaleX(-1) composes the two transforms, cancelling them out in RTL and leaving
-          the arrow pointing the LTR way. */}
       <Icon
-        as={ArrowLeft}
-        directional
+        as={I18nManager.isRTL ? ArrowRight : ArrowLeft}
         size={size}
         className={cn('text-text-primary', iconClassName)}
       />
