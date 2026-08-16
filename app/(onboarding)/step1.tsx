@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -15,6 +16,7 @@ import { AnimatedPressable } from '@/src/components/ui/animated-pressable';
 import * as Haptics from 'expo-haptics';
 
 export default function OnboardingStep1Screen() {
+  const { t } = useTranslation(['common']);
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { tempRegistration } = useAppSelector((state) => state.auth);
@@ -165,7 +167,9 @@ export default function OnboardingStep1Screen() {
             onPress={handleNext}
             hapticStyle="medium"
             className="h-[56px] w-full rounded-full bg-brand-primary">
-            <Text className="font-cairo text-[16px] font-bold text-white">Continue</Text>
+            <Text className="font-cairo text-[16px] font-bold text-white">
+              {t('common:buttons.continue', 'Continue')}
+            </Text>
           </Button>
         </View>
       </View>

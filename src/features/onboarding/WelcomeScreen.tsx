@@ -44,13 +44,15 @@ export const WelcomeScreen: React.FC = () => {
         {/* Actions */}
         <View className="mt-4 flex-col gap-3">
           <Button
-            onPress={() => router.push('/(auth)/register')}
+            onPress={() => router.push('/register')}
             className="h-[56px] w-full rounded-full bg-brand-primary shadow-sm">
-            <Text className="font-cairo text-[16px] font-bold text-white">{t('welcome.getStarted')}</Text>
+            <Text className="font-cairo text-[16px] font-bold text-white">
+              {t('welcome.getStarted')}
+            </Text>
           </Button>
 
           <Pressable
-            onPress={() => router.push('/(auth)/login')}
+            onPress={() => router.push('/login')}
             className="h-[56px] w-full items-center justify-center rounded-full border-2 border-brand-primary bg-surface-surface active:bg-brand-primary-container">
             <Text className="font-cairo text-[16px] font-bold text-brand-primary">
               {t('welcome.alreadyHaveAccount')}

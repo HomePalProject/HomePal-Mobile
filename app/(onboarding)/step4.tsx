@@ -105,7 +105,7 @@ export default function OnboardingStep4Screen() {
           'auth:missingCredentialsMsg',
           'Your login credentials expired from temporary session. Please restart registration.'
         ),
-        [{ text: t('common:buttons.ok', 'OK'), onPress: () => router.replace('/(auth)/register') }]
+        [{ text: t('common:buttons.ok', 'OK'), onPress: () => router.replace('/register') }]
       );
       return;
     }
@@ -133,7 +133,7 @@ export default function OnboardingStep4Screen() {
           'Please check your email for confirmation instructions to activate your account.'
         )
       );
-      router.replace('/(auth)/login');
+      router.replace('/login');
     } catch (err: any) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       toast.error(
