@@ -1,11 +1,12 @@
 import '@/global.css';
 
+import { LoadingScreen } from '@/src/components/common/LoadingScreen';
 import { AppDrawer } from '@/src/components/navigation/AppDrawer';
 import { useProtectedRoute } from '@/src/hooks/useProtectedRoute';
 import { initI18n } from '@/src/localization';
 import { ThemeProvider as HomePalThemeProvider, ThemeMode } from '@/src/providers/ThemeProvider';
 import { ToastProvider } from '@/src/providers/ToastProvider';
-import { store, useAppDispatch } from '@/src/store';
+import { store, useAppDispatch, useAppSelector } from '@/src/store';
 import { bootstrapAuth } from '@/src/store/slices/authSlice';
 import { NAV_THEME } from '@/src/theme';
 import {
@@ -23,7 +24,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'nativewind';
 import { useEffect, useState } from 'react';
-import { I18nManager, LogBox } from 'react-native';
+import { I18nManager, LogBox, StyleSheet, View } from 'react-native';
 import { Provider } from 'react-redux';
 
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
@@ -32,10 +33,13 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 export { ErrorBoundary } from 'expo-router';
 
 SplashScreen.preventAutoHideAsync();
-LogBox.ignoreAllLogs(true); // Hides the broken RTL warning toasts from the UI (warnings still show in terminal)
+LogBox.ignoreAllLogs(true);
+
+const STACK_ANIMATION = I18nManager.isRTL ? 'slide_from_left' : 'slide_from_right';
 
 function SessionBootstrapper() {
   const dispatch = useAppDispatch();
+
   useProtectedRoute();
 
   useEffect(() => {
@@ -45,11 +49,29 @@ function SessionBootstrapper() {
   return null;
 }
 
+function BootstrapOverlay() {
+  const isBootstrapped = useAppSelector((state) => state.auth.isBootstrapped);
+  const [showLoader, setShowLoader] = useState(false);
+
+  useEffect(() => {
+    if (isBootstrapped) return;
+    const timer = setTimeout(() => setShowLoader(true), 150);
+    return () => clearTimeout(timer);
+  }, [isBootstrapped]);
+
+  if (isBootstrapped || !showLoader) return null;
+
+  return (
+    <View style={StyleSheet.absoluteFill}>
+      <LoadingScreen />
+    </View>
+  );
+}
+
 export default function RootLayout() {
   const { colorScheme } = useColorScheme();
-  const [i18nInitialized, setI18nInitialized] = useState(false);
   const [initialThemeMode, setInitialThemeMode] = useState<ThemeMode>('system');
-  const [themeLoaded, setThemeLoaded] = useState(false);
+  const [shellReady, setShellReady] = useState(false);
 
   const [fontsLoaded, fontError] = useFonts({
     Cairo_400Regular,
@@ -58,9 +80,6 @@ export default function RootLayout() {
     Cairo_700Bold,
   });
 
-  // One-time bootstrap. Deliberately has no dependencies: it must run exactly once.
-  // Keying it on the OS colour scheme (as it was) re-ran the whole thing — including a
-  // redundant SecureStore read — every time the system flipped between light and dark.
   useEffect(() => {
     async function prepare() {
       try {
@@ -73,14 +92,13 @@ export default function RootLayout() {
       } catch (err) {
         console.warn('[RootLayout] Error initializing app:', err);
       } finally {
-        setI18nInitialized(true);
-        setThemeLoaded(true);
+        setShellReady(true);
       }
     }
     prepare();
   }, []);
 
-  const appIsReady = (fontsLoaded || fontError) && i18nInitialized && themeLoaded;
+  const appIsReady = (fontsLoaded || fontError) && shellReady;
 
   useEffect(() => {
     if (appIsReady) {
@@ -88,11 +106,6 @@ export default function RootLayout() {
     }
   }, [appIsReady]);
 
-  const stackAnimation = I18nManager.isRTL ? 'slide_from_left' : 'slide_from_right';
-
-  // Hold the tree until the persisted theme has been read. ThemeProvider seeds its state
-  // from `initialMode` via useState, which ignores later prop changes — so it has to
-  // mount already knowing the right value. The native splash is still up here.
   if (!appIsReady) {
     return null;
   }
@@ -110,7 +123,7 @@ export default function RootLayout() {
                   <Stack
                     screenOptions={{
                       headerShown: false,
-                      animation: stackAnimation,
+                      animation: STACK_ANIMATION,
                       contentStyle: {
                         backgroundColor: colorScheme === 'dark' ? '#121413' : '#FAF8F3',
                       },
@@ -123,6 +136,7 @@ export default function RootLayout() {
                     <Stack.Screen name="edit-profile" />
                   </Stack>
                 </AppDrawer>
+                <BootstrapOverlay />
                 <PortalHost />
               </BottomSheetModalProvider>
             </NavigationThemeProvider>
