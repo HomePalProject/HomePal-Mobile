@@ -1,98 +1,54 @@
 import React from 'react';
 import { View, ScrollView } from 'react-native';
+import { Skeleton } from '@/src/components/ui/skeleton';
 
 export function PantrySkeleton() {
   return (
-    <View className="flex-1">
-      <ScrollView
-        className="flex-1"
-        showsVerticalScrollIndicator={false}
-        contentContainerClassName="px-spacing-16 pb-spacing-24">
-        {/* Title Skeleton */}
-        <View className="pt-spacing-12">
-          <View
-            className="mb-spacing-8 h-5 w-28 rounded-radius-small"
-            style={{ backgroundColor: '#E4E1DC' }}
-          />
-
-          <View
-            className="mb-spacing-20 h-3.5 w-40 rounded-radius-small"
-            style={{ backgroundColor: '#E4E1DC' }}
-          />
-        </View>
-
-        {/* Category Pills Skeleton */}
+    <View className="flex-1 bg-surface-background">
+      <View className="py-spacing-8">
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            gap: 8,
-            paddingBottom: 20,
-          }}>
-          {[1, 2, 3, 4].map((key) => (
-            <View
+          contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}>
+          {[1, 2, 3, 4, 5].map((key) => (
+            <Skeleton
               key={key}
-              className="h-7 rounded-radius-full"
-              style={{
-                width: key === 4 ? 72 : 68,
-                backgroundColor: '#E4E1DC',
-              }}
+              className="h-9 rounded-radius-full"
+              style={{ width: key === 1 ? 50 : key % 2 === 0 ? 80 : 100 }}
             />
           ))}
         </ScrollView>
+      </View>
 
-        {/* Grid Skeleton Cards */}
-        <View className="flex-row flex-wrap justify-between gap-y-spacing-16">
-          {[1, 2, 3, 4, 5, 6].map((key) => (
-            <View
-              key={key}
-              className="p-spacing-12 w-[48%] rounded-radius-large"
-              style={{
-                backgroundColor: '#F8F7F4',
-              }}>
-              {/* Image Skeleton */}
+      <View className="flex-row items-center gap-spacing-8 px-spacing-16 py-spacing-8">
+        <Skeleton className="h-11 flex-1 rounded-radius-large" />
+        <Skeleton className="h-11 w-11 rounded-radius-full" />
+      </View>
+
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingHorizontal: 16,
+          paddingTop: 12,
+          paddingBottom: 32,
+        }}>
+        {[1, 2, 3].map((rowKey) => (
+          <View key={rowKey} className="mb-[16px] flex-row justify-between">
+            {[1, 2].map((colKey) => (
               <View
-                className="mb-spacing-12 h-28 w-full rounded-radius-medium"
-                style={{
-                  backgroundColor: '#E4E1DC',
-                }}
-              />
-
-              {/* Name Skeleton */}
-              <View
-                className="mb-spacing-8 h-4 w-3/4 rounded-radius-small"
-                style={{
-                  backgroundColor: '#E4E1DC',
-                }}
-              />
-
-              {/* Secondary text Skeleton */}
-              <View
-                className="mb-spacing-12 h-3 w-1/2 rounded-radius-small"
-                style={{
-                  backgroundColor: '#E4E1DC',
-                }}
-              />
-
-              {/* Bottom row */}
-              <View className="flex-row items-center justify-between">
-                <View
-                  className="h-6 w-16 rounded-radius-full"
-                  style={{
-                    backgroundColor: '#E4E1DC',
-                  }}
-                />
-
-                <View
-                  className="h-6 w-6 rounded-radius-full"
-                  style={{
-                    backgroundColor: '#E4E1DC',
-                  }}
-                />
+                key={`${rowKey}-${colKey}`}
+                className="w-[48%] rounded-radius-large border border-surface-border bg-surface-surface p-2 shadow-sm">
+                <Skeleton className="mb-2 h-28 w-full rounded-radius-medium" />
+                <Skeleton className="mb-2 h-4 w-3/4 rounded-radius-small" />
+                <Skeleton className="mb-2 h-3 w-1/2 rounded-radius-small" />
+                <View className="flex-row items-center justify-between">
+                  <Skeleton className="h-6 w-16 rounded-radius-full" />
+                  <Skeleton className="h-6 w-6 rounded-radius-full" />
+                </View>
               </View>
-            </View>
-          ))}
-        </View>
+            ))}
+          </View>
+        ))}
       </ScrollView>
     </View>
   );

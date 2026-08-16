@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, Text, Pressable } from 'react-native';
-import { router, Href, Stack } from 'expo-router';
 import { useAppSelector } from '@/src/store';
+import { Href, router, Stack } from 'expo-router';
+import React from 'react';
+import { Pressable, Text, View } from 'react-native';
 
 export default function HomeScreen() {
   const { fullName, family } = useAppSelector((state) => state.profile);

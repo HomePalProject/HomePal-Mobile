@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { View, Image, TouchableOpacity } from 'react-native';
 import { Text } from '@/src/components/ui/text';
 import { Offer } from '../types';
@@ -12,6 +13,7 @@ interface OfferCardProps {
 }
 
 export const OfferCard: React.FC<OfferCardProps> = ({ offer, onPress }) => {
+  const { t } = useTranslation(['offers']);
   // Format dates nicely
   const formatDate = (dateString?: string | null) => {
     if (!dateString) return '';
@@ -78,7 +80,9 @@ export const OfferCard: React.FC<OfferCardProps> = ({ offer, onPress }) => {
           <Image source={{ uri: imageUri }} className="h-full w-full" resizeMode="cover" />
         ) : (
           <View className="flex-1 items-center justify-center">
-            <Text className="font-cairo text-text-secondary opacity-50">No Image Available</Text>
+            <Text className="font-cairo text-text-secondary opacity-50">
+              {t('offers:noImageAvailable', 'No Image Available')}
+            </Text>
           </View>
         )}
       </View>

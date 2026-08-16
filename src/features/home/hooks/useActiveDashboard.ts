@@ -62,8 +62,10 @@ export function useActiveDashboard(householdData?: HouseholdDto | null): ActiveD
   }, []);
 
   useEffect(() => {
-    fetchStats();
-  }, [fetchStats]);
+    if (householdData) {
+      fetchStats();
+    }
+  }, [fetchStats, householdData]);
 
   const totalMembers = Number(householdData?.membersCount) || 1;
 

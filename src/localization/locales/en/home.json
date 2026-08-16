@@ -1,0 +1,18 @@
+{
+  "loading": "Loading dashboard...",
+  "orphan": {
+    "welcome": "Welcome to HomePal!",
+    "noHousehold": "You don't belong to any household yet",
+    "description": "Create your own household to start managing your groceries and meals, or check if you have pending invitations",
+    "createBtn": "Create a New Household",
+    "invitationsBtn": "View Pending Invitations",
+    "proTip": "Households allow you to sync shopping lists and meal plans with family or roommates in real-time."
+  },
+  "active": {
+    "goodMorning": "Good Morning, {{firstName}}!",
+    "welcomeBack": "Welcome back to your digital home hub.",
+    "primaryResidence": "Primary Residence",
+    "manager": "Manager",
+    "member": "Member"
+  }
+}

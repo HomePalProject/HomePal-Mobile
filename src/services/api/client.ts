@@ -2,6 +2,7 @@ import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'ax
 import { authStorage } from '@/src/services/storage/auth.storage';
 import { ApiResponse, ProblemDetails } from '@/src/types/api';
 import { env } from '@/src/config/env';
+import i18n from '@/src/localization/i18n';
 
 const BASE_URL = env.API_BASE_URL;
 
@@ -39,7 +40,6 @@ export const apiClient = axios.create({
   timeout: 15000,
   headers: {
     'Content-Type': 'application/json',
-    'Accept-Language': 'en-US',
   },
 });
 
@@ -65,13 +65,18 @@ const processQueue = (error: any, token: string | null = null) => {
 apiClient.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     const token = await authStorage.getAccessToken();
+    const currentLang = i18n.language || 'en';
+    if (config.headers) {
+      config.headers['Accept-Language'] = currentLang.startsWith('ar') ? 'ar-EG' : 'en-US';
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
     console.log(`[HTTP Request] ${config.method?.toUpperCase()} ${config.url}`, {
       hasToken: !!token,
       tokenPreview: token ? `${token.substring(0, 15)}...` : 'None',
+      lang: config.headers?.['Accept-Language'],
     });
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
     return config;
   },
   (error) => {
@@ -94,7 +99,7 @@ apiClient.interceptors.response.use(
 
     // Handle universal API envelope where success === false
     if (resData && typeof resData.success === 'boolean' && !resData.success) {
-      const errorMessage = resData.message || 'An error occurred while processing your request.';
+      const errorMessage = resData.message || i18n.t('common:errors.unexpectedError');
       const status = resData.status || response.status;
       console.warn(
         `[HTTP Response Success Envelope Error] ${response.config.method?.toUpperCase()} ${response.config.url}`,
@@ -157,8 +162,13 @@ apiClient.interceptors.response.use(
 
         // Call refresh endpoint directly using clean axios instance to bypass interceptors
         console.log('[HTTP Auth] Calling refresh token endpoint...');
+        const currentLang = i18n.language || 'en';
         const refreshResponse = await axios.post<ApiResponse>(`${BASE_URL}api/Auth/refresh`, {
           refreshToken,
+        }, {
+          headers: {
+            'Accept-Language': currentLang.startsWith('ar') ? 'ar-EG' : 'en-US'
+          }
         });
 
         const refreshData = refreshResponse.data;
@@ -211,7 +221,7 @@ apiClient.interceptors.response.use(
           console.log('[HTTP Auth] Dispatching unauthorized/logout callback.');
           onUnauthorizedCallback();
         }
-        return Promise.reject(new ApiError('Session expired. Please sign in again.', 401));
+        return Promise.reject(new ApiError(i18n.t('common:errors.sessionExpired'), 401));
       } finally {
         isRefreshing = false;
       }
@@ -223,7 +233,7 @@ apiClient.interceptors.response.use(
 
       // Envelope error
       if ('success' in resData && typeof resData.success === 'boolean' && !resData.success) {
-        const errorMessage = resData.message || error.message || 'Request failed';
+        const errorMessage = resData.message || error.message || i18n.t('common:errors.requestFailed');
         return Promise.reject(
           new ApiError(
             errorMessage,
@@ -237,7 +247,7 @@ apiClient.interceptors.response.use(
       // ProblemDetails error
       if ('title' in resData || 'detail' in resData) {
         const problem = resData as ProblemDetails;
-        const errorMessage = problem.detail || problem.title || error.message || 'Request failed';
+        const errorMessage = problem.detail || problem.title || error.message || i18n.t('common:errors.requestFailed');
         return Promise.reject(
           new ApiError(errorMessage, problem.status || error.response.status, problem.errors)
         );
@@ -247,8 +257,8 @@ apiClient.interceptors.response.use(
     // Generic Axios / Network error
     const fallbackMsg =
       error.message === 'Network Error'
-        ? 'Unable to connect to HomePal servers. Please check your internet connection.'
-        : error.message || 'An unexpected error occurred.';
+        ? i18n.t('common:errors.networkError')
+        : error.message || i18n.t('common:errors.unexpectedError');
 
     return Promise.reject(new ApiError(fallbackMsg, error.response?.status || 'NetworkError'));
   }

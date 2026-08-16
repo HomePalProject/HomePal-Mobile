@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { View, Text, Pressable, Animated } from 'react-native';
 import { Plus, X, ScanLine, Package } from 'lucide-react-native';
 import { Icon } from '@/src/components/ui/icon';
+import { useTranslation } from 'react-i18next';
 
 interface PantryFABProps {
   onAddPress: () => void;
@@ -9,6 +10,7 @@ interface PantryFABProps {
 }
 
 export function PantryFAB({ onAddPress, onScanPress }: PantryFABProps) {
+  const { t } = useTranslation('pantry');
   const [isOpen, setIsOpen] = useState(false);
   const animation = useRef(new Animated.Value(0)).current;
 
@@ -60,18 +62,18 @@ export function PantryFAB({ onAddPress, onScanPress }: PantryFABProps) {
   };
 
   return (
-    <View className="absolute bottom-6 right-4 items-end gap-spacing-8">
+    <View className="absolute bottom-6 end-4 items-end gap-spacing-8">
       {/* Speed-dial: Scan Items or Receipt */}
       <Animated.View style={scanItemStyle} pointerEvents={isOpen ? 'auto' : 'none'}>
         <Pressable
           onPress={handleScanPress}
           className="flex-row items-center gap-spacing-4 active:scale-95 active:opacity-80"
           accessibilityRole="button"
-          accessibilityLabel="Scan Items or Receipt">
+          accessibilityLabel={t('scanReceiptOrItems', 'Scan Items or Receipt')}>
           {/* Pill Label */}
           <View className="rounded-radius-full border border-surface-border bg-surface-surface px-spacing-16 py-spacing-8 shadow-md">
             <Text className="text-body font-cairo font-bold text-text-primary">
-              Scan Items or Receipt
+              {t('scanReceiptOrItems', 'Scan Items or Receipt')}
             </Text>
           </View>
           {/* Amber Icon Button */}
@@ -87,10 +89,12 @@ export function PantryFAB({ onAddPress, onScanPress }: PantryFABProps) {
           onPress={handleAddPress}
           className="flex-row items-center gap-spacing-4 active:scale-95 active:opacity-80"
           accessibilityRole="button"
-          accessibilityLabel="Add Item">
+          accessibilityLabel={t('addPantryItem', 'Add Item')}>
           {/* Pill Label */}
           <View className="rounded-radius-full border border-surface-border bg-surface-surface px-spacing-16 py-spacing-8 shadow-md">
-            <Text className="text-body font-cairo font-bold text-text-primary">Add Item</Text>
+            <Text className="text-body font-cairo font-bold text-text-primary">
+              {t('addPantryItem', 'Add Item')}
+            </Text>
           </View>
           {/* Green Icon Button */}
           <View className="h-12 w-12 items-center justify-center rounded-radius-full bg-brand-primary shadow-md">

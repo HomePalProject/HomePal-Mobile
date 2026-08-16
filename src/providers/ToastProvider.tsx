@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useState, useRef, useEffect, ReactNode } from 'react';
-import { View, Animated, Pressable, Platform, Dimensions } from 'react-native';
+import { View, Animated, Pressable, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react-native';
+import { useColorScheme } from 'nativewind';
+import { lightColors, darkColors } from '@/src/theme/colors';
 
 export type ToastType = 'success' | 'error' | 'info';
 
@@ -42,6 +44,8 @@ export const toast = {
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const insets = useSafeAreaInsets();
+  const { colorScheme } = useColorScheme();
+  const themeColors = colorScheme === 'dark' ? darkColors : lightColors;
   const [toastData, setToastData] = useState<ToastOptions | null>(null);
   const slideAnim = useRef(new Animated.Value(-150)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
@@ -113,7 +117,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       case 'success':
         return {
           bg: 'bg-surface-surface',
-          border: 'border-status-success',
+          borderColor: themeColors.brand.success,
           iconColor: 'text-status-success',
           icon: CheckCircle2,
           accentBg: 'bg-status-success/15',
@@ -121,7 +125,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       case 'error':
         return {
           bg: 'bg-surface-surface',
-          border: 'border-status-error',
+          borderColor: themeColors.brand.error,
           iconColor: 'text-status-error',
           icon: AlertCircle,
           accentBg: 'bg-status-error/15',
@@ -130,7 +134,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       default:
         return {
           bg: 'bg-surface-surface',
-          border: 'border-status-info',
+          borderColor: themeColors.brand.info,
           iconColor: 'text-status-info',
           icon: Info,
           accentBg: 'bg-status-info/15',
@@ -157,10 +161,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           className="pointer-events-box-none">
           <Pressable
             onPress={hideToast}
-            className={`flex-row items-center gap-3.5 rounded-2xl border-2 ${currentStyle.border} ${currentStyle.bg} p-4 shadow-lg shadow-black/15`}>
+            style={{ borderColor: currentStyle.borderColor, borderWidth: 2 }}
+            className={`flex-row items-center gap-3.5 rounded-2xl ${currentStyle.bg} p-4 shadow-lg shadow-black/15`}>
             <View
               className={`h-10 w-10 items-center justify-center rounded-full ${currentStyle.accentBg}`}>
-              <Icon as={currentStyle.icon} size={22} className={currentStyle.iconColor} />
+              <Icon as={currentStyle.icon} size={22} color={currentStyle.borderColor} />
             </View>
             <View className="flex-1 flex-col justify-center">
               <Text className="font-cairo text-[15px] font-bold leading-tight text-text-primary">

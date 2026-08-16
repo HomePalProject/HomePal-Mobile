@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, TextInput, Pressable } from 'react-native';
-import { Search, SlidersHorizontal } from 'lucide-react-native';
+import { View, Pressable } from 'react-native';
+import { SlidersHorizontal } from 'lucide-react-native';
 import { Icon } from '@/src/components/ui/icon';
+import { SearchBar } from '@/src/components/ui/search-bar';
+import { useTranslation } from 'react-i18next';
 
 interface PantrySearchBarProps {
   value?: string;
@@ -9,20 +11,18 @@ interface PantrySearchBarProps {
   onFilterPress?: () => void;
 }
 
-export function PantrySearchBar({ value, onChangeText, onFilterPress }: PantrySearchBarProps) {
+export function PantrySearchBar({ value = '', onChangeText, onFilterPress }: PantrySearchBarProps) {
+  const { t } = useTranslation('pantry');
+
   return (
     <View className="flex-row items-center gap-spacing-8 bg-surface-background px-spacing-16 py-spacing-8">
       {/* Search Input Box */}
-      <View className="bg-surface-surfaceVariant flex-1 flex-row items-center gap-spacing-8 rounded-radius-full border border-surface-border px-spacing-16 py-spacing-8">
-        <Icon as={Search} size={18} className="text-text-secondary" />
-        <TextInput
-          value={value}
-          onChangeText={onChangeText}
-          placeholder="Search pantry..."
-          placeholderTextColor="#6D6862"
-          className="text-body flex-1 p-0 font-cairo text-text-primary"
-        />
-      </View>
+      <SearchBar
+        value={value}
+        onChangeText={onChangeText || (() => {})}
+        placeholder={t('searchPlaceholder')}
+        containerClassName="flex-1"
+      />
 
       {/* Filter Button */}
       <Pressable

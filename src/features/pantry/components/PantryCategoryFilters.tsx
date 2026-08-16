@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { ProductCategoryResponse } from '@/src/types/api';
+import { useTranslation } from 'react-i18next';
 
 interface PantryCategoryFiltersProps {
   categories: ProductCategoryResponse[];
@@ -13,6 +14,8 @@ export function PantryCategoryFilters({
   selectedCategoryId,
   onSelectCategory,
 }: PantryCategoryFiltersProps) {
+  const { t } = useTranslation('pantry');
+
   return (
     <View className="bg-surface-background py-spacing-8">
       <ScrollView
@@ -30,7 +33,7 @@ export function PantryCategoryFilters({
             className={`text-body font-cairo font-bold ${
               selectedCategoryId === 'all' ? 'text-text-inverse' : 'text-text-secondary'
             }`}>
-            All
+            {t('filterAll')}
           </Text>
         </Pressable>
 

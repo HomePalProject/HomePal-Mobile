@@ -1,18 +1,21 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, Image, ScrollView, Modal } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
-import { SvgIcon } from '../../../components/ui/SvgIcon';
-import * as ImagePicker from 'expo-image-picker';
-import { useAppSelector, useAppDispatch } from '@/src/store';
+import { useAppDispatch, useAppSelector } from '@/src/store';
 import {
+  deleteProfileImage,
   saveProfile,
   uploadProfileImage,
-  deleteProfileImage,
 } from '@/src/store/slices/profileSlice';
+import * as ImagePicker from 'expo-image-picker';
+import { router } from 'expo-router';
+import React, { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Image, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DatePicker } from '../../../components/ui';
+import { SvgIcon } from '../../../components/ui/SvgIcon';
 import { Gender } from '../../../types/api';
-
+import { useProfileAvatar } from '../hooks/useProfileAvatar';
+import { AppBottomSheet } from '@/src/components/ui/bottom-sheet';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 export default function EditProfileScreen() {
   const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.profile);
@@ -22,64 +25,41 @@ export default function EditProfileScreen() {
   const [birthDate, setBirthDate] = useState<string>(profile.birthDate || '');
   const [governorate, setGovernorate] = useState(profile.governorate);
   const [city, setCity] = useState(profile.city);
-  const [profileImageUri, setProfileImageUri] = useState<string | null>(profile.profileImageUri);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [permissionModalVisible, setPermissionModalVisible] = useState(false);
+
+  const {
+    profileImageUri,
+    setProfileImageUri,
+    photoBottomSheetRef,
+    permissionModalVisible,
+    setPermissionModalVisible,
+    pickImage,
+    takePhoto,
+    handleImageSelection,
+  } = useProfileAvatar(profile.profileImageUri);
+
   const [isSaving, setIsSaving] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
-    if (!result.canceled) {
-      setProfileImageUri(result.assets[0].uri);
-    }
-  };
-
-  const takePhoto = async () => {
-    const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== 'granted') {
-      setPermissionModalVisible(true);
-      return;
-    }
-    const result = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      allowsMultipleSelection: false,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
-    if (!result.canceled) {
-      setProfileImageUri(result.assets[0].uri);
-    }
-  };
-
-  const handleImageSelection = () => {
-    setModalVisible(true);
-  };
+  const { t } = useTranslation('profile');
 
   const handleSave = async () => {
     if (!fullName.trim()) {
-      setErrorMsg('Full Name is required');
+      setErrorMsg(t('edit.validation.fullNameReq'));
       return;
     }
     if (!governorate.trim()) {
-      setErrorMsg('Governorate is required');
+      setErrorMsg(t('edit.validation.governorateReq'));
       return;
     }
     if (gender === null || gender === undefined) {
-      setErrorMsg('Gender is required');
+      setErrorMsg(t('edit.validation.genderReq'));
       return;
     }
     if (!city.trim()) {
-      setErrorMsg('City is required');
+      setErrorMsg(t('edit.validation.cityReq'));
       return;
     }
     if (!birthDate) {
-      setErrorMsg('Birth Date is required');
+      setErrorMsg(t('edit.validation.birthDateReq'));
       return;
     }
 
@@ -112,7 +92,7 @@ export default function EditProfileScreen() {
       router.back();
     } catch (err: any) {
       console.error('[EditProfileScreen] Error saving profile:', err, err.errors);
-      let msg = err.message || 'Failed to save changes. Please try again.';
+      let msg = err.message || t('edit.validation.saveFailed');
       if (err.errors && typeof err.errors === 'object') {
         // Handle ASP.NET Core ProblemDetails errors object
         const errorDetails = Object.entries(err.errors)
@@ -131,9 +111,13 @@ export default function EditProfileScreen() {
     }
   };
 
+  const insets = useSafeAreaInsets();
+
   return (
-    <SafeAreaView className="flex-1 bg-surface-background">
-      <View className="h-16 flex-row items-center justify-between border-b border-surface-divider bg-surface-surface px-spacing-16 shadow-sm">
+    <SafeAreaView className="flex-1 bg-surface-background" edges={['bottom', 'left', 'right']}>
+      <View
+        className="flex-row items-center justify-between border-b border-surface-divider bg-surface-surface px-spacing-16 pb-3 shadow-sm"
+        style={{ paddingTop: Math.max(insets.top, 16) + 12 }}>
         <Pressable
           onPress={() => router.back()}
           className="bg-surface-surfaceVariant/60 h-10 w-10 items-center justify-center rounded-radius-full">
@@ -141,10 +125,10 @@ export default function EditProfileScreen() {
         </Pressable>
 
         <Text className="text-bodyLarge font-cairo font-bold text-text-primary">
-          Account Settings
+          {t('edit.title')}
         </Text>
 
-        <View className="border-brand-primary/20 h-10 w-10 items-center justify-center overflow-hidden rounded-radius-full border bg-brand-primary-container">
+        <View className="h-10 w-10 items-center justify-center overflow-hidden rounded-radius-full border border-brand-primary/20 bg-brand-primary-container">
           {profileImageUri ? (
             <Image source={{ uri: profileImageUri }} className="h-full w-full" />
           ) : (
@@ -156,7 +140,7 @@ export default function EditProfileScreen() {
       </View>
 
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 48 }}>
-        <View className="bg-brand-primary-container/10 relative items-center overflow-hidden border-b border-surface-divider py-spacing-32">
+        <View className="relative items-center overflow-hidden border-b border-surface-divider bg-brand-primary-container/10 py-spacing-32">
           <View className="absolute inset-0 items-center justify-center">
             <SvgIcon name="profile-glow-edit" width={390} height={228} />
           </View>
@@ -173,7 +157,7 @@ export default function EditProfileScreen() {
             </View>
             <Pressable
               onPress={handleImageSelection}
-              className="active:bg-brand-primaryPressed absolute bottom-0 right-0 h-10 w-10 items-center justify-center rounded-radius-full border-2 border-surface-surface bg-brand-primary shadow-lg">
+              className="active:bg-brand-primaryPressed absolute bottom-0 end-0 h-10 w-10 items-center justify-center rounded-radius-full border-2 border-surface-surface bg-brand-primary shadow-lg">
               <SvgIcon name="camera" width={18} height={15} fill="#FAF8F3" />
             </Pressable>
           </View>
@@ -182,30 +166,30 @@ export default function EditProfileScreen() {
             onPress={handleImageSelection}
             className="z-[1] mt-spacing-16 active:opacity-75">
             <Text className="text-body font-cairo font-bold text-brand-primary">
-              Change Profile Photo
+              {t('edit.changePhoto')}
             </Text>
           </Pressable>
         </View>
 
         <View className="gap-y-spacing-24 px-spacing-16 pt-spacing-24">
           <View className="w-full">
-            <Text className="text-caption mb-spacing-8 ml-spacing-8 font-cairo font-bold text-text-secondary">
-              Full Name
+            <Text className="text-caption mb-spacing-8 ms-spacing-8 font-cairo font-bold text-text-secondary">
+              {t('edit.fullName')}
             </Text>
-            <View className="border-surface-border/40 h-12 justify-center rounded-radius-medium border bg-surface-surface px-spacing-16 shadow-sm">
+            <View className="h-12 justify-center rounded-radius-medium border border-surface-border/40 bg-surface-surface px-spacing-16 shadow-sm">
               <TextInput
                 value={fullName}
                 onChangeText={setFullName}
                 className="text-body h-full w-full font-cairo text-text-primary"
-                placeholder="Full Name"
+                placeholder={t('edit.fullNamePlaceholder')}
                 placeholderTextColor="#A8A29B"
               />
             </View>
           </View>
 
           <View className="w-full">
-            <Text className="text-caption mb-spacing-8 ml-spacing-8 font-cairo font-bold text-text-secondary">
-              Gender
+            <Text className="text-caption mb-spacing-8 ms-spacing-8 font-cairo font-bold text-text-secondary">
+              {t('edit.gender')}
             </Text>
             <View className="flex-row gap-x-spacing-16">
               <Pressable
@@ -219,7 +203,7 @@ export default function EditProfileScreen() {
                   className={`text-body font-cairo ${
                     gender === Gender.Male ? 'font-bold text-brand-primary' : 'text-text-secondary'
                   }`}>
-                  Male
+                  {t('edit.male')}
                 </Text>
               </Pressable>
 
@@ -236,7 +220,7 @@ export default function EditProfileScreen() {
                       ? 'font-bold text-brand-primary'
                       : 'text-text-secondary'
                   }`}>
-                  Female
+                  {t('edit.female')}
                 </Text>
               </Pressable>
             </View>
@@ -244,56 +228,56 @@ export default function EditProfileScreen() {
 
           <View className="w-full">
             <DatePicker
-              label="Birth Date"
+              label={t('edit.birthDate')}
               value={birthDate}
               onChange={setBirthDate}
-              placeholder="Select birth date"
+              placeholder={t('edit.selectBirthDate')}
             />
           </View>
 
           <View className="w-full flex-row justify-between">
             <View className="w-[48%]">
-              <Text className="text-caption mb-spacing-8 ml-spacing-8 font-cairo font-bold text-text-secondary">
-                Governorate
+              <Text className="text-caption mb-spacing-8 ms-spacing-8 font-cairo font-bold text-text-secondary">
+                {t('edit.governorate')}
               </Text>
-              <View className="border-surface-border/40 h-12 justify-center rounded-radius-medium border bg-surface-surface px-spacing-16 shadow-sm">
+              <View className="h-12 justify-center rounded-radius-medium border border-surface-border/40 bg-surface-surface px-spacing-16 shadow-sm">
                 <TextInput
                   value={governorate}
                   onChangeText={setGovernorate}
                   className="text-body h-full w-full font-cairo text-text-primary"
-                  placeholder="Governorate"
+                  placeholder={t('edit.governoratePlaceholder')}
                   placeholderTextColor="#A8A29B"
                 />
               </View>
             </View>
 
             <View className="w-[48%]">
-              <Text className="text-caption mb-spacing-8 ml-spacing-8 font-cairo font-bold text-text-secondary">
-                City
+              <Text className="text-caption mb-spacing-8 ms-spacing-8 font-cairo font-bold text-text-secondary">
+                {t('edit.city')}
               </Text>
-              <View className="border-surface-border/40 h-12 justify-center rounded-radius-medium border bg-surface-surface px-spacing-16 shadow-sm">
+              <View className="h-12 justify-center rounded-radius-medium border border-surface-border/40 bg-surface-surface px-spacing-16 shadow-sm">
                 <TextInput
                   value={city}
                   onChangeText={setCity}
                   className="text-body h-full w-full font-cairo text-text-primary"
-                  placeholder="City"
+                  placeholder={t('edit.cityPlaceholder')}
                   placeholderTextColor="#A8A29B"
                 />
               </View>
             </View>
           </View>
 
-          <Pressable className="active:bg-surface-surfaceVariant/40 border-surface-border/40 mt-spacing-8 flex-row items-center justify-between rounded-radius-large border bg-surface-surface p-spacing-16 shadow-sm">
+          <Pressable className="active:bg-surface-surfaceVariant/40 mt-spacing-8 flex-row items-center justify-between rounded-radius-large border border-surface-border/40 bg-surface-surface p-spacing-16 shadow-sm">
             <View className="flex-row items-center gap-spacing-16">
               <View className="h-10 w-10 items-center justify-center rounded-radius-full bg-brand-primary-container">
                 <SvgIcon name="security-shield" width={18} height={20} fill="#356859" />
               </View>
               <View>
                 <Text className="text-body font-cairo font-bold text-text-primary">
-                  Account Security
+                  {t('edit.securityTitle')}
                 </Text>
                 <Text className="text-caption font-cairo text-text-secondary">
-                  Two-factor authentication active
+                  {t('edit.securityDesc')}
                 </Text>
               </View>
             </View>
@@ -316,81 +300,79 @@ export default function EditProfileScreen() {
               }`}
               onPress={handleSave}>
               <Text className="text-bodyLarge font-cairo font-bold text-text-inverse">
-                {isSaving ? 'Saving Changes...' : 'Save Changes'}
+                {isSaving ? t('edit.saving') : t('edit.save')}
               </Text>
             </Pressable>
 
             <Pressable
               disabled={isSaving}
-              className={`active:bg-brand-accent-container/80 h-14 items-center justify-center rounded-radius-full bg-brand-accent-container shadow-sm ${
+              className={`h-14 items-center justify-center rounded-radius-full bg-brand-accent-container shadow-sm active:bg-brand-accent-container/80 ${
                 isSaving ? 'opacity-50' : ''
               }`}
               onPress={() => router.back()}>
-              <Text className="text-bodyLarge font-cairo font-bold text-text-primary">Cancel</Text>
+              <Text className="text-bodyLarge font-cairo font-bold text-text-primary">
+                {t('cancel')}
+              </Text>
             </Pressable>
           </View>
         </View>
       </ScrollView>
 
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}>
-        <Pressable
-          className="flex-1 justify-end bg-black/40"
-          onPress={() => setModalVisible(false)}>
-          <Pressable className="rounded-t-radius-large border-t border-surface-border bg-surface-surface p-spacing-24 shadow-lg">
-            <Text className="text-bodyLarge mb-spacing-8 text-center font-cairo font-bold text-text-primary">
-              Profile Photo
-            </Text>
-            <Text className="text-caption mb-spacing-24 text-center font-cairo text-text-secondary">
-              Choose an option to update your photo
-            </Text>
+      <AppBottomSheet ref={photoBottomSheetRef} enablePanDownToClose>
+        <View className="px-spacing-24 pb-spacing-24">
+          <Text className="text-bodyLarge mb-spacing-8 text-center font-cairo font-bold text-text-primary">
+            {t('edit.photoModal.title')}
+          </Text>
+          <Text className="text-caption mb-spacing-24 text-center font-cairo text-text-secondary">
+            {t('edit.photoModal.subtitle')}
+          </Text>
 
-            <View className="gap-y-spacing-16">
+          <View className="gap-y-spacing-16">
+            <Pressable
+              onPress={() => {
+                photoBottomSheetRef.current?.dismiss();
+                takePhoto();
+              }}
+              className="active:bg-brand-primaryPressed h-12 flex-row items-center justify-center rounded-radius-medium bg-brand-primary">
+              <Text className="text-body font-cairo font-bold text-text-inverse">
+                {t('edit.photoModal.takePhoto')}
+              </Text>
+            </Pressable>
+
+            <Pressable
+              onPress={() => {
+                photoBottomSheetRef.current?.dismiss();
+                pickImage();
+              }}
+              className="h-12 flex-row items-center justify-center rounded-radius-medium border border-brand-primary/20 bg-brand-primary-container active:opacity-90">
+              <Text className="text-body font-cairo font-bold text-brand-primary">
+                {t('edit.photoModal.chooseLibrary')}
+              </Text>
+            </Pressable>
+
+            {profileImageUri && (
               <Pressable
                 onPress={() => {
-                  setModalVisible(false);
-                  takePhoto();
+                  photoBottomSheetRef.current?.dismiss();
+                  setProfileImageUri(null);
                 }}
-                className="active:bg-brand-primaryPressed h-12 flex-row items-center justify-center rounded-radius-medium bg-brand-primary">
-                <Text className="text-body font-cairo font-bold text-text-inverse">Take Photo</Text>
-              </Pressable>
-
-              <Pressable
-                onPress={() => {
-                  setModalVisible(false);
-                  pickImage();
-                }}
-                className="border-brand-primary/20 h-12 flex-row items-center justify-center rounded-radius-medium border bg-brand-primary-container active:opacity-90">
-                <Text className="text-body font-cairo font-bold text-brand-primary">
-                  Choose from Library
+                className="h-12 flex-row items-center justify-center rounded-radius-medium border border-brand-error/20 bg-brand-error/10 active:opacity-90">
+                <Text className="text-body font-cairo font-bold text-brand-error">
+                  {t('edit.photoModal.removePhoto')}
                 </Text>
               </Pressable>
+            )}
 
-              {profileImageUri && (
-                <Pressable
-                  onPress={() => {
-                    setModalVisible(false);
-                    setProfileImageUri(null);
-                  }}
-                  className="h-12 flex-row items-center justify-center rounded-radius-medium border border-brand-error/20 bg-brand-error/10 active:opacity-90">
-                  <Text className="text-body font-cairo font-bold text-brand-error">
-                    Remove Current Photo
-                  </Text>
-                </Pressable>
-              )}
-
-              <Pressable
-                onPress={() => setModalVisible(false)}
-                className="bg-surface-surfaceVariant active:bg-surface-border/40 h-12 flex-row items-center justify-center rounded-radius-medium">
-                <Text className="text-body font-cairo font-bold text-text-secondary">Cancel</Text>
-              </Pressable>
-            </View>
-          </Pressable>
-        </Pressable>
-      </Modal>
+            <Pressable
+              onPress={() => photoBottomSheetRef.current?.dismiss()}
+              className="bg-surface-surfaceVariant h-12 flex-row items-center justify-center rounded-radius-medium active:bg-surface-border/40">
+              <Text className="text-body font-cairo font-bold text-text-secondary">
+                {t('cancel')}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      </AppBottomSheet>
 
       <Modal
         animationType="fade"
@@ -404,17 +386,18 @@ export default function EditProfileScreen() {
             className="w-full max-w-[320px] rounded-radius-large border border-surface-border bg-surface-surface p-spacing-24 shadow-xl"
             onPress={(e) => e.stopPropagation()}>
             <Text className="text-bodyLarge mb-spacing-8 text-center font-cairo font-bold text-text-primary">
-              Camera Permission Required
+              {t('edit.cameraPermission.title')}
             </Text>
             <Text className="text-bodySmall mb-spacing-24 text-center font-cairo leading-[20px] text-text-secondary">
-              You need to grant camera permission to take a photo. Please enable camera access in
-              your device settings.
+              {t('edit.cameraPermission.message')}
             </Text>
 
             <Pressable
               onPress={() => setPermissionModalVisible(false)}
               className="h-12 flex-row items-center justify-center rounded-radius-medium bg-brand-primary shadow-sm active:bg-brand-primary-pressed">
-              <Text className="text-body font-cairo font-bold text-text-inverse">OK</Text>
+              <Text className="text-body font-cairo font-bold text-text-inverse">
+                {t('edit.cameraPermission.ok')}
+              </Text>
             </Pressable>
           </Pressable>
         </Pressable>

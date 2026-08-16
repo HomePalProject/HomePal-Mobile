@@ -1,26 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import { View, ScrollView, Pressable, RefreshControl, FlatList, Dimensions } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text } from '@/src/components/ui/text';
 import { TabHeader } from '@/src/components/navigation/TabHeader';
-import { useRouter } from 'expo-router';
+import { Text } from '@/src/components/ui/text';
 import * as Haptics from 'expo-haptics';
+import { Href, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Pressable, RefreshControl, ScrollView, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useAppDispatch, useAppSelector } from '@/src/store';
 import {
+  deleteMealPlan,
   fetchLatestMealPlan,
   fetchMealPlansHistory,
-  deleteMealPlan,
 } from '@/src/store/slices/mealPlansSlice';
+import { useTranslation } from 'react-i18next';
 
+import { DeleteConfirmationModal } from '@/src/features/meals/components/DeleteConfirmationModal';
 import { LatestMealPlanCard } from '@/src/features/meals/components/LatestMealPlanCard';
 import { MealPlanHistoryCard } from '@/src/features/meals/components/MealPlanHistoryCard';
-import { MealPlansPagination } from '@/src/features/meals/components/MealPlansPagination';
-import { DeleteConfirmationModal } from '@/src/features/meals/components/DeleteConfirmationModal';
 
 export default function MealsScreen() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const { t } = useTranslation('meals');
 
   const { latestPlan, historyPlans, isLoadingLatest, isLoadingHistory, isDeleting, pagination } =
     useAppSelector((state) => state.mealPlans);
@@ -78,7 +79,7 @@ export default function MealsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-surface-background" edges={['left', 'right']}>
-      <TabHeader title="Meal Plans" />
+      <TabHeader title={t('tabTitle')} />
 
       <ScrollView
         className="flex-1 px-4 pt-4"
@@ -102,7 +103,7 @@ export default function MealsScreen() {
         <View className="mb-8 rounded-2xl border border-surface-border bg-surface-background p-4 shadow-sm dark:border-text-secondary">
           <View className="mb-4 flex-row items-center justify-between px-1">
             <Text className="font-cairo text-lg font-bold text-brand-primary">
-              Meal Plans History
+              {t('historyTitle')}
             </Text>
             <Pressable
               onPress={() => {
@@ -111,7 +112,7 @@ export default function MealsScreen() {
               }}
               disabled={isLoadingHistory}
               className={`rounded-full bg-brand-amber-300 px-4 py-1.5 ${isLoadingHistory ? 'opacity-50' : ''}`}>
-              <Text className="font-cairo text-sm font-bold text-text-primary">Refresh</Text>
+              <Text className="font-cairo text-sm font-bold text-text-primary">{t('refresh')}</Text>
             </Pressable>
           </View>
 
@@ -130,7 +131,7 @@ export default function MealsScreen() {
           ) : (
             <View className="py-8">
               <Text className="text-center font-cairo text-base font-semibold text-text-secondary">
-                No meal plans found.
+                {t('noHistory')}
               </Text>
             </View>
           )}

@@ -7,6 +7,7 @@ import { Icon } from '@/src/components/ui/icon';
 import { cn } from '@/src/utils';
 import { useAppSelector } from '@/src/store';
 import { HouseholdMember, HouseholdStats } from '../hooks/useActiveDashboard';
+import { useTranslation } from 'react-i18next';
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 export interface ActiveStateViewProps {
@@ -64,6 +65,7 @@ interface MemberRowProps {
 }
 
 function MemberRow({ member }: MemberRowProps) {
+  const { t } = useTranslation('home');
   const isManager = member.role === 'Household Manager';
   return (
     <View
@@ -109,13 +111,13 @@ function MemberRow({ member }: MemberRowProps) {
       {isManager ? (
         <View className="rounded-full bg-brand-primary px-4 py-1.5">
           <Text className="font-cairo text-[12px] font-bold leading-[16px] tracking-[0.02em] text-white">
-            Manager
+            {t('active.manager')}
           </Text>
         </View>
       ) : (
         <View className="rounded-full border border-surface-border px-4 py-1.5">
           <Text className="font-cairo text-[12px] font-semibold leading-[16px] tracking-[0.02em] text-text-secondary">
-            Member
+            {t('active.member')}
           </Text>
         </View>
       )}
@@ -134,6 +136,7 @@ export function ActiveStateView({
 }: ActiveStateViewProps) {
   const { isManager } = useAppSelector((state) => state.profile);
   const router = useRouter();
+  const { t } = useTranslation('home');
 
   return (
     <View className="flex-1">
@@ -159,10 +162,10 @@ export function ActiveStateView({
         <View style={{ gap: 16 }}>
           <View style={{ gap: 4 }}>
             <Text className="font-cairo text-[28px] font-bold leading-[36px] text-text-primary">
-              Good Morning, {firstName}!
+              {t('active.goodMorning', { firstName })}
             </Text>
             <Text className="font-cairo text-[16px] leading-[24px] text-text-secondary">
-              Welcome back to your digital home hub.
+              {t('active.welcomeBack')}
             </Text>
           </View>
 
@@ -179,7 +182,7 @@ export function ActiveStateView({
             }}>
             {/* Atmospheric glow orb */}
             <View
-              className="absolute -right-8 -top-8 h-32 w-32 rounded-full opacity-10"
+              className="absolute -end-8 -top-8 h-32 w-32 rounded-full opacity-10"
               style={{ backgroundColor: '#9cd1bf' }}
             />
 
@@ -189,7 +192,7 @@ export function ActiveStateView({
                 <View className="flex-row items-center gap-2">
                   <Icon as={Home} size={18} color="#9cd1bf" />
                   <Text className="font-cairo text-[12px] font-bold uppercase tracking-[0.12em] text-slate-100">
-                    Primary Residence
+                    {t('active.primaryResidence')}
                   </Text>
                 </View>
 

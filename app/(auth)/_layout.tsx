@@ -10,8 +10,9 @@ export default function AuthLayout() {
         contentStyle: { backgroundColor: 'transparent' },
       }}>
       <Stack.Screen name="welcome" />
-      <Stack.Screen name="login" />
-      <Stack.Screen name="register" />
+      {/* login + register live in the (forms) group; they share a layout and swap
+          in place rather than pushing over one another. */}
+      <Stack.Screen name="(forms)" />
       <Stack.Screen name="forgot-password" />
     </Stack>
   );

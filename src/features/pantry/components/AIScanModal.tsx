@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, ScrollView, Modal, KeyboardAvoidingView, Platform } from 'react-native';
 import { ProductCategoryResponse, MeasuringUnitResponse } from '@/src/types/api';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { CategorySelectorSheet } from './CategorySelectorSheet';
 import { UnitSelectorSheet } from './UnitSelectorSheet';
 import { ExpirationDatePickerModal } from './ExpirationDatePickerModal';
@@ -32,7 +33,9 @@ export function AIScanModal({
 }: AIScanModalProps) {
   const [items, setItems] = useState<ScannedItem[]>([]);
   const [activeItemIndex, setActiveItemIndex] = useState<number | null>(null);
-  const [activePicker, setActivePicker] = useState<'category' | 'unit' | 'date' | null>(null);
+  const categorySheetRef = useRef<BottomSheetModal>(null);
+  const unitSheetRef = useRef<BottomSheetModal>(null);
+  const datePickerRef = useRef<BottomSheetModal>(null);
 
   useEffect(() => {
     if (visible && status === 'success') {
@@ -44,7 +47,9 @@ export function AIScanModal({
     if (!visible) {
       setItems([]);
       setActiveItemIndex(null);
-      setActivePicker(null);
+      categorySheetRef.current?.dismiss();
+      unitSheetRef.current?.dismiss();
+      datePickerRef.current?.dismiss();
     }
   }, [visible]);
 
@@ -79,7 +84,9 @@ export function AIScanModal({
 
   const handleOpenPicker = (idx: number, picker: 'category' | 'unit' | 'date') => {
     setActiveItemIndex(idx);
-    setActivePicker(picker);
+    const target =
+      picker === 'category' ? categorySheetRef : picker === 'unit' ? unitSheetRef : datePickerRef;
+    target.current?.present();
   };
 
   return (
@@ -133,35 +140,23 @@ export function AIScanModal({
       {activeItemIndex !== null && (
         <>
           <CategorySelectorSheet
-            visible={activePicker === 'category'}
+            ref={categorySheetRef}
             categories={categories}
             selectedId={items[activeItemIndex]?.categoryId}
-            onSelect={(cat) => {
-              handleUpdateField(activeItemIndex, 'categoryId', cat.id);
-              setActivePicker(null);
-            }}
-            onClose={() => setActivePicker(null)}
+            onSelect={(cat) => handleUpdateField(activeItemIndex, 'categoryId', cat.id)}
           />
 
           <UnitSelectorSheet
-            visible={activePicker === 'unit'}
+            ref={unitSheetRef}
             units={measuringUnits}
             selectedId={items[activeItemIndex]?.measuringUnitId}
-            onSelect={(ut) => {
-              handleUpdateField(activeItemIndex, 'measuringUnitId', ut.id);
-              setActivePicker(null);
-            }}
-            onClose={() => setActivePicker(null)}
+            onSelect={(ut) => handleUpdateField(activeItemIndex, 'measuringUnitId', ut.id)}
           />
 
           <ExpirationDatePickerModal
-            visible={activePicker === 'date'}
+            ref={datePickerRef}
             value={items[activeItemIndex]?.expireDate || ''}
-            onChange={(dt) => {
-              handleUpdateField(activeItemIndex, 'expireDate', dt);
-              setActivePicker(null);
-            }}
-            onClose={() => setActivePicker(null)}
+            onChange={(dt) => handleUpdateField(activeItemIndex, 'expireDate', dt)}
           />
         </>
       )}

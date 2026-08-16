@@ -20,7 +20,10 @@ import {
   UpdateShoppingListItemRequest,
 } from '@/src/types/api';
 
+import { useTranslation } from 'react-i18next';
+
 export default function ShoppingListScreen() {
+  const { t } = useTranslation(['shopping', 'common']);
   const {
     items,
     categories,
@@ -65,21 +68,28 @@ export default function ShoppingListScreen() {
   };
 
   const handleDeleteItem = (id: string) => {
-    Alert.alert('Delete Item', 'Are you sure you want to remove this item?', [
-      { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await removeItem(id);
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-          } catch {
-            Alert.alert('Error', 'Failed to delete item.');
-          }
+    Alert.alert(
+      t('pantry:deleteModalTitle', 'Delete Item'),
+      t('shopping:deleteMessage', 'Are you sure you want to remove this item?'),
+      [
+        { text: t('common:buttons.cancel', 'Cancel'), style: 'cancel' },
+        {
+          text: t('common:buttons.delete', 'Delete'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await removeItem(id);
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            } catch {
+              Alert.alert(
+                t('common:errors.requestFailed', 'Error'),
+                t('shopping:failedToDelete', 'Failed to delete item.')
+              );
+            }
+          },
         },
-      },
-    ]);
+      ]
+    );
   };
 
   const handleToggleItem = async (id: string) => {
@@ -105,7 +115,10 @@ export default function ShoppingListScreen() {
       setIsModalVisible(false);
       setEditingItem(null);
     } catch {
-      Alert.alert('Error', 'Failed to save item. Please try again.');
+      Alert.alert(
+        t('common:errors.requestFailed', 'Error'),
+        t('shopping:failedToSave', 'Failed to save item. Please try again.')
+      );
     } finally {
       setIsSaving(false);
     }
@@ -114,23 +127,29 @@ export default function ShoppingListScreen() {
   const handleClearPurchased = () => {
     const purchasedCount = items.filter((i) => i.isPurchased).length;
     if (purchasedCount === 0) {
-      Alert.alert('No Purchased Items', 'There are no purchased items to clear.');
+      Alert.alert(
+        t('shopping:noPurchasedItems', 'No Purchased Items'),
+        t('shopping:noPurchasedMessage', 'There are no purchased items to clear.')
+      );
       return;
     }
     Alert.alert(
-      'Clear Purchased',
-      `Remove ${purchasedCount} purchased item${purchasedCount > 1 ? 's' : ''} from your list?`,
+      t('shopping:clearPurchasedConfirm', 'Clear Purchased Items'),
+      t('shopping:clearPurchasedMessage', 'Are you sure you want to remove all purchased items from your list?'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common:buttons.cancel', 'Cancel'), style: 'cancel' },
         {
-          text: 'Clear',
+          text: t('shopping:clearPurchased', 'Clear'),
           style: 'destructive',
           onPress: async () => {
             try {
               await clearPurchased();
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             } catch {
-              Alert.alert('Error', 'Failed to clear purchased items.');
+              Alert.alert(
+                t('common:errors.requestFailed', 'Error'),
+                t('shopping:failedToClear', 'Failed to clear purchased items.')
+              );
             }
           },
         },
@@ -167,7 +186,7 @@ export default function ShoppingListScreen() {
               loadShoppingList();
             }}
             className="py-spacing-12 rounded-radius-medium bg-brand-primary px-spacing-24 active:opacity-80">
-            <Text className="font-cairo text-base font-bold text-text-inverse">Retry</Text>
+            <Text className="font-cairo text-base font-bold text-text-inverse">{t('shopping:retry')}</Text>
           </Pressable>
         </View>
       );
@@ -211,7 +230,7 @@ export default function ShoppingListScreen() {
           <View className="mb-spacing-16 flex-row items-center gap-spacing-8">
             <Icon as={ShoppingCart} size={20} className="text-brand-primary" />
             <Text className="font-cairo text-lg font-black text-brand-primary">
-              Household Shopping List
+              {t('shopping:title')}
             </Text>
           </View>
 
@@ -221,14 +240,14 @@ export default function ShoppingListScreen() {
               onPress={handleAddItem}
               className="flex-row items-center gap-spacing-4 rounded-full bg-brand-primary px-spacing-16 py-spacing-8 shadow-sm active:opacity-80">
               <Icon as={Plus} size={14} className="text-white" />
-              <Text className="font-cairo text-sm font-bold text-text-inverse">Add Item</Text>
+              <Text className="font-cairo text-sm font-bold text-text-inverse">{t('shopping:addItem')}</Text>
             </Pressable>
             {items.some((i) => i.isPurchased) && (
               <Pressable
                 onPress={handleClearPurchased}
                 className="flex-row items-center rounded-full bg-brand-accent-container px-spacing-16 py-spacing-8 shadow-sm active:opacity-80">
                 <Text className="font-cairo text-sm font-bold text-brand-accent">
-                  Clear Purchased
+                  {t('shopping:clearPurchasedBtn')}
                 </Text>
               </Pressable>
             )}

@@ -15,7 +15,7 @@ import { pantryService } from '@/src/services';
  */
 export function usePantry() {
   const dispatch = useAppDispatch();
-  const { items, categories, measuringUnits, isLoading, error } = useAppSelector(
+  const { items, categories, measuringUnits, isLoading, isInitialized, error } = useAppSelector(
     (state) => state.pantry
   );
 
@@ -57,6 +57,7 @@ export function usePantry() {
     categories,
     measuringUnits,
     isLoading,
+    isInitialized,
     error,
     loadPantry,
     addItem,

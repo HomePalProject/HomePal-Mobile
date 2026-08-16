@@ -1,33 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, Pressable, Image, Alert, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import * as Haptics from 'expo-haptics';
+import { Icon } from '@/src/components/ui/icon';
+import { useTranslation } from 'react-i18next';
+import { env } from '@/src/config/env';
 import { colors } from '@/src/theme/colors';
+import * as Haptics from 'expo-haptics';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import {
-  Calendar,
+  AlertTriangle,
   Box,
+  Calendar,
+  Check,
   Clock,
   History,
-  Trash2,
-  Check,
-  AlertTriangle,
   Minus,
-  Plus,
   Package,
+  Plus,
+  Trash2,
 } from 'lucide-react-native';
-import { Icon } from '@/src/components/ui/icon';
-import { usePantry } from '../hooks/usePantry';
-import { env } from '@/src/config/env';
-import { getCategoryIconConfig } from '../components/CategorySelectorSheet';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
-  PantryItemDetailsHeader,
   DeleteConfirmationModal,
-  PantryNotificationModal,
   PantryDetailRow,
+  PantryItemDetailsHeader,
+  PantryNotificationModal,
 } from '../components';
-import { PantryItemResponse } from '@/src/types/api';
+import { getCategoryIconConfig } from '../components/CategorySelectorSheet';
+import { usePantry } from '../hooks/usePantry';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -70,6 +70,7 @@ const formatPrettyDate = (dateStr?: string | null): string => {
 // ─── Screen Component ──────────────────────────────────────────────────────────
 
 export default function PantryItemDetailsScreen() {
+  const { t } = useTranslation(['pantry']);
   const router = useRouter();
   const { itemId } = useLocalSearchParams<{ itemId: string }>();
 
@@ -246,8 +247,10 @@ export default function PantryItemDetailsScreen() {
         {/* Unified Card Details List */}
         <View className="gap-spacing-16 rounded-[20px] border border-surface-border bg-surface-surface p-spacing-16 shadow-sm">
           {/* Interactive Stepper Details Row */}
-          <View className="border-surface-border/50 flex-row items-center justify-between border-b pb-spacing-16">
-            <Text className="font-cairo text-lg font-bold text-text-primary">Quantity</Text>
+          <View className="flex-row items-center justify-between border-b border-surface-border/50 pb-spacing-16">
+            <Text className="font-cairo text-lg font-bold text-text-primary">
+              {t('pantry:quantity', 'Quantity')}
+            </Text>
 
             {/* Stepper controls */}
             <View className="bg-surface-surfaceVariant px-spacing-12 my-2 flex-row items-center gap-spacing-16 rounded-radius-full border border-surface-border px-2 py-1.5">
@@ -324,7 +327,9 @@ export default function PantryItemDetailsScreen() {
           accessibilityRole="button"
           accessibilityLabel="Delete item">
           <Icon as={Trash2} size={18} className="text-status-error" />
-          <Text className="text-body font-cairo font-bold text-status-error">Delete Item</Text>
+          <Text className="text-body font-cairo font-bold text-status-error">
+            {t('pantry:deleteItem', 'Delete Item')}
+          </Text>
         </Pressable>
       </View>
 
