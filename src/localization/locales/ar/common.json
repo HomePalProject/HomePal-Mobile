@@ -16,7 +16,9 @@
     "search": "بحث",
     "loading": "جاري التحميل...",
     "saveChanges": "حفظ التغييرات",
-    "ok": "موافق"
+    "ok": "موافق",
+    "previous": "السابق",
+    "continue": "متابعة"
   },
   "labels": {
     "searchPlaceholder": "بحث...",

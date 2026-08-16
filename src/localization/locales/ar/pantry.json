@@ -84,5 +84,10 @@
   "aiAutoCategorizeTitle": "تصنيف تلقائي",
   "searchUnits": "البحث عن وحدات...",
   "searchCategories": "البحث عن فئات...",
-  "noCategoriesFound": "لا توجد فئات"
+  "noCategoriesFound": "لا توجد فئات",
+  "deleteItem": "حذف العنصر",
+  "selectYear": "اختر السنة",
+  "selectMonth": "اختر الشهر",
+  "selectExpirationDate": "اختر تاريخ الانتهاء",
+  "backToDaysView": "العودة لعرض الأيام"
 }

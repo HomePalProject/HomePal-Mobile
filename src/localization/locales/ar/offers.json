@@ -24,5 +24,7 @@
     "endOfStock": "حتى نفاذ الكمية",
     "description": "الوصف",
     "addToShoppingList": "أضف إلى قائمة التسوق"
-  }
+  },
+  "noImageAvailable": "لا توجد صورة متاحة",
+  "offerIdMissing": "معرّف العرض مفقود"
 }

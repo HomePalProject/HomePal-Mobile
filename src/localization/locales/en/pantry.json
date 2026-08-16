@@ -84,5 +84,10 @@
   "aiAutoCategorizeTitle": "Auto-Categorize",
   "searchUnits": "Search units...",
   "searchCategories": "Search categories...",
-  "noCategoriesFound": "No categories found"
+  "noCategoriesFound": "No categories found",
+  "deleteItem": "Delete Item",
+  "selectYear": "Select Year",
+  "selectMonth": "Select Month",
+  "selectExpirationDate": "Select Expiration Date",
+  "backToDaysView": "Back to Days View"
 }

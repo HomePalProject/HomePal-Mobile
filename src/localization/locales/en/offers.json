@@ -24,5 +24,7 @@
     "endOfStock": "End of Stock",
     "description": "Description",
     "addToShoppingList": "Add to Shopping List"
-  }
+  },
+  "noImageAvailable": "No Image Available",
+  "offerIdMissing": "Offer ID is missing"
 }

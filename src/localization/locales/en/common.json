@@ -16,7 +16,9 @@
     "search": "Search",
     "loading": "Loading...",
     "saveChanges": "Save Changes",
-    "ok": "OK"
+    "ok": "OK",
+    "previous": "Previous",
+    "continue": "Continue"
   },
   "labels": {
     "searchPlaceholder": "Search...",
