@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextInput, View, TextInputProps, Pressable } from 'react-native';
+import { TextInput, View, TextInputProps, Pressable, I18nManager } from 'react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { Eye, EyeOff } from 'lucide-react-native';
@@ -62,6 +62,7 @@ export const TextField = React.forwardRef<TextInput, TextFieldProps>(
               error && 'border-brand-error focus:border-brand-error',
               inputClassName
             )}
+            style={[{ textAlign: I18nManager.isRTL ? 'right' : 'left' }, props.style]}
             {...props}
           />
 

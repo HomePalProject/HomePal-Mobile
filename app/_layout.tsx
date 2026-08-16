@@ -23,7 +23,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'nativewind';
 import { useEffect, useState } from 'react';
-import { I18nManager, LogBox, useColorScheme as useRNColorScheme } from 'react-native';
+import { I18nManager, LogBox } from 'react-native';
 import { Provider } from 'react-redux';
 
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
@@ -46,11 +46,10 @@ function SessionBootstrapper() {
 }
 
 export default function RootLayout() {
-  const { colorScheme, setColorScheme } = useColorScheme();
+  const { colorScheme } = useColorScheme();
   const [i18nInitialized, setI18nInitialized] = useState(false);
   const [initialThemeMode, setInitialThemeMode] = useState<ThemeMode>('system');
   const [themeLoaded, setThemeLoaded] = useState(false);
-  const rawSystemScheme = useRNColorScheme();
 
   const [fontsLoaded, fontError] = useFonts({
     Cairo_400Regular,
@@ -59,23 +58,18 @@ export default function RootLayout() {
     Cairo_700Bold,
   });
 
+  // One-time bootstrap. Deliberately has no dependencies: it must run exactly once.
+  // Keying it on the OS colour scheme (as it was) re-ran the whole thing — including a
+  // redundant SecureStore read — every time the system flipped between light and dark.
   useEffect(() => {
     async function prepare() {
       try {
         await initI18n();
+
         const savedTheme = await SecureStore.getItemAsync('HOMEPAL_THEME_MODE');
-
-        let resolvedInitial: ThemeMode = 'system';
         if (savedTheme === 'light' || savedTheme === 'dark' || savedTheme === 'system') {
-          resolvedInitial = savedTheme as ThemeMode;
+          setInitialThemeMode(savedTheme);
         }
-
-        setInitialThemeMode(resolvedInitial);
-
-        // Pre-sync nativewind color scheme here so it's ready before render
-        const systemColorScheme = rawSystemScheme === 'dark' ? 'dark' : 'light';
-        const initialResolved = resolvedInitial === 'system' ? systemColorScheme : resolvedInitial;
-        setColorScheme(initialResolved as 'light' | 'dark');
       } catch (err) {
         console.warn('[RootLayout] Error initializing app:', err);
       } finally {
@@ -84,7 +78,7 @@ export default function RootLayout() {
       }
     }
     prepare();
-  }, [rawSystemScheme, setColorScheme]);
+  }, []);
 
   const appIsReady = (fontsLoaded || fontError) && i18nInitialized && themeLoaded;
 
@@ -95,6 +89,13 @@ export default function RootLayout() {
   }, [appIsReady]);
 
   const stackAnimation = I18nManager.isRTL ? 'slide_from_left' : 'slide_from_right';
+
+  // Hold the tree until the persisted theme has been read. ThemeProvider seeds its state
+  // from `initialMode` via useState, which ignores later prop changes — so it has to
+  // mount already knowing the right value. The native splash is still up here.
+  if (!appIsReady) {
+    return null;
+  }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

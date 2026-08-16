@@ -4,7 +4,7 @@ import type { LucideIcon, LucideProps } from 'lucide-react-native';
 import { cssInterop } from 'nativewind';
 import * as React from 'react';
 
-import { I18nManager } from 'react-native';
+import { I18nManager, View } from 'react-native';
 
 type IconProps = LucideProps & {
   as: LucideIcon;
@@ -13,9 +13,16 @@ type IconProps = LucideProps & {
 
 function IconImpl({ as: IconComponent, directional, style, ...props }: IconProps) {
   const isRTL = I18nManager.isRTL;
-  const directionalStyle = directional && isRTL ? { transform: [{ scaleX: -1 }] } : {};
 
-  return <IconComponent style={[style, directionalStyle]} {...props} />;
+  if (directional && isRTL) {
+    return (
+      <View style={{ transform: [{ scaleX: -1 }] }}>
+        <IconComponent style={style} {...props} />
+      </View>
+    );
+  }
+
+  return <IconComponent style={style} {...props} />;
 }
 
 cssInterop(IconImpl, {

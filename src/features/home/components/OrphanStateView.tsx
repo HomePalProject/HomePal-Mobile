@@ -2,6 +2,7 @@ import { Button } from '@/src/components/ui/button';
 import { Icon } from '@/src/components/ui/icon';
 import { ProTipCard } from '@/src/components/ui/pro-tip-card';
 import { Text } from '@/src/components/ui/text';
+import { toast } from '@/src/providers/ToastProvider';
 import { Home, Mail, PlusCircle } from 'lucide-react-native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -44,7 +45,7 @@ export function OrphanStateView({
       </View>
 
       <View className="items-center gap-spacing-24 py-spacing-16">
-        <View className="border-brand-primary/10 bg-brand-primary-container/20 h-32 w-32 items-center justify-center rounded-radius-full border">
+        <View className="h-32 w-32 items-center justify-center rounded-radius-full border border-brand-primary/10 bg-brand-primary-container/20">
           <Icon as={Home} size={48} className="text-brand-primary" />
         </View>
 
