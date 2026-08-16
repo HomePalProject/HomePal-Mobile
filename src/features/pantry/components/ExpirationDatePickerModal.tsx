@@ -4,6 +4,8 @@ import { X, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { Icon } from '@/src/components/ui/icon';
 import { AppBottomSheet } from '@/src/components/ui/bottom-sheet';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { useTranslation } from 'react-i18next';
+import { getMonthNames, getWeekdayNames } from '@/src/utils/dateNames';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -21,23 +23,6 @@ export const formatDisplayDate = (dateStr: string): string => {
   }
   return dateStr;
 };
-
-const MONTHS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
-
-const DAYS_OF_WEEK = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
 const CURRENT_YEAR = new Date().getFullYear();
 // Generate years from current year up to 10 years in the future (expiration date)
@@ -57,7 +42,10 @@ export const ExpirationDatePickerModal = forwardRef<
   BottomSheetModal,
   ExpirationDatePickerModalProps
 >(({ value, onChange, onClose }, ref) => {
+  const { t, i18n } = useTranslation('pantry');
   const [mode, setMode] = useState<'calendar' | 'years' | 'months'>('calendar');
+  const MONTHS = getMonthNames(i18n.language);
+  const DAYS_OF_WEEK = getWeekdayNames(i18n.language);
 
   const dismiss = () => {
     if (ref && typeof ref === 'object') {
@@ -126,10 +114,10 @@ export const ExpirationDatePickerModal = forwardRef<
         <View className="flex-row items-center justify-between border-b border-surface-border pb-4">
           <Text className="font-cairo text-[18px] font-bold text-text-primary">
             {mode === 'years'
-              ? 'Select Year'
+              ? t('selectYear', 'Select Year')
               : mode === 'months'
-                ? 'Select Month'
-                : 'Select Expiration Date'}
+                ? t('selectMonth', 'Select Month')
+                : t('selectExpirationDate', 'Select Expiration Date')}
           </Text>
           <Pressable
             onPress={dismiss}
@@ -283,7 +271,7 @@ export const ExpirationDatePickerModal = forwardRef<
             onPress={() => setMode('calendar')}
             className="bg-surface-surfaceVariant mt-2 w-full items-center justify-center rounded-full py-3">
             <Text className="font-cairo text-[14px] font-bold text-text-primary">
-              Back to Days View
+              {t('backToDaysView', 'Back to Days View')}
             </Text>
           </Pressable>
         )}

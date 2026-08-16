@@ -47,22 +47,11 @@ export function ThemeProvider({ children, initialMode = 'system' }: ThemeProvide
     setColorScheme(resolvedMode);
   }, [resolvedMode, setColorScheme]);
 
-  useEffect(() => {
-    // Load saved theme preference on mount
-    const loadSavedTheme = async () => {
-      try {
-        const saved = await SecureStore.getItemAsync(THEME_STORAGE_KEY);
-        if (saved === 'light' || saved === 'dark' || saved === 'system') {
-          setModeState(saved);
-        } else {
-          setModeState('system');
-        }
-      } catch (error) {
-        console.error('Failed to load theme preference from storage:', error);
-      }
-    };
-    loadSavedTheme();
-  }, []);
+  // No load-on-mount here by design. The root layout reads the persisted mode before
+  // this provider is mounted and passes it as `initialMode`, so reading it again here
+  // would be a duplicate SecureStore hit — and would resolve *after* first paint, which
+  // is what caused the theme to flash from system to the saved value on cold start.
+  // Writing stays here (handleSetMode) so the provider remains the only writer.
 
   const handleSetMode = useCallback(async (newMode: ThemeMode) => {
     setModeState(newMode);
