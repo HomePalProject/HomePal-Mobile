@@ -120,8 +120,8 @@ export default function OnboardingStep4Screen() {
           confirmPassword: tempRegistration.confirmPassword || tempRegistration.password,
           gender: tempRegistration.gender ?? Gender.Male,
           birthDate: tempRegistration.birthDate || '2000-01-01',
-          governorate: tempRegistration.governorate || 'Cairo',
-          city: tempRegistration.city || 'Nasr City',
+          governorateId: tempRegistration.governorateId || undefined,
+          cityId: tempRegistration.cityId || undefined,
         })
       ).unwrap();
 

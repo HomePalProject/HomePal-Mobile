@@ -42,10 +42,10 @@ export function ThemeProvider({ children, initialMode = 'system' }: ThemeProvide
 
   const currentTheme = resolvedMode === 'dark' ? darkTheme : defaultTheme;
 
-  // Let NativeWind handle the actual color scheme string ('system' | 'light' | 'dark')
+  // Force NativeWind's color scheme to match the exact resolved mode to fix system sync issues
   useEffect(() => {
-    setColorScheme(mode);
-  }, [mode, setColorScheme]);
+    setColorScheme(mode === 'system' ? systemColorScheme : mode);
+  }, [mode, systemColorScheme, setColorScheme]);
 
   // No load-on-mount here by design. The root layout reads the persisted mode before
   // this provider is mounted and passes it as `initialMode`, so reading it again here

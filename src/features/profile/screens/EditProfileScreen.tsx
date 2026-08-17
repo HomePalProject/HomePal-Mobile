@@ -6,16 +6,20 @@ import {
 } from '@/src/store/slices/profileSlice';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DatePicker } from '../../../components/ui';
 import { SvgIcon } from '../../../components/ui/SvgIcon';
+import { Icon } from '@/src/components/ui/icon';
+import { ArrowLeft } from 'lucide-react-native';
 import { Gender } from '../../../types/api';
 import { useProfileAvatar } from '../hooks/useProfileAvatar';
 import { AppBottomSheet } from '@/src/components/ui/bottom-sheet';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { LocationSelectorModal } from '@/src/components/ui/LocationSelectorModal';
+
 export default function EditProfileScreen() {
   const dispatch = useAppDispatch();
   const profile = useAppSelector((state) => state.profile);
@@ -23,8 +27,35 @@ export default function EditProfileScreen() {
   const [fullName, setFullName] = useState(profile.fullName);
   const [gender, setGender] = useState<Gender | null>(profile.gender);
   const [birthDate, setBirthDate] = useState<string>(profile.birthDate || '');
+  const [governorateId, setGovernorateId] = useState(profile.governorateId);
   const [governorate, setGovernorate] = useState(profile.governorate);
+  const [cityId, setCityId] = useState(profile.cityId);
   const [city, setCity] = useState(profile.city);
+  const [selectorType, setSelectorType] = useState<'governorate' | 'city'>('governorate');
+  const [isSelectorVisible, setIsSelectorVisible] = useState(false);
+
+  useEffect(() => {
+    // If we have IDs but no names (e.g. backend doesn't populate the string names in getMe), fetch them.
+    const fetchNames = async () => {
+      try {
+        if (profile.governorateId && !profile.governorate) {
+          const { locationsService } = await import('@/src/services/api/locations.service');
+          const govs = await locationsService.getGovernorates();
+          const foundGov = govs.find((g) => g.id === profile.governorateId);
+          if (foundGov) setGovernorate(foundGov.name);
+        }
+        if (profile.cityId && !profile.city) {
+          const { locationsService } = await import('@/src/services/api/locations.service');
+          const cities = await locationsService.getCities(profile.governorateId);
+          const foundCity = cities.find((c) => c.id === profile.cityId);
+          if (foundCity) setCity(foundCity.name);
+        }
+      } catch (err) {
+        console.warn('Failed to fetch location names for profile', err);
+      }
+    };
+    fetchNames();
+  }, [profile.governorateId, profile.governorate, profile.cityId, profile.city]);
 
   const {
     profileImageUri,
@@ -46,16 +77,16 @@ export default function EditProfileScreen() {
       setErrorMsg(t('edit.validation.fullNameReq'));
       return;
     }
-    if (!governorate.trim()) {
-      setErrorMsg(t('edit.validation.governorateReq'));
+    if (!governorateId) {
+      setErrorMsg(t('edit.validation.governorateReq', 'Please select a governorate'));
       return;
     }
     if (gender === null || gender === undefined) {
-      setErrorMsg(t('edit.validation.genderReq'));
+      setErrorMsg(t('edit.validation.genderReq', 'Please select your gender'));
       return;
     }
-    if (!city.trim()) {
-      setErrorMsg(t('edit.validation.cityReq'));
+    if (!cityId) {
+      setErrorMsg(t('edit.validation.cityReq', 'Please select a city'));
       return;
     }
     if (!birthDate) {
@@ -73,8 +104,8 @@ export default function EditProfileScreen() {
           fullName: fullName.trim(),
           gender,
           birthDate: birthDate ? birthDate.split('T')[0] : null,
-          governorate: governorate.trim(),
-          city: city.trim(),
+          governorateId: governorateId!,
+          cityId: cityId!,
         })
       ).unwrap();
 
@@ -121,7 +152,7 @@ export default function EditProfileScreen() {
         <Pressable
           onPress={() => router.back()}
           className="bg-surface-surfaceVariant/60 h-10 w-10 items-center justify-center rounded-radius-full">
-          <SvgIcon name="arrow-left" width={16} height={16} fill="#2D2A26" />
+          <Icon as={ArrowLeft} size={20} className="text-text-primary" />
         </Pressable>
 
         <Text className="text-bodyLarge font-cairo font-bold text-text-primary">
@@ -240,30 +271,34 @@ export default function EditProfileScreen() {
               <Text className="text-caption mb-spacing-8 ms-spacing-8 font-cairo font-bold text-text-secondary">
                 {t('edit.governorate')}
               </Text>
-              <View className="h-12 justify-center rounded-radius-medium border border-surface-border/40 bg-surface-surface px-spacing-16 shadow-sm">
-                <TextInput
-                  value={governorate}
-                  onChangeText={setGovernorate}
-                  className="text-body h-full w-full font-cairo text-text-primary"
-                  placeholder={t('edit.governoratePlaceholder')}
-                  placeholderTextColor="#A8A29B"
-                />
-              </View>
+              <Pressable
+                onPress={() => {
+                  setSelectorType('governorate');
+                  setIsSelectorVisible(true);
+                }}
+                className="h-12 justify-center rounded-radius-medium border border-surface-border/40 bg-surface-surface px-spacing-16 shadow-sm">
+                <Text
+                  className={`text-body font-cairo ${governorate ? 'text-text-primary' : 'text-[#A8A29B]'}`}>
+                  {governorate || t('edit.governoratePlaceholder', 'Select Governorate')}
+                </Text>
+              </Pressable>
             </View>
 
             <View className="w-[48%]">
               <Text className="text-caption mb-spacing-8 ms-spacing-8 font-cairo font-bold text-text-secondary">
                 {t('edit.city')}
               </Text>
-              <View className="h-12 justify-center rounded-radius-medium border border-surface-border/40 bg-surface-surface px-spacing-16 shadow-sm">
-                <TextInput
-                  value={city}
-                  onChangeText={setCity}
-                  className="text-body h-full w-full font-cairo text-text-primary"
-                  placeholder={t('edit.cityPlaceholder')}
-                  placeholderTextColor="#A8A29B"
-                />
-              </View>
+              <Pressable
+                onPress={() => {
+                  setSelectorType('city');
+                  setIsSelectorVisible(true);
+                }}
+                className="h-12 justify-center rounded-radius-medium border border-surface-border/40 bg-surface-surface px-spacing-16 shadow-sm">
+                <Text
+                  className={`text-body font-cairo ${city ? 'text-text-primary' : 'text-[#A8A29B]'}`}>
+                  {city || t('edit.cityPlaceholder', 'Select City')}
+                </Text>
+              </Pressable>
             </View>
           </View>
 
@@ -374,34 +409,47 @@ export default function EditProfileScreen() {
         </View>
       </AppBottomSheet>
 
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={permissionModalVisible}
-        onRequestClose={() => setPermissionModalVisible(false)}>
-        <Pressable
-          className="flex-1 items-center justify-center bg-black/50 px-spacing-24"
-          onPress={() => setPermissionModalVisible(false)}>
-          <Pressable
-            className="w-full max-w-[320px] rounded-radius-large border border-surface-border bg-surface-surface p-spacing-24 shadow-xl"
-            onPress={(e) => e.stopPropagation()}>
-            <Text className="text-bodyLarge mb-spacing-8 text-center font-cairo font-bold text-text-primary">
-              {t('edit.cameraPermission.title')}
+      {/* Permission Modal */}
+      <Modal visible={permissionModalVisible} transparent animationType="fade">
+        <View className="flex-1 items-center justify-center bg-black/50 px-spacing-24">
+          <View className="w-full rounded-3xl bg-surface-surface p-spacing-24">
+            <Text className="mb-spacing-12 text-center font-cairo text-lg font-bold text-text-primary">
+              {t('edit.permissionRequired')}
             </Text>
-            <Text className="text-bodySmall mb-spacing-24 text-center font-cairo leading-[20px] text-text-secondary">
-              {t('edit.cameraPermission.message')}
+            <Text className="mb-spacing-24 text-center font-cairo text-base text-text-secondary">
+              {t('edit.permissionMessage')}
             </Text>
-
             <Pressable
               onPress={() => setPermissionModalVisible(false)}
-              className="h-12 flex-row items-center justify-center rounded-radius-medium bg-brand-primary shadow-sm active:bg-brand-primary-pressed">
-              <Text className="text-body font-cairo font-bold text-text-inverse">
-                {t('edit.cameraPermission.ok')}
-              </Text>
+              className="py-spacing-12 items-center justify-center rounded-radius-full bg-brand-primary">
+              <Text className="font-cairo text-sm font-bold text-text-inverse">{t('edit.ok')}</Text>
             </Pressable>
-          </Pressable>
-        </Pressable>
+          </View>
+        </View>
       </Modal>
+
+      {/* Location Selector Modal */}
+      <LocationSelectorModal
+        visible={isSelectorVisible}
+        onClose={() => setIsSelectorVisible(false)}
+        type={selectorType}
+        governorateId={governorateId}
+        selectedId={selectorType === 'governorate' ? governorateId : cityId}
+        onSelect={(id, name) => {
+          if (selectorType === 'governorate') {
+            setGovernorateId(id);
+            setGovernorate(name);
+            // Reset city when governorate changes
+            if (governorateId !== id) {
+              setCityId(null);
+              setCity('');
+            }
+          } else {
+            setCityId(id);
+            setCity(name);
+          }
+        }}
+      />
     </SafeAreaView>
   );
 }

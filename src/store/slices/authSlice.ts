@@ -12,7 +12,8 @@ interface AuthState {
   isLoading: boolean;
   isBootstrapped: boolean;
   error: string | null;
-  tempRegistration: Partial<RegisterRequest> | null;
+  tempRegistration:
+    (Partial<RegisterRequest> & { governorateName?: string; cityName?: string }) | null;
   onboardingData: Record<string, any> | null;
 }
 
@@ -78,8 +79,8 @@ export const bootstrapAuth = createAsyncThunk('auth/bootstrap', async (_, { reje
  * Save temporary registration data to state and storage
  */
 export const saveTempRegistration = createAsyncThunk<
-  Partial<RegisterRequest>,
-  Partial<RegisterRequest>,
+  Partial<RegisterRequest> & { governorateName?: string; cityName?: string },
+  Partial<RegisterRequest> & { governorateName?: string; cityName?: string },
   { state: RootState }
 >('auth/saveTempReg', async (payload, { getState }) => {
   const currentState = getState().auth.tempRegistration || {};

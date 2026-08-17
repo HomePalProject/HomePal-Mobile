@@ -91,21 +91,8 @@ export const onboardingStep1Schema = z.object({
  * Onboarding Step 2 schema — Location & Region.
  */
 export const onboardingStep2Schema = z.object({
-  governorate: z
-    .string()
-    .min(2, 'Please select or enter a valid governorate name (at least 2 letters)')
-    .regex(/^[\p{L}\s.-]+$/u, 'Governorate can only contain letters and spaces')
-    .refine((val) => (val.match(/\p{L}/gu) || []).length >= 2, {
-      message: 'Governorate name must contain at least 2 alphabetical letters',
-    }),
-  city: z
-    .string()
-    .min(2, 'Please enter your city or district (at least 2 letters)')
-    .regex(/^[\p{L}0-9\s.,-]+$/u, 'City can only contain letters, numbers, and spaces')
-    .refine((val) => (val.match(/\p{L}/gu) || []).length >= 2, {
-      message:
-        'City or district name must contain at least 2 alphabetical letters (e.g., Nasr City, Maadi)',
-    }),
+  governorateId: z.string().uuid('Please select a valid governorate'),
+  cityId: z.string().uuid('Please select a valid city'),
 });
 
 /**

@@ -27,8 +27,10 @@ export interface UserProfile {
   username: string;
   email: string;
   birthDate: string | null;
-  governorate: string;
-  city: string;
+  governorateId?: string;
+  governorate?: string;
+  cityId?: string;
+  city?: string;
   isActive?: boolean;
   isProfileComplete?: boolean;
   emailConfirmed?: boolean;
@@ -78,8 +80,8 @@ export interface RegisterRequest {
   password: string;
   confirmPassword: string;
   birthDate?: string | null;
-  governorate?: string;
-  city?: string;
+  governorateId?: string;
+  cityId?: string;
 }
 
 export interface LoginRequest {
@@ -125,8 +127,8 @@ export interface UpdateProfileRequest {
   fullName: string;
   gender?: Gender | null;
   birthDate?: string | null;
-  governorate: string;
-  city: string;
+  governorateId: string;
+  cityId: string;
 }
 
 // --- Household API Schemas ---
@@ -134,22 +136,24 @@ export interface UpdateProfileRequest {
 export interface CreateHouseholdRequest {
   name: string;
   address?: string | null;
-  governorate?: string | null;
-  city?: string | null;
+  governorateId?: string | null;
+  cityId?: string | null;
 }
 
 export interface UpdateHouseholdRequest {
   name: string;
   address?: string | null;
-  governorate?: string | null;
-  city?: string | null;
+  governorateId?: string | null;
+  cityId?: string | null;
 }
 
 export interface HouseholdDto {
   id: string;
   name: string;
   address?: string;
+  governorateId?: string;
   governorate?: string;
+  cityId?: string;
   city?: string;
   createdAt?: string;
   [key: string]: any;
@@ -360,4 +364,17 @@ export interface UpdateMealPlanRequest {
   endDate: string;
   totalEstimatedCost: number;
   planData: string;
+}
+
+// --- Locations API Schemas ---
+
+export interface GovernorateResponse {
+  id: string;
+  name: string;
+}
+
+export interface CityResponse {
+  id: string;
+  name: string;
+  governorateId: string;
 }

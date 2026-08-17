@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, ScrollView, Pressable, Image, TextInput, I18nManager } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -10,6 +10,7 @@ import { BackButton } from '@/src/components/ui/back-button';
 import { cn } from '@/src/utils';
 import { CreateHouseholdForm } from '../hooks/useCreateHousehold';
 import { useTranslation } from 'react-i18next';
+import { LocationSelectorModal } from '@/src/components/ui/LocationSelectorModal';
 
 export interface CreateHouseholdScreenProps {
   formData: CreateHouseholdForm;
@@ -71,16 +72,61 @@ function FormField({
         returnKeyType={returnKeyType}
         editable={editable}
         className={cn(
-          'bg-surface-variant h-[52px] w-full rounded-xl border px-4 font-cairo text-[16px] text-text-primary',
+          'h-[52px] w-full rounded-xl border bg-surface-surface-variant px-4 font-cairo text-[16px] text-text-primary',
           error ? 'border-brand-error' : 'border-surface-border/60',
-          'focus:border-2 focus:border-brand-primary'
+          !editable && 'opacity-50'
         )}
       />
+      {error && <Text className="mt-1 font-cairo text-[12px] text-brand-error">{error}</Text>}
+    </View>
+  );
+}
 
-      {/* Error message */}
-      {error ? (
-        <Text className="font-cairo text-[12px] font-medium text-brand-error">{error}</Text>
-      ) : null}
+interface PressableFieldProps {
+  label: string;
+  required?: boolean;
+  placeholder: string;
+  value: string;
+  onPress: () => void;
+  error?: string;
+  editable?: boolean;
+}
+
+function PressableField({
+  label,
+  required,
+  placeholder,
+  value,
+  onPress,
+  error,
+  editable = true,
+}: PressableFieldProps) {
+  return (
+    <View style={{ gap: 6 }}>
+      {/* Label */}
+      <Text
+        className={cn(
+          'font-cairo text-[14px] font-semibold text-text-primary',
+          error && 'text-brand-error'
+        )}>
+        {label}
+        {required && <Text className="text-brand-error"> *</Text>}
+      </Text>
+
+      {/* Input */}
+      <Pressable
+        onPress={editable ? onPress : undefined}
+        className={cn(
+          'h-[52px] w-full justify-center rounded-xl border bg-surface-surface-variant px-4',
+          error ? 'border-brand-error' : 'border-surface-border/60',
+          !editable && 'opacity-50'
+        )}>
+        <Text
+          className={cn('font-cairo text-[16px]', value ? 'text-text-primary' : 'text-[#A8A29B]')}>
+          {value || placeholder}
+        </Text>
+      </Pressable>
+      {error && <Text className="mt-1 font-cairo text-[12px] text-brand-error">{error}</Text>}
     </View>
   );
 }
@@ -97,6 +143,8 @@ export function CreateHouseholdScreen({
 }: CreateHouseholdScreenProps) {
   const { t } = useTranslation('households');
   const insets = useSafeAreaInsets();
+  const [selectorType, setSelectorType] = useState<'governorate' | 'city'>('governorate');
+  const [isSelectorVisible, setIsSelectorVisible] = useState(false);
 
   return (
     <SafeAreaView className="flex-1 bg-surface-background" edges={['bottom', 'left', 'right']}>
@@ -193,26 +241,28 @@ export function CreateHouseholdScreen({
           />
 
           {/* Governorate */}
-          <FormField
+          <PressableField
             label={t('create.governorateLabel')}
             placeholder={t('create.governoratePlaceholder')}
             value={formData.governorate}
-            onChangeText={(t) => onChangeField('governorate', t)}
+            onPress={() => {
+              setSelectorType('governorate');
+              setIsSelectorVisible(true);
+            }}
             error={errors.governorate}
-            autoCapitalize="words"
-            returnKeyType="next"
             editable={!isLoading}
           />
 
           {/* City */}
-          <FormField
+          <PressableField
             label={t('create.cityLabel')}
             placeholder={t('create.cityPlaceholder')}
             value={formData.city}
-            onChangeText={(t) => onChangeField('city', t)}
+            onPress={() => {
+              setSelectorType('city');
+              setIsSelectorVisible(true);
+            }}
             error={errors.city}
-            autoCapitalize="words"
-            returnKeyType="done"
             editable={!isLoading}
           />
 
@@ -244,6 +294,27 @@ export function CreateHouseholdScreen({
           )}
         </Button>
       </View>
+
+      <LocationSelectorModal
+        visible={isSelectorVisible}
+        onClose={() => setIsSelectorVisible(false)}
+        type={selectorType}
+        governorateId={formData.governorateId}
+        selectedId={selectorType === 'governorate' ? formData.governorateId : formData.cityId}
+        onSelect={(id, name) => {
+          if (selectorType === 'governorate') {
+            onChangeField('governorateId' as keyof CreateHouseholdForm, id);
+            onChangeField('governorate' as keyof CreateHouseholdForm, name);
+            if (formData.governorateId !== id) {
+              onChangeField('cityId' as keyof CreateHouseholdForm, '');
+              onChangeField('city' as keyof CreateHouseholdForm, '');
+            }
+          } else {
+            onChangeField('cityId' as keyof CreateHouseholdForm, id);
+            onChangeField('city' as keyof CreateHouseholdForm, name);
+          }
+        }}
+      />
     </SafeAreaView>
   );
 }

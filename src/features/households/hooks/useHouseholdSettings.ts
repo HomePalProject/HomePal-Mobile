@@ -17,7 +17,9 @@ export function useHouseholdSettings() {
 
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
+  const [governorateId, setGovernorateId] = useState<string | null>(null);
   const [governorate, setGovernorate] = useState('');
+  const [cityId, setCityId] = useState<string | null>(null);
   const [city, setCity] = useState('');
 
   useEffect(() => {
@@ -30,8 +32,36 @@ export function useHouseholdSettings() {
           setHousehold(data);
           setName(data.name || '');
           setAddress(data.address || '');
-          setGovernorate(data.governorate || '');
-          setCity(data.city || '');
+          setGovernorateId(data.governorateId || null);
+          setCityId(data.cityId || null);
+
+          let loadedGovName = data.governorate || '';
+          let loadedCityName = data.city || '';
+
+          // Fetch names if IDs are present but names are missing
+          if (data.governorateId && !data.governorate) {
+            try {
+              const { locationsService } = await import('@/src/services/api/locations.service');
+              const govs = await locationsService.getGovernorates();
+              const foundGov = govs.find((g) => g.id === data.governorateId);
+              if (foundGov) loadedGovName = foundGov.name;
+            } catch (err) {
+              console.warn('Failed to fetch governorate name', err);
+            }
+          }
+          if (data.cityId && !data.city) {
+            try {
+              const { locationsService } = await import('@/src/services/api/locations.service');
+              const cities = await locationsService.getCities(data.governorateId);
+              const foundCity = cities.find((c) => c.id === data.cityId);
+              if (foundCity) loadedCityName = foundCity.name;
+            } catch (err) {
+              console.warn('Failed to fetch city name', err);
+            }
+          }
+
+          setGovernorate(loadedGovName);
+          setCity(loadedCityName);
         }
       } catch (error: any) {
         console.warn('[useHouseholdSettings] Error loading household:', error?.message || error);
@@ -60,8 +90,8 @@ export function useHouseholdSettings() {
       await householdService.updateHousehold({
         name: name.trim(),
         address: address.trim() || null,
-        governorate: governorate.trim() || null,
-        city: city.trim() || null,
+        governorateId: governorateId || null,
+        cityId: cityId || null,
       });
 
       toast.success(
@@ -83,7 +113,10 @@ export function useHouseholdSettings() {
   const handleDelete = () => {
     Alert.alert(
       i18n.t('households:deleteConfirmTitle', 'Delete Household'),
-      i18n.t('households:deleteConfirmMessage', 'Are you sure you want to delete this household? This action cannot be undone.'),
+      i18n.t(
+        'households:deleteConfirmMessage',
+        'Are you sure you want to delete this household? This action cannot be undone.'
+      ),
       [
         { text: i18n.t('common:buttons.cancel', 'Cancel'), style: 'cancel' },
         {
@@ -122,8 +155,12 @@ export function useHouseholdSettings() {
     setName,
     address,
     setAddress,
+    governorateId,
+    setGovernorateId,
     governorate,
     setGovernorate,
+    cityId,
+    setCityId,
     city,
     setCity,
     onUpdate: handleUpdate,

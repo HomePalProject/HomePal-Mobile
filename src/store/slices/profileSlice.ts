@@ -39,7 +39,9 @@ export interface ProfileState {
   fullName: string;
   gender: Gender | null;
   birthDate: string | null;
+  governorateId: string | null;
   governorate: string;
+  cityId: string | null;
   city: string;
   email: string;
   profileImageUri: string | null;
@@ -55,7 +57,9 @@ const initialState: ProfileState = {
   fullName: '',
   gender: null,
   birthDate: null,
+  governorateId: null,
   governorate: '',
+  cityId: null,
   city: '',
   email: '',
   profileImageUri: null,
@@ -84,7 +88,9 @@ const populateProfileState = (state: ProfileState, data: UserProfile) => {
   state.fullName = data.fullName || '';
   state.gender = parsedGender || null;
   state.birthDate = data.birthDate || null;
+  state.governorateId = data.governorateId || null;
   state.governorate = data.governorate || '';
+  state.cityId = data.cityId || null;
   state.city = data.city || '';
   state.email = data.email || '';
   state.profileImageUri = resolveProfileImageUri(data);
