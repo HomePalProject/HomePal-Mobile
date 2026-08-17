@@ -1,6 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-import { View, Pressable, Image, Animated, Dimensions, Modal, StyleSheet } from 'react-native';
+import {
+  View,
+  Pressable,
+  Image,
+  Animated,
+  Dimensions,
+  Modal,
+  StyleSheet,
+  I18nManager,
+} from 'react-native';
 
 import { router, Href, usePathname } from 'expo-router';
 
@@ -24,8 +33,6 @@ import { Icon } from '@/src/components/ui/icon';
 import { useAppSelector, useAppDispatch } from '@/src/store';
 
 import { logoutUser } from '@/src/store/slices/authSlice';
-
-import { closeDrawer } from '@/src/store/slices/uiSlice';
 
 import { useTheme } from '@/src/providers/ThemeProvider';
 
@@ -56,6 +63,10 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
 
   const { resolvedMode, setMode } = useTheme();
   const { t } = useTranslation('common');
+
+  const toggleTheme = () => {
+    setMode(resolvedMode === 'dark' ? 'light' : 'dark');
+  };
 
   const checkActive = (route: string) => {
     const cleanPathname = pathname.replace(/\/\([^)]+\)/g, '');
@@ -593,9 +604,6 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
           </Pressable>
         </Modal>
       )}
-          </View>
-        </Animated.View>
-      </Animated.View>
     </View>
   );
 }

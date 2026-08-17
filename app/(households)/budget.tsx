@@ -17,6 +17,7 @@ import { Icon } from '@/src/components/ui/icon';
 import { useAppDispatch } from '@/src/store';
 
 import { useBudget } from '@/src/features/budget/hooks/useBudget';
+import { useHouseholdMembers } from '@/src/features/households/hooks/useHouseholdMembers';
 import {
   MonthSelector,
   BudgetSummaryCards,
@@ -53,6 +54,12 @@ export default function BudgetScreen() {
     removeExpense,
     clearError,
   } = useBudget();
+
+  const { members } = useHouseholdMembers();
+  const currentUserMember = members?.find((m) => m.isCurrentUser);
+  const isCurrentUserAdmin = currentUserMember
+    ? currentUserMember.role === 'Household Manager'
+    : false;
 
   const fetchBudgetAndExpenses = async (date: Date) => {
     const year = date.getFullYear();
@@ -160,15 +167,19 @@ export default function BudgetScreen() {
             remainingAmount={summary?.remainingAmount || 0}
             onSetTargetPress={() => setTargetModalVisible(true)}
             isLoading={isLoading}
+            isReadOnly={!isCurrentUserAdmin}
           />
 
-          <AddExpenseForm onAddExpense={handleAddExpense} isLoading={createExpenseLoading} />
+          {isCurrentUserAdmin && (
+            <AddExpenseForm onAddExpense={handleAddExpense} isLoading={createExpenseLoading} />
+          )}
 
           <ExpensesLogList
             expenses={expenses}
             onDeleteExpense={handleDeleteExpense}
             isDeletingId={deletingId}
             isLoading={isLoading && !refreshing}
+            isReadOnly={!isCurrentUserAdmin}
           />
         </ScrollView>
       </KeyboardAvoidingView>

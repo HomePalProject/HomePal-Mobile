@@ -135,7 +135,10 @@ export default function ShoppingListScreen() {
     }
     Alert.alert(
       t('shopping:clearPurchasedConfirm', 'Clear Purchased Items'),
-      t('shopping:clearPurchasedMessage', 'Are you sure you want to remove all purchased items from your list?'),
+      t(
+        'shopping:clearPurchasedMessage',
+        'Are you sure you want to remove all purchased items from your list?'
+      ),
       [
         { text: t('common:buttons.cancel', 'Cancel'), style: 'cancel' },
         {
@@ -186,7 +189,9 @@ export default function ShoppingListScreen() {
               loadShoppingList();
             }}
             className="py-spacing-12 rounded-radius-medium bg-brand-primary px-spacing-24 active:opacity-80">
-            <Text className="font-cairo text-base font-bold text-text-inverse">{t('shopping:retry')}</Text>
+            <Text className="font-cairo text-base font-bold text-text-inverse">
+              {t('shopping:retry')}
+            </Text>
           </Pressable>
         </View>
       );
@@ -197,9 +202,9 @@ export default function ShoppingListScreen() {
     }
 
     return (
-      <View className="mb-spacing-16">
+      <View className="mb-spacing-16 flex-1">
         <ShoppingListSummaryBar items={items} />
-        <View className="bg-surface-border/50 mb-spacing-16 h-px" />
+        <View className="mb-spacing-16 h-px bg-surface-border/50" />
         <FlatList
           data={items}
           keyExtractor={(item) => item.id}
@@ -240,7 +245,9 @@ export default function ShoppingListScreen() {
               onPress={handleAddItem}
               className="flex-row items-center gap-spacing-4 rounded-full bg-brand-primary px-spacing-16 py-spacing-8 shadow-sm active:opacity-80">
               <Icon as={Plus} size={14} className="text-white" />
-              <Text className="font-cairo text-sm font-bold text-text-inverse">{t('shopping:addItem')}</Text>
+              <Text className="font-cairo text-sm font-bold text-text-inverse">
+                {t('shopping:addItem')}
+              </Text>
             </Pressable>
             {items.some((i) => i.isPurchased) && (
               <Pressable
@@ -258,18 +265,20 @@ export default function ShoppingListScreen() {
         </View>
       </View>
 
-      <AddEditShoppingItemModal
-        visible={isModalVisible}
-        onClose={() => {
-          setIsModalVisible(false);
-          setEditingItem(null);
-        }}
-        onSave={handleSave}
-        editItem={editingItem}
-        categories={categories || []}
-        measuringUnits={measuringUnits || []}
-        isSaving={isSaving}
-      />
+      {isModalVisible && (
+        <AddEditShoppingItemModal
+          visible={isModalVisible}
+          onClose={() => {
+            setIsModalVisible(false);
+            setEditingItem(null);
+          }}
+          onSave={handleSave}
+          editItem={editingItem}
+          categories={categories || []}
+          measuringUnits={measuringUnits || []}
+          isSaving={isSaving}
+        />
+      )}
     </SafeAreaView>
   );
 }

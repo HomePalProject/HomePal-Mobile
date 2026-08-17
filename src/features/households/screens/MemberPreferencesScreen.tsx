@@ -19,7 +19,7 @@ export function MemberPreferencesScreen({ memberId }: MemberPreferencesScreenPro
     selectedPreferenceIds,
     loadingPreferences,
     targetMember,
-    isManager,
+    canEdit,
     togglePreference,
   } = useMemberPreferences(memberId);
   const { t } = useTranslation('households');
@@ -29,7 +29,9 @@ export function MemberPreferencesScreen({ memberId }: MemberPreferencesScreenPro
       {/* Header */}
       <View className="flex-row items-center justify-between p-spacing-16">
         <BackButton onPress={() => router.back()} />
-        <Text className="font-cairo text-xl font-bold text-text-primary">{t('preferences.title')}</Text>
+        <Text className="font-cairo text-xl font-bold text-text-primary">
+          {t('preferences.title')}
+        </Text>
         <View className="w-10" />
       </View>
 
@@ -61,7 +63,7 @@ export function MemberPreferencesScreen({ memberId }: MemberPreferencesScreenPro
               <Text className="text-center font-cairo text-xl font-bold text-text-primary">
                 {targetMember?.fullName}
               </Text>
-              {!isManager ? (
+              {!canEdit ? (
                 <Text className="mt-spacing-4 font-cairo text-sm text-text-secondary">
                   {t('preferences.viewOnly')}
                 </Text>
@@ -107,7 +109,7 @@ export function MemberPreferencesScreen({ memberId }: MemberPreferencesScreenPro
                         label={pref.name}
                         selected={selectedPreferenceIds.has(pref.id)}
                         onPress={() => togglePreference(pref.id)}
-                        disabled={!isManager || loadingPreferences.has(pref.id)}
+                        disabled={!canEdit || loadingPreferences.has(pref.id)}
                       />
                     ))}
                   </View>

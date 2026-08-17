@@ -11,6 +11,7 @@ interface ExpensesLogListProps {
   onDeleteExpense: (id: string) => Promise<void>;
   isDeletingId?: string | null;
   isLoading?: boolean;
+  isReadOnly?: boolean;
 }
 
 /**
@@ -57,6 +58,7 @@ export function ExpensesLogList({
   onDeleteExpense,
   isDeletingId = null,
   isLoading = false,
+  isReadOnly = false,
 }: ExpensesLogListProps) {
   const { t } = useTranslation('budget');
   const { theme } = useTheme();
@@ -112,20 +114,22 @@ export function ExpensesLogList({
                     {formatCurrency(expense.amount)}
                   </Text>
 
-                  <Pressable
-                    onPress={() => onDeleteExpense(expense.id)}
-                    disabled={isDeleting || isLoading}
-                    accessibilityRole="button"
-                    accessibilityLabel={t('deleteExpenseLabel', 'Delete expense {{title}}', {
-                      title: expense.title,
-                    })}
-                    className="active:bg-surface-surfaceVariant h-10 w-10 items-center justify-center rounded-radius-full disabled:opacity-50">
-                    {isDeleting ? (
-                      <ActivityIndicator size="small" color={theme.colors.brand.error} />
-                    ) : (
-                      <Icon as={Trash2} size={18} className="text-brand-error" />
-                    )}
-                  </Pressable>
+                  {!isReadOnly && (
+                    <Pressable
+                      onPress={() => onDeleteExpense(expense.id)}
+                      disabled={isDeleting || isLoading}
+                      accessibilityRole="button"
+                      accessibilityLabel={t('deleteExpenseLabel', 'Delete expense {{title}}', {
+                        title: expense.title,
+                      })}
+                      className="active:bg-surface-surfaceVariant h-10 w-10 items-center justify-center rounded-radius-full disabled:opacity-50">
+                      {isDeleting ? (
+                        <ActivityIndicator size="small" color={theme.colors.brand.error} />
+                      ) : (
+                        <Icon as={Trash2} size={18} className="text-brand-error" />
+                      )}
+                    </Pressable>
+                  )}
                 </View>
               </View>
             );
