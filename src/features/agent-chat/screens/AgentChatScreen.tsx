@@ -20,6 +20,7 @@ import {
   EmptyChatView,
   ChatMessageItem,
   ToolActionCard,
+  ClearChatModal,
 } from '../components';
 import { ChatMessage } from '../types';
 
@@ -35,6 +36,7 @@ export function AgentChatScreen() {
   const { theme, resolvedMode } = useTheme();
   const flatListRef = useRef<FlatList>(null);
   const [inputText, setInputText] = useState('');
+  const [isClearModalVisible, setIsClearModalVisible] = useState(false);
 
   const {
     messages,
@@ -123,7 +125,7 @@ export function AgentChatScreen() {
               </Text>
             </View>
             <Pressable
-              onPress={clearHistory}
+              onPress={() => setIsClearModalVisible(true)}
               accessibilityRole="button"
               accessibilityLabel="Clear chat history"
               className="active:opacity-75">
@@ -192,6 +194,12 @@ export function AgentChatScreen() {
           disabled={isStreaming || isLoadingHistory}
         />
       </KeyboardAvoidingView>
+
+      <ClearChatModal
+        visible={isClearModalVisible}
+        onClose={() => setIsClearModalVisible(false)}
+        onConfirm={clearHistory}
+      />
     </SafeAreaView>
   );
 }

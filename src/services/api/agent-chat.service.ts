@@ -44,7 +44,13 @@ export const agentChatService = {
    */
   async deleteChatHistory(): Promise<void> {
     try {
-      await apiClient.delete<ApiResponse<null>>('/api/agent-chat');
+      await apiClient.delete<ApiResponse<null>>('/api/agent-chat', {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        timeout: 60000,
+      });
     } catch (error: any) {
       console.warn('[AgentChatService] Error deleting chat history:', error?.message || error);
       throw error;
