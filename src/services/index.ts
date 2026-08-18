@@ -6,4 +6,5 @@ export * from './api/category.service';
 export * from './api/unit.service';
 export * from './api/shopping-list.service';
 export * from './api/budget.service';
+export * from './api/agent-chat.service';
 export * from './storage/auth.storage';
