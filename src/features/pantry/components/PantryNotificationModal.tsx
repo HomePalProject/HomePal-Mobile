@@ -56,7 +56,7 @@ export function PantryNotificationModal({
             ].join(' ')}
             accessibilityRole="button"
             accessibilityLabel="Close notification">
-            <Text className="text-body font-cairo font-bold text-white">OK</Text>
+            <Text className="text-body font-cairo font-bold text-text-primary">OK</Text>
           </Pressable>
         </View>
       </View>

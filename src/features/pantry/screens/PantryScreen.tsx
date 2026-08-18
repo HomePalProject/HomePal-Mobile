@@ -7,6 +7,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
 import { colors } from '@/src/theme/colors';
 import { usePantry } from '../hooks/usePantry';
+import { usePantryExpiryNotifications } from '../hooks/usePantryExpiryNotifications';
 import {
   PantryHeader,
   PantryCategoryFilters,
@@ -27,6 +28,9 @@ import { ScannedItem } from '../components/AIScanItemRow';
 export default function PantryScreen() {
   const router = useRouter();
   const { t } = useTranslation('pantry');
+
+  // Sync scheduled expiry alerts on Redux state updates
+  usePantryExpiryNotifications();
   const {
     items,
     categories,
