@@ -11,7 +11,6 @@ import {
   PantryHeader,
   PantryCategoryFilters,
   PantrySearchBar,
-  PantryRecommendationCard,
   PantrySkeleton,
   PantryErrorView,
   PantryEmptyView,
@@ -20,6 +19,7 @@ import {
   AIScanModal,
   ImagePickerSheet,
   PantryNotificationModal,
+  PantryStockAlertCard,
 } from '../components';
 import { useTranslation } from 'react-i18next';
 import { ScannedItem } from '../components/AIScanItemRow';
@@ -44,24 +44,25 @@ export default function PantryScreen() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Identify the pantry item closest to its expiration date (strictly in the future)
-  const urgentItem = useMemo(() => {
+  // Identify all expiring/expired pantry items sorted by expiration date (within 7 days or past)
+  const expiringItems = useMemo(() => {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
 
-    const validItems = items.filter((item) => {
-      if (!item.expireDate) return false;
-      const expiry = new Date(item.expireDate);
-      return expiry > now;
-    });
-
-    if (validItems.length === 0) return null;
-
-    return [...validItems].sort((a, b) => {
-      const dateA = new Date(a.expireDate!);
-      const dateB = new Date(b.expireDate!);
-      return dateA.getTime() - dateB.getTime();
-    })[0];
+    return items
+      .filter((item) => {
+        if (!item.expireDate) return false;
+        const expiry = new Date(item.expireDate);
+        expiry.setHours(0, 0, 0, 0);
+        const diffTime = expiry.getTime() - now.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays <= 7;
+      })
+      .sort((a, b) => {
+        const dateA = new Date(a.expireDate!);
+        const dateB = new Date(b.expireDate!);
+        return dateA.getTime() - dateB.getTime();
+      });
   }, [items]);
 
   // Scan Modal States
@@ -249,7 +250,16 @@ export default function PantryScreen() {
           onSelectCategory={setSelectedCategoryId}
         />
         <PantrySearchBar value={searchQuery} onChangeText={setSearchQuery} />
-        {urgentItem && <PantryRecommendationCard itemName={urgentItem.name} />}
+        <PantryStockAlertCard
+          expiringItems={expiringItems}
+          onPressCheckDeals={() => {
+            const firstItemName = expiringItems[0]?.name || '';
+            router.push({
+              pathname: '/(tabs)/shop',
+              params: { query: firstItemName },
+            } as any);
+          }}
+        />
         <PantryList
           items={filteredItems}
           refreshControl={

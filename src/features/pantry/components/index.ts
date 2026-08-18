@@ -2,6 +2,7 @@ export * from './PantryHeader';
 export * from './PantryCategoryFilters';
 export * from './PantrySearchBar';
 export * from './PantryRecommendationCard';
+export * from './PantryStockAlertCard';
 export * from './PantrySkeleton';
 export * from './PantryErrorView';
 export * from './PantryEmptyView';
