@@ -235,7 +235,7 @@ export default function PantryScreen() {
     }
 
     if (items.length === 0) {
-      return <PantryEmptyView />;
+      return <PantryEmptyView onAddItem={handleAddItem} />;
     }
 
     const filteredItems = items.filter((item) => {
