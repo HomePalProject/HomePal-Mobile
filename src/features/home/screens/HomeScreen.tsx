@@ -2,8 +2,10 @@ import { useAppSelector } from '@/src/store';
 import { Href, router, Stack } from 'expo-router';
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 export default function HomeScreen() {
+  const { t } = useTranslation('home');
   const { fullName, family } = useAppSelector((state) => state.profile);
 
   const nameParts = fullName.trim().split(/\s+/);
@@ -28,7 +30,7 @@ export default function HomeScreen() {
           className="shadow-low flex-row items-center justify-between rounded-radius-medium border border-surface-border bg-surface-surface p-spacing-16">
           <View className="gap-spacing-4">
             <Text className="text-bodyLarge font-cairo font-bold text-text-primary">
-              Welcome, {user.firstName}
+              {t('active.welcomeUser', { name: user.firstName })}
             </Text>
             <Text className="text-caption font-cairo text-text-secondary">{user.family}</Text>
           </View>
@@ -42,7 +44,9 @@ export default function HomeScreen() {
         </Pressable>
 
         <View className="mt-spacing-24 flex-1 items-center justify-center">
-          <Text className="text-body font-cairo text-text-disabled">Home Content</Text>
+          <Text className="text-body font-cairo text-text-disabled">
+            {t('active.homeContent', 'Home Content')}
+          </Text>
         </View>
       </View>
     </>

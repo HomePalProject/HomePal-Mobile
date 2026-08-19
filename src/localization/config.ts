@@ -19,6 +19,7 @@ export const NAMESPACES = [
   'budget',
   'profile',
   'home',
+  'agentChat',
 ] as const;
 
 export type Namespace = (typeof NAMESPACES)[number];

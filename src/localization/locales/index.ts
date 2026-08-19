@@ -11,6 +11,7 @@ import enShopping from './en/shopping.json';
 import enBudget from './en/budget.json';
 import enProfile from './en/profile.json';
 import enHome from './en/home.json';
+import enAgentChat from './en/agentChat.json';
 
 import arCommon from './ar/common.json';
 import arAuth from './ar/auth.json';
@@ -23,6 +24,7 @@ import arShopping from './ar/shopping.json';
 import arBudget from './ar/budget.json';
 import arProfile from './ar/profile.json';
 import arHome from './ar/home.json';
+import arAgentChat from './ar/agentChat.json';
 
 /**
  * All translations, bundled statically.
@@ -46,6 +48,7 @@ export const resources: Record<SupportedLanguage, Record<string, Record<string, 
     budget: enBudget,
     profile: enProfile,
     home: enHome,
+    agentChat: enAgentChat,
   },
   ar: {
     common: arCommon,
@@ -59,5 +62,6 @@ export const resources: Record<SupportedLanguage, Record<string, Record<string, 
     budget: arBudget,
     profile: arProfile,
     home: arHome,
+    agentChat: arAgentChat,
   },
 };

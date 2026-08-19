@@ -53,11 +53,13 @@
     "receivedInvitations": "الدعوات الواردة",
     "profileSettings": "الملف الشخصي والإعدادات",
     "householdBudget": "ميزانية المنزل",
+    "aiAssistant": "مساعد الذكاء الاصطناعي",
+    "signOut": "تسجيل الخروج"
     "subscription": "الاشتراكات والباقات"
   },
   "logoutModal": {
     "title": "تأكيد تسجيل الخروج",
-    "message": "هل أنت ألكيد من رغبتك في تسجيل الخروج من هوم بال؟",
+    "message": "هل أنت متأكد من رغبتك في تسجيل الخروج من هوم بال؟",
     "confirm": "تسجيل الخروج"
   },
   "subscriptions": {

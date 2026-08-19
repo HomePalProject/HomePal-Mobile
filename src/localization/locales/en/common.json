@@ -53,6 +53,8 @@
     "receivedInvitations": "Received Invitations",
     "profileSettings": "Profile & Settings",
     "householdBudget": "Household Budget",
+    "aiAssistant": "AI Assistant",
+    "signOut": "Sign Out"
     "subscription": "Subscription & Plans"
   },
   "logoutModal": {

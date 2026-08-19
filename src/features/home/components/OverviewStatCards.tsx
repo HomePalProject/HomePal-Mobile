@@ -4,6 +4,7 @@ import { Archive, Users, Banknote, TrendingUp } from 'lucide-react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { HouseholdKpisDto } from '../../overview/types';
+import { useTranslation } from 'react-i18next';
 
 interface OverviewStatCardsProps {
   kpis?: HouseholdKpisDto;
@@ -20,6 +21,7 @@ const formatValue = (value: number | string | undefined) => {
 };
 
 export function OverviewStatCards({ kpis }: OverviewStatCardsProps) {
+  const { t } = useTranslation('home');
   const isBudgetNegative =
     kpis?.monthlyRemaining !== undefined &&
     (typeof kpis.monthlyRemaining === 'number'
@@ -34,13 +36,13 @@ export function OverviewStatCards({ kpis }: OverviewStatCardsProps) {
           <Icon as={Archive} size={20} className="text-text-primary" />
         </View>
         <Text className="text-caption mt-spacing-8 font-cairo font-semibold text-text-secondary">
-          Items in Inventory
+          {t('active.kpis.itemsInInventory', 'Items in Inventory')}
         </Text>
         <Text className="mt-spacing-4 font-cairo text-2xl font-bold text-brand-primary">
           {formatValue(kpis?.itemsInInventory)}
         </Text>
         <Text className="mt-spacing-4 font-cairo text-[11px] text-text-disabled">
-          Inventory records
+          {t('active.kpis.inventoryRecords', 'Inventory records')}
         </Text>
       </View>
 
@@ -50,13 +52,13 @@ export function OverviewStatCards({ kpis }: OverviewStatCardsProps) {
           <Icon as={Users} size={20} className="text-text-primary" />
         </View>
         <Text className="text-caption mt-spacing-8 font-cairo font-semibold text-text-secondary">
-          Household Members
+          {t('active.kpis.householdMembers', 'Household Members')}
         </Text>
         <Text className="mt-spacing-4 font-cairo text-2xl font-bold text-brand-primary">
           {formatValue(kpis?.householdMembers)}
         </Text>
         <Text className="mt-spacing-4 font-cairo text-[11px] text-text-disabled">
-          Active members
+          {t('active.kpis.activeMembers', 'Active members')}
         </Text>
       </View>
 
@@ -66,13 +68,13 @@ export function OverviewStatCards({ kpis }: OverviewStatCardsProps) {
           <Icon as={Banknote} size={20} className="text-text-primary" />
         </View>
         <Text className="text-caption mt-spacing-8 font-cairo font-semibold text-text-secondary">
-          Monthly Budget
+          {t('active.kpis.monthlyBudget', 'Monthly Budget')}
         </Text>
         <Text className="mt-spacing-4 font-cairo text-2xl font-bold text-brand-primary">
           {formatValue(kpis?.monthlyBudget)}
         </Text>
         <Text className="mt-spacing-4 font-cairo text-[11px] text-text-disabled">
-          EGP per month
+          {t('active.kpis.egpPerMonth', 'EGP per month')}
         </Text>
       </View>
 
@@ -82,7 +84,7 @@ export function OverviewStatCards({ kpis }: OverviewStatCardsProps) {
           <Icon as={TrendingUp} size={20} className="text-text-primary" />
         </View>
         <Text className="text-caption mt-spacing-8 font-cairo font-semibold text-text-secondary">
-          Monthly Expenses
+          {t('active.kpis.monthlyExpenses', 'Monthly Expenses')}
         </Text>
         <Text
           className={[
@@ -94,7 +96,7 @@ export function OverviewStatCards({ kpis }: OverviewStatCardsProps) {
           {formatValue(kpis?.monthlyExpenses)}
         </Text>
         <Text className="mt-spacing-4 font-cairo text-[11px] text-text-disabled">
-          EGP per month
+          {t('active.kpis.egpPerMonth', 'EGP per month')}
         </Text>
       </View>
     </View>

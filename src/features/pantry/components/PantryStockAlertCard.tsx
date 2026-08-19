@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { AlertCircle, Search } from 'lucide-react-native';
 import { useTheme } from '@/src/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 export interface ExpiringItem {
   name: string;
@@ -18,6 +19,7 @@ export function PantryStockAlertCard({
   onPressCheckDeals,
 }: PantryStockAlertCardProps) {
   const { theme } = useTheme();
+  const { t } = useTranslation('pantry');
 
   if (!expiringItems || expiringItems.length === 0) {
     return null;
@@ -34,12 +36,15 @@ export function PantryStockAlertCard({
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     if (diffDays < 0) {
-      return '(Expired)';
+      return t('stockAlert.statusExpired', 'Expired');
     }
     if (diffDays === 0) {
-      return '(Expires today)';
+      return t('stockAlert.statusToday', 'Expires today');
     }
-    return `(Expiring Soon (${diffDays}d))`;
+    return t('stockAlert.statusSoon', {
+      defaultValue: 'Expiring Soon ({{days}}d)',
+      days: diffDays,
+    });
   };
 
   return (
@@ -51,10 +56,8 @@ export function PantryStockAlertCard({
       className="mx-spacing-16 mb-spacing-16 rounded-radius-large border p-spacing-16 shadow-sm">
       {/* Header Row: Title & Badge */}
       <View className="mb-spacing-16 flex-row items-center gap-spacing-8">
-        <Text
-          style={{ color: theme.colors.brand.error }}
-          className="font-cairo text-base text-xl font-bold">
-          Pantry Stock Alert
+        <Text style={{ color: theme.colors.brand.error }} className="font-cairo text-xl font-bold">
+          {t('stockAlert.title', 'Pantry Stock Alert')}
         </Text>
 
         {/* Count Badge */}
@@ -62,7 +65,7 @@ export function PantryStockAlertCard({
           style={{ backgroundColor: theme.colors.brand.accent }}
           className="py-spacing-2 rounded-radius-medium px-spacing-8">
           <Text className="font-cairo text-base font-bold text-text-primary">
-            {expiringItems.length} {expiringItems.length === 1 ? 'item' : 'items'}
+            {t('stockAlert.itemCount', { count: expiringItems.length })}
           </Text>
         </View>
       </View>
@@ -84,22 +87,24 @@ export function PantryStockAlertCard({
         {/* Text Area */}
         <View className="flex-1">
           <Text className="mb-spacing-8 font-cairo text-sm font-bold leading-tight text-text-on-accent">
-            Hey! Items in your pantry are running out or expiring soon. Wanna check supermarket
-            offers?
+            {t(
+              'stockAlert.description',
+              'Hey! Items in your pantry are running out or expiring soon. Wanna check supermarket offers?'
+            )}
           </Text>
 
           {/* Expiring Items inline list */}
           <Text className="text-bodySmall font-cairo leading-[20px] text-text-on-accent">
             {expiringItems.slice(0, 3).map((item, idx) => {
               const status = getExpiryStatus(item.expireDate);
-              const isExpired = status === '(Expired)';
+              const isExpired = status === t('stockAlert.statusExpired', 'Expired');
               const statusColor = isExpired ? theme.colors.brand.error : theme.colors.brand.accent;
               return (
                 <React.Fragment key={idx}>
                   <Text className="font-bold text-text-on-accent">{item.name}</Text>
                   <Text style={{ color: statusColor }} className="font-semibold">
                     {' '}
-                    {status}
+                    ({status})
                   </Text>
                   {idx < Math.min(expiringItems.length, 3) - 1 ? <Text>, </Text> : null}
                 </React.Fragment>
@@ -108,7 +113,7 @@ export function PantryStockAlertCard({
             {expiringItems.length > 3 ? (
               <Text className="font-bold text-text-on-accent">
                 {' '}
-                +{expiringItems.length - 3} more
+                {t('stockAlert.more', { count: expiringItems.length - 3 })}
               </Text>
             ) : null}
           </Text>
@@ -120,11 +125,11 @@ export function PantryStockAlertCard({
         <Pressable
           onPress={onPressCheckDeals}
           accessibilityRole="button"
-          accessibilityLabel="Check Supermarket Deals"
-          className="h-10 flex-row items-center justify-center self-start rounded-radius-full bg-brand-primary px-spacing-16 shadow-sm active:bg-brand-primary-pressed">
-          <Search size={20} color={'white'} className="mr-spacing-8" />
+          accessibilityLabel={t('stockAlert.checkDeals', 'Check Supermarket Deals')}
+          className="h-10 flex-row items-center justify-center gap-x-spacing-8 self-start rounded-radius-full bg-brand-primary px-spacing-16 shadow-sm active:bg-brand-primary-pressed">
+          <Search size={20} color={'white'} />
           <Text className="px-spacing-8 font-cairo text-base font-bold text-white">
-            Check Supermarket Deals
+            {t('stockAlert.checkDeals', 'Check Supermarket Deals')}
           </Text>
         </Pressable>
       )}
