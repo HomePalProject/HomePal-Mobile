@@ -25,6 +25,7 @@ import {
   Wallet,
   Sparkles,
   Bot,
+  Globe,
 } from 'lucide-react-native';
 import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
@@ -37,6 +38,7 @@ import { lightColors, darkColors } from '@/src/theme/colors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useDrawerStore } from '@/src/store/useDrawerStore';
+import { useLanguage } from '@/src/localization/hooks/useLanguage';
 
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const DRAWER_WIDTH = Math.min(SCREEN_WIDTH * 0.82, 320);
@@ -51,6 +53,7 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
 
   const { resolvedMode, setMode } = useTheme();
   const { t } = useTranslation('common');
+  const { currentLanguage, changeLanguage } = useLanguage();
 
   const toggleTheme = () => {
     setMode(resolvedMode === 'dark' ? 'light' : 'dark');
@@ -455,6 +458,20 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
                 </Pressable>
               );
             })()}
+
+            {/* Language Toggle */}
+            <Pressable
+              onPress={() => changeLanguage(currentLanguage === 'en' ? 'ar' : 'en')}
+              accessibilityRole="button"
+              accessibilityLabel={t('labels.language', 'Language')}
+              className="active:bg-surface-surfaceVariant flex-row items-center justify-between rounded-full px-4 py-3.5">
+              <View className="flex-row items-center gap-3.5">
+                <Icon as={Globe} size={22} className="text-text-primary" />
+                <Text className="font-cairo text-[15px] font-semibold text-text-primary">
+                  {currentLanguage === 'en' ? 'العربية (Arabic)' : 'English (الإنجليزية)'}
+                </Text>
+              </View>
+            </Pressable>
 
             <Pressable
               onPress={toggleTheme}
