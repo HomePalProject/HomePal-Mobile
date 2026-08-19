@@ -24,19 +24,22 @@ import {
 } from '../components';
 import { ChatMessage } from '../types';
 
-const QUICK_ACTION_CHIPS = [
-  { label: '💡 Weekly Meal Plan', query: 'Weekly Meal Plan' },
-  { label: '🥫 Pantry Inventory', query: 'Pantry Inventory' },
-  { label: '⚠️ Expiring Items', query: 'Expiring Items' },
-  { label: '💰 Budget Summary', query: 'Budget Summary' },
-  { label: '🛒 Grocery Deals', query: 'Grocery Deals' },
-];
+import { useTranslation } from 'react-i18next';
 
 export function AgentChatScreen() {
   const { theme, resolvedMode } = useTheme();
+  const { t } = useTranslation('agentChat');
   const flatListRef = useRef<FlatList>(null);
   const [inputText, setInputText] = useState('');
   const [isClearModalVisible, setIsClearModalVisible] = useState(false);
+
+  const chips = [
+    { label: t('chips.mealPlan', '💡 Weekly Meal Plan'), query: 'Weekly Meal Plan' },
+    { label: t('chips.pantry', '🥫 Pantry Inventory'), query: 'Pantry Inventory' },
+    { label: t('chips.expiring', '⚠️ Expiring Items'), query: 'Expiring Items' },
+    { label: t('chips.budget', '💰 Budget Summary'), query: 'Budget Summary' },
+    { label: t('chips.deals', '🛒 Grocery Deals'), query: 'Grocery Deals' },
+  ];
 
   const {
     messages,
@@ -73,7 +76,7 @@ export function AgentChatScreen() {
   // Paywall View for unsubscribed accounts
   if (error === 'SUBSCRIPTION_REQUIRED') {
     return (
-      <SafeAreaView className="flex-1 bg-surface-background">
+      <SafeAreaView edges={['top', 'left', 'right']} className="flex-1 bg-surface-background">
         <StatusBar
           backgroundColor={theme.colors.surface.surface}
           barStyle={resolvedMode === 'dark' ? 'light-content' : 'dark-content'}
@@ -85,17 +88,20 @@ export function AgentChatScreen() {
             <Lock size={36} color={theme.colors.brand.primary} />
           </View>
           <Text className="mb-spacing-8 text-center font-cairo text-xl font-bold text-brand-primary">
-            AI Assistant Subscription
+            {t('paywall.title', 'AI Assistant Subscription')}
           </Text>
           <Text className="text-bodySmall mb-spacing-24 px-spacing-32 text-center font-cairo text-text-secondary">
-            Unlock personalized meal plans, pantry scans & AI assistant.
+            {t(
+              'paywall.description',
+              'Unlock personalized meal plans, pantry scans & AI assistant.'
+            )}
           </Text>
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Subscribe to AI assistant"
+            accessibilityLabel={t('paywall.accessibilitySubscribe', 'Subscribe to AI assistant')}
             className="py-spacing-12 rounded-radius-full bg-brand-primary px-spacing-24 active:opacity-75">
             <Text className="text-bodySmall font-cairo font-bold text-text-inverse">
-              Subscribe Now
+              {t('paywall.subscribe', 'Subscribe Now')}
             </Text>
           </Pressable>
         </View>
@@ -104,7 +110,7 @@ export function AgentChatScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-surface-background">
+    <SafeAreaView edges={['top', 'left', 'right']} className="flex-1 bg-surface-background">
       <StatusBar
         backgroundColor={theme.colors.surface.surface}
         barStyle={resolvedMode === 'dark' ? 'light-content' : 'dark-content'}
@@ -121,15 +127,17 @@ export function AgentChatScreen() {
             <View className="flex-row items-center gap-spacing-8">
               <View style={{ width: 8, height: 8, borderRadius: 4 }} className="bg-brand-success" />
               <Text className="font-cairo text-base font-semibold text-text-secondary">
-                HomePal Assistant • Online
+                {t('bar.onlineStatus', 'HomePal Assistant • Online')}
               </Text>
             </View>
             <Pressable
               onPress={() => setIsClearModalVisible(true)}
               accessibilityRole="button"
-              accessibilityLabel="Clear chat history"
+              accessibilityLabel={t('bar.clearAccessibility', 'Clear chat history')}
               className="active:opacity-75">
-              <Text className="font-cairo text-base font-bold text-brand-error">Clear</Text>
+              <Text className="font-cairo text-base font-bold text-brand-error">
+                {t('bar.clearHistory', 'Clear')}
+              </Text>
             </Pressable>
           </View>
         )}
@@ -141,12 +149,15 @@ export function AgentChatScreen() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
             className="mb-spacing-8 max-h-14">
-            {QUICK_ACTION_CHIPS.map((chip, index) => (
+            {chips.map((chip, index) => (
               <Pressable
                 key={index}
                 onPress={() => sendMessage(chip.query)}
                 accessibilityRole="button"
-                accessibilityLabel={`Quick action: ${chip.label}`}
+                accessibilityLabel={t('chips.accessibility', {
+                  defaultValue: 'Quick action: {{label}}',
+                  label: chip.label,
+                })}
                 className="bg-surface-surfaceVariant flex-row items-center rounded-radius-full border border-surface-border px-spacing-16 py-spacing-8 active:opacity-75">
                 <Text className="font-cairo text-sm font-semibold text-text-primary">
                   {chip.label}

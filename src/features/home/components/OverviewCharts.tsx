@@ -4,6 +4,7 @@ import { LineChart, PieChart } from 'react-native-gifted-charts';
 import { Text } from '@/src/components/ui/text';
 import { useTheme } from '@/src/providers/ThemeProvider';
 import { HouseholdOverviewReportDto, LocalizedItem } from '../../overview/types';
+import { useTranslation } from 'react-i18next';
 
 interface OverviewChartsProps {
   data?: HouseholdOverviewReportDto;
@@ -24,24 +25,47 @@ const MONTHS_SHORT = [
   'Dec',
 ];
 
-const formatCurrency = (value: number | string | undefined) => {
-  if (value === undefined || value === null) return '0 EGP';
+const formatCurrency = (value: number | string | undefined, t: any) => {
+  const currencyUnit = t('active.kpis.currency', 'EGP');
+  if (value === undefined || value === null) return `0 ${currencyUnit}`;
   const num = typeof value === 'number' ? value : parseFloat(value);
-  if (isNaN(num)) return String(value) + ' EGP';
+  if (isNaN(num)) return String(value) + ` ${currencyUnit}`;
   const fixed = num % 1 === 0 ? num.toFixed(0) : num.toFixed(2);
   const [integer, decimal] = fixed.split('.');
   const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  return `${formattedInteger}${decimal ? '.' + decimal : ''} EGP`;
+  return `${formattedInteger}${decimal ? '.' + decimal : ''} ${currencyUnit}`;
 };
 
-const getCategoryName = (categoryName?: LocalizedItem[]) => {
-  if (!categoryName || categoryName.length === 0) return 'Other';
+const getCategoryName = (categoryName?: LocalizedItem[], currentLanguage?: string, t?: any) => {
+  const fallback = t ? t('active.charts.other', 'Other') : 'Other';
+  if (!categoryName || categoryName.length === 0) return fallback;
+  const matchedItem = categoryName.find((item) =>
+    item.culture?.toLowerCase().startsWith(currentLanguage || 'en')
+  );
+  if (matchedItem) return matchedItem.value;
   const engItem = categoryName.find((item) => item.culture?.toLowerCase().startsWith('en'));
-  return engItem?.value || categoryName[0]?.value || 'Other';
+  return engItem?.value || categoryName[0]?.value || fallback;
 };
 
 export function OverviewCharts({ data }: OverviewChartsProps) {
   const { theme } = useTheme();
+  const { t, i18n } = useTranslation('home');
+  const currentLanguage = i18n.language || 'en';
+
+  const monthsShort = [
+    t('active.charts.months.jan', 'Jan'),
+    t('active.charts.months.feb', 'Feb'),
+    t('active.charts.months.mar', 'Mar'),
+    t('active.charts.months.apr', 'Apr'),
+    t('active.charts.months.may', 'May'),
+    t('active.charts.months.jun', 'Jun'),
+    t('active.charts.months.jul', 'Jul'),
+    t('active.charts.months.aug', 'Aug'),
+    t('active.charts.months.sep', 'Sep'),
+    t('active.charts.months.oct', 'Oct'),
+    t('active.charts.months.nov', 'Nov'),
+    t('active.charts.months.dec', 'Dec'),
+  ];
 
   const expensesOverTime = data?.expensesOverTime || [];
   const inventoryDistribution = data?.inventoryDistribution;
@@ -61,7 +85,7 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
     const m = typeof item.month === 'number' ? item.month : parseInt(item.month || '1', 10);
     return {
       value: val,
-      label: MONTHS_SHORT[m - 1] || '',
+      label: monthsShort[m - 1] || '',
     };
   });
 
@@ -86,7 +110,7 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
     return {
       value: val,
       color: palette[index % palette.length],
-      label: getCategoryName(item.categoryName),
+      label: getCategoryName(item.categoryName, currentLanguage, t),
     };
   });
 
@@ -129,15 +153,18 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
         <View className="mb-spacing-12 flex-row items-center justify-between">
           <View className="flex-1 pr-spacing-8">
             <Text className="font-cairo text-base font-bold text-text-primary">
-              Expenses Over Time
+              {t('active.charts.expensesOverTime', 'Expenses Over Time')}
             </Text>
             <Text className="font-cairo text-[12px] text-text-secondary">
-              Track household spending over the last 6 months.
+              {t(
+                'active.charts.expensesSubtitle',
+                'Track household spending over the last 6 months.'
+              )}
             </Text>
           </View>
           <View className="bg-surface-surfaceVariant rounded-radius-full border border-surface-border px-spacing-8 py-spacing-4">
             <Text className="font-cairo text-[11px] font-semibold text-text-secondary">
-              Last 6 months
+              {t('active.charts.last6months', 'Last 6 months')}
             </Text>
           </View>
         </View>
@@ -175,7 +202,7 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
         ) : (
           <View className="h-32 items-center justify-center">
             <Text className="font-cairo text-sm text-text-disabled">
-              No historical data available
+              {t('active.charts.noData', 'No historical data available')}
             </Text>
           </View>
         )}
@@ -186,15 +213,15 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
         <View className="mb-spacing-12 flex-row items-center justify-between">
           <View className="flex-1 pr-spacing-8">
             <Text className="font-cairo text-base font-bold text-text-primary">
-              Inventory Distribution
+              {t('active.charts.inventoryDistribution', 'Inventory Distribution')}
             </Text>
             <Text className="font-cairo text-[12px] text-text-secondary">
-              Distribution of inventory items by category.
+              {t('active.charts.inventorySubtitle', 'Distribution of inventory items by category.')}
             </Text>
           </View>
           <View className="bg-surface-surfaceVariant rounded-radius-full border border-surface-border px-spacing-8 py-spacing-4">
             <Text className="font-cairo text-[11px] font-semibold text-text-secondary">
-              {totalItems} {totalItems === 1 ? 'item' : 'items'}
+              {t('active.charts.itemCount', { count: totalItems })}
             </Text>
           </View>
         </View>
@@ -214,7 +241,7 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
                   {totalItems}
                 </Text>
                 <Text className="font-cairo text-[10px] leading-[12px] text-text-disabled">
-                  items
+                  {t('active.charts.itemsLabel', 'items')}
                 </Text>
               </View>
             </View>
@@ -235,7 +262,9 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
           </View>
         ) : (
           <View className="h-32 items-center justify-center">
-            <Text className="font-cairo text-sm text-text-disabled">No items in inventory</Text>
+            <Text className="font-cairo text-sm text-text-disabled">
+              {t('active.charts.noInventory', 'No items in inventory')}
+            </Text>
           </View>
         )}
       </View>
@@ -245,15 +274,18 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
         <View className="mb-spacing-12 flex-row items-center justify-between">
           <View className="flex-1 pr-spacing-8">
             <Text className="font-cairo text-base font-bold text-text-primary">
-              Budget Overview
+              {t('active.charts.budgetOverview', 'Budget Overview')}
             </Text>
             <Text className="font-cairo text-[12px] text-text-secondary">
-              See how much of your monthly budget has been spent.
+              {t(
+                'active.charts.budgetSubtitle',
+                'See how much of your monthly budget has been spent.'
+              )}
             </Text>
           </View>
           <View className="bg-surface-surfaceVariant rounded-radius-full border border-surface-border px-spacing-8 py-spacing-4">
             <Text className="font-cairo text-[11px] font-semibold text-text-secondary">
-              Current Month
+              {t('active.charts.currentMonth', 'Current Month')}
             </Text>
           </View>
         </View>
@@ -278,7 +310,7 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
                 {spentPct}%
               </Text>
               <Text className="font-cairo text-[10px] leading-[12px] text-text-disabled">
-                Spent
+                {t('active.charts.spentLabel', 'Spent')}
               </Text>
             </View>
           </View>
@@ -287,13 +319,17 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
         {/* Budget Details Table */}
         <View className="pt-spacing-12 mt-spacing-8 gap-y-spacing-8 border-t border-surface-divider">
           <View className="flex-row items-center justify-between">
-            <Text className="font-cairo text-sm text-text-secondary">Monthly Budget</Text>
+            <Text className="font-cairo text-sm text-text-secondary">
+              {t('active.charts.monthlyBudgetTable', 'Monthly Budget')}
+            </Text>
             <Text className="font-cairo text-sm font-bold text-text-primary">
-              {formatCurrency(target)}
+              {formatCurrency(target, t)}
             </Text>
           </View>
           <View className="flex-row items-center justify-between">
-            <Text className="font-cairo text-sm text-text-secondary">Spent</Text>
+            <Text className="font-cairo text-sm text-text-secondary">
+              {t('active.charts.spentTable', 'Spent')}
+            </Text>
             <Text
               className={[
                 'font-cairo text-sm font-bold',
@@ -301,11 +337,13 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
               ]
                 .filter(Boolean)
                 .join(' ')}>
-              {formatCurrency(spent)}
+              {formatCurrency(spent, t)}
             </Text>
           </View>
           <View className="flex-row items-center justify-between">
-            <Text className="font-cairo text-sm text-text-secondary">Remaining</Text>
+            <Text className="font-cairo text-sm text-text-secondary">
+              {t('active.charts.remainingTable', 'Remaining')}
+            </Text>
             <Text
               className={[
                 'font-cairo text-sm font-bold',
@@ -313,7 +351,7 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
               ]
                 .filter(Boolean)
                 .join(' ')}>
-              {formatCurrency(remaining)}
+              {formatCurrency(remaining, t)}
             </Text>
           </View>
         </View>

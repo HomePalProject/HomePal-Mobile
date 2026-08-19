@@ -2,6 +2,7 @@ import React from 'react';
 import { View, TextInput, Pressable, ActivityIndicator } from 'react-native';
 import { Plus, Send } from 'lucide-react-native';
 import { useTheme } from '@/src/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 export interface ChatInputBarProps {
   value: string;
@@ -21,11 +22,12 @@ export function ChatInputBar({
   onAttachPress,
 }: ChatInputBarProps) {
   const { theme } = useTheme();
+  const { t } = useTranslation('agentChat');
 
   return (
     <View className="flex-row items-center gap-spacing-8 border-t border-surface-border bg-surface-background px-spacing-16 py-spacing-8">
       {/* Left: Plus/Attach Button */}
-      <Pressable
+      {/* <Pressable
         onPress={onAttachPress}
         disabled={disabled || isStreaming}
         accessibilityRole="button"
@@ -33,16 +35,16 @@ export function ChatInputBar({
         style={{ width: 44, height: 44, borderRadius: 22 }}
         className="bg-surface-surfaceVariant/60 items-center justify-center active:opacity-75 disabled:opacity-50">
         <Plus size={22} color={theme.colors.text.secondary} />
-      </Pressable>
+      </Pressable> */}
 
       {/* Middle/Right: Rounded wrapper containing both TextInput and Send Button */}
       <View
-        style={{ height: 48 }}
+        style={{ height: 55 }}
         className="flex-1 flex-row items-center rounded-radius-full border border-surface-border bg-surface-surface pl-spacing-16 pr-spacing-4">
         <TextInput
           value={value}
           onChangeText={onChangeText}
-          placeholder="Message Assistant..."
+          placeholder={t('input.placeholder', 'Message Assistant...')}
           placeholderTextColor={theme.colors.text.disabled}
           editable={!disabled && !isStreaming}
           className="h-full flex-1 font-cairo text-base text-text-primary"
@@ -54,7 +56,11 @@ export function ChatInputBar({
           onPress={onSend}
           disabled={disabled || (!value.trim() && !isStreaming)}
           accessibilityRole="button"
-          accessibilityLabel={isStreaming ? 'Generating response' : 'Send message'}
+          accessibilityLabel={
+            isStreaming
+              ? t('input.generating', 'Generating response')
+              : t('input.send', 'Send message')
+          }
           style={{ width: 40, height: 40, borderRadius: 20 }}
           className="m-1 items-center justify-center bg-brand-primary active:opacity-75 disabled:opacity-50">
           {isStreaming ? (

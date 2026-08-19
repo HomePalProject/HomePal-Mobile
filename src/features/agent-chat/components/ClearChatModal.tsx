@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal, View, Text, Pressable } from 'react-native';
 import { AlertTriangle } from 'lucide-react-native';
 import { useTheme } from '@/src/hooks/useTheme';
+import { useTranslation } from 'react-i18next';
 
 export interface ClearChatModalProps {
   visible: boolean;
@@ -17,12 +18,20 @@ export function ClearChatModal({
   visible,
   onClose,
   onConfirm,
-  title = 'Clear Chat',
-  description = 'Are you sure you want to clear your chat session history?',
-  cancelText = 'Cancel',
-  confirmText = 'Confirm',
+  title,
+  description,
+  cancelText,
+  confirmText,
 }: ClearChatModalProps) {
   const { theme } = useTheme();
+  const { t } = useTranslation('agentChat');
+
+  const modalTitle = title || t('clearModal.title', 'Clear Chat');
+  const modalDescription =
+    description ||
+    t('clearModal.description', 'Are you sure you want to clear your chat session history?');
+  const modalCancelText = cancelText || t('clearModal.cancel', 'Cancel');
+  const modalConfirmText = confirmText || t('clearModal.confirm', 'Confirm');
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
@@ -46,12 +55,12 @@ export function ClearChatModal({
 
           {/* Heading */}
           <Text className="text-bodyLarge mb-spacing-8 text-center font-cairo font-bold text-text-primary">
-            {title}
+            {modalTitle}
           </Text>
 
           {/* Message Description */}
           <Text className="text-bodySmall mb-spacing-24 text-center font-cairo leading-[20px] text-text-secondary">
-            {description}
+            {modalDescription}
           </Text>
 
           {/* Action Buttons Row */}
@@ -59,10 +68,10 @@ export function ClearChatModal({
             <Pressable
               onPress={onClose}
               accessibilityRole="button"
-              accessibilityLabel={cancelText}
+              accessibilityLabel={modalCancelText}
               className="h-12 flex-1 flex-row items-center justify-center rounded-radius-full border border-surface-border bg-transparent active:bg-surface-border/40">
               <Text className="text-body font-cairo font-bold text-brand-primary">
-                {cancelText}
+                {modalCancelText}
               </Text>
             </Pressable>
 
@@ -72,10 +81,10 @@ export function ClearChatModal({
                 onClose();
               }}
               accessibilityRole="button"
-              accessibilityLabel={confirmText}
+              accessibilityLabel={modalConfirmText}
               className="h-12 flex-1 flex-row items-center justify-center rounded-radius-full bg-brand-error active:bg-brand-error/80">
               <Text className="text-body font-cairo font-bold text-text-inverse">
-                {confirmText}
+                {modalConfirmText}
               </Text>
             </Pressable>
           </View>

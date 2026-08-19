@@ -13,6 +13,7 @@ import { ErrorBanner } from '@/src/components/common/ErrorBanner';
 import { AuthSegmentedControl } from '@/src/features/auth/components/AuthSegmentedControl';
 import { useAppSelector } from '@/src/store';
 import { useGoogleAuth } from '@/src/hooks/useGoogleAuth';
+import { SvgIcon } from '@/src/components/ui/SvgIcon';
 
 export default function AuthFormsLayout() {
   const pathname = usePathname();
@@ -74,6 +75,7 @@ export default function AuthFormsLayout() {
               isLoading={isGoogleLoading}
               hapticStyle="light"
               className="h-[52px] w-full flex-row items-center justify-center gap-3 rounded-[12px] border border-surface-border bg-surface-surface">
+              <SvgIcon name="google" width={18} height={18} />
               <Text className="font-cairo text-[15px] font-semibold text-text-primary">
                 {t('auth:login.continueWithGoogle')}
               </Text>

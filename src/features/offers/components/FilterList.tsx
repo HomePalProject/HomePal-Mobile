@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollView, TouchableOpacity, View } from 'react-native';
 import { Text } from '@/src/components/ui/text';
 import { Store, Tag } from 'lucide-react-native';
+import { colors } from '@/src/theme';
 
 interface FilterOption {
   id: string;
@@ -42,7 +43,7 @@ export const FilterList: React.FC<FilterListProps> = ({
               ? 'bg-brand-primary shadow-sm'
               : 'bg-surface-surfaceVariant border border-surface-border'
           }`}>
-          {!selectedId && type === 'supermarket' && <Store size={16} className="text-white" />}
+          {!selectedId && type === 'supermarket' && <Store size={16} color={colors.text.inverse} />}
           <Text
             className={`font-cairo text-[14px] font-bold ${
               !selectedId ? 'text-white' : 'text-text-secondary'

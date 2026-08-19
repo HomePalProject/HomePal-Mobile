@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, FlatList, ActivityIndicator, Switch, RefreshControl } from 'react-native';
+import { View, FlatList, ActivityIndicator, Switch, RefreshControl, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '@/src/components/ui/text';
 import { CheckCircle2 } from 'lucide-react-native';
@@ -61,8 +61,14 @@ export const OffersScreen = () => {
       );
     }
     return (
-      <View className="mt-10 items-center justify-center p-6">
-        <Text className="text-center font-cairo text-[16px] text-text-secondary">
+      <View className="mt-3 items-center justify-center p-6">
+        <Image
+          source={require('@/src/assets/images/emptyOffer.png')}
+          style={{ width: 250, height: 250 }}
+          resizeMode="contain"
+          className="mb-3 opacity-85"
+        />
+        <Text className="px-8 text-center font-cairo text-[16px] text-text-secondary">
           {t('noActiveOffers')}
         </Text>
       </View>

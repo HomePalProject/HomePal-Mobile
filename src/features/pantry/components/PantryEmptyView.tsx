@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, Pressable, Image } from 'react-native';
 import { Plus } from 'lucide-react-native';
 import { Icon } from '@/src/components/ui/icon';
-import PantryEmptyImage from '@/src/assets/images/pantry-empty.jpg';
 import { useTranslation } from 'react-i18next';
 
 interface PantryEmptyViewProps {
@@ -14,14 +13,13 @@ export function PantryEmptyView({ onAddItem }: PantryEmptyViewProps) {
 
   return (
     <View className="flex-1 items-center justify-center px-spacing-24">
-      <View className="bg-brand-accentContainer/30 mb-spacing-24 h-32 w-32 items-center justify-center rounded-radius-large">
-        <Image
-          source={PantryEmptyImage}
-          resizeMode="contain"
-          className="h-full w-full rounded-radius-large"
-          accessibilityLabel="Empty Pantry"
-        />
-      </View>
+      <Image
+        source={require('@/src/assets/images/emptyPantry.png')}
+        style={{ width: 250, height: 250 }}
+        resizeMode="contain"
+        className="mb-spacing-24 opacity-85"
+        accessibilityLabel="Empty Pantry"
+      />
 
       <Text className="text-h3 mb-spacing-8 text-center font-cairo font-bold text-text-primary">
         {t('emptyPantry')}
