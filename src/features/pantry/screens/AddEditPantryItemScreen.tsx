@@ -4,7 +4,6 @@ import {
   TextInput,
   ScrollView,
   Pressable,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Text,
@@ -138,10 +137,12 @@ export default function AddEditPantryItemScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.back();
     } catch {
-      Alert.alert(
-        t('common:errors.requestFailed', 'Error'),
-        t('pantry:failedToSave', 'Failed to save item. Please try again.')
-      );
+      setNotification({
+        visible: true,
+        type: 'error',
+        title: t('common:errors.requestFailed', 'Error'),
+        message: t('pantry:failedToSave', 'Failed to save item. Please try again.'),
+      });
     }
   };
 
@@ -158,10 +159,12 @@ export default function AddEditPantryItemScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.replace('/(tabs)/pantry');
     } catch {
-      Alert.alert(
-        t('common:errors.requestFailed', 'Error'),
-        t('pantry:failedToRemove', 'Failed to remove item. Please try again.')
-      );
+      setNotification({
+        visible: true,
+        type: 'error',
+        title: t('common:errors.requestFailed', 'Error'),
+        message: t('pantry:failedToRemove', 'Failed to remove item. Please try again.'),
+      });
     } finally {
       setIsDeleting(false);
     }
@@ -306,10 +309,12 @@ export default function AddEditPantryItemScreen() {
           <PantryImagePicker
             imageUri={imageUri}
             onPickerPress={() =>
-              Alert.alert(
-                t('categoryImageTitle', 'Category Image'),
-                t('categoryImageMsg', 'Linked to the selected category.')
-              )
+              setNotification({
+                visible: true,
+                type: 'success',
+                title: t('categoryImageTitle', 'Category Image'),
+                message: t('categoryImageMsg', 'Linked to the selected category.'),
+              })
             }
             onScanPress={handleScanItem}
           />

@@ -6,7 +6,7 @@ import { CheckCircle2 } from 'lucide-react-native';
 import { Icon } from '@/src/components/ui/icon';
 import { useColorScheme } from 'nativewind';
 import { lightColors, darkColors } from '@/src/theme/colors';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 import { useOffers } from '../hooks/useOffers';
@@ -19,6 +19,7 @@ import { OfferCard } from '../components/OfferCard';
 
 export const OffersScreen = () => {
   const router = useRouter();
+  const { query } = useLocalSearchParams<{ query?: string }>();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
   const themeColors = isDark ? darkColors : lightColors;
@@ -39,6 +40,13 @@ export const OffersScreen = () => {
   } = useOffers({
     activeOnly: true, // Default to true as per design
   });
+
+  React.useEffect(() => {
+    if (query) {
+      updateFilters({ query });
+      router.setParams({ query: undefined });
+    }
+  }, [query, updateFilters]);
 
   const categoryOptions = categories.map((c) => ({ id: c.id, label: c.name }));
   const supermarketOptions = supermarkets.map((s) => ({ id: s.id, label: s.name }));

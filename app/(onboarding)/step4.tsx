@@ -6,7 +6,7 @@ import { Text } from '@/src/components/ui/text';
 import { Button } from '@/src/components/ui/button';
 import { TextField } from '@/src/components/ui/text-field';
 import { Icon } from '@/src/components/ui/icon';
-import { ArrowLeft, Sparkles, Heart, AlertTriangle, Check } from 'lucide-react-native';
+import { ArrowLeft, Sparkles, Heart, AlertTriangle, Check, Bot } from 'lucide-react-native';
 import { useAppDispatch, useAppSelector } from '@/src/store';
 import { registerUser, saveOnboardingData, clearError } from '@/src/store/slices/authSlice';
 import { onboardingStep4Schema } from '@/src/utils/validation';
@@ -257,7 +257,7 @@ export default function OnboardingStep4Screen() {
             {/* Section 3: AI Text Area */}
             <View className="mt-6 flex-col gap-2 pb-6">
               <View className="flex-row items-center gap-2">
-                <Icon as={Sparkles} size={18} className="text-brand-accent" />
+                <Icon as={Bot} size={18} className="text-brand-accent" />
                 <Text className="font-cairo text-[18px] font-bold text-text-primary">
                   ✨ Anything else? — AI Personalized
                 </Text>
