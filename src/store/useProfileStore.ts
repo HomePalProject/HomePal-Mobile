@@ -52,7 +52,9 @@ export interface ProfileState {
   fullName: string;
   gender: Gender | null;
   birthDate: string | null;
+  governorateId: string | null;
   governorate: string;
+  cityId: string | null;
   city: string;
   email: string;
   profileImageUri: string | null;
@@ -84,7 +86,9 @@ export const useProfileStore = create<ProfileState>((set) => ({
   fullName: '',
   gender: null,
   birthDate: null,
+  governorateId: null,
   governorate: '',
+  cityId: null,
   city: '',
   email: '',
   profileImageUri: null,
@@ -124,7 +128,9 @@ export const useProfileStore = create<ProfileState>((set) => ({
           fullName: cachedProfile.fullName,
           gender: parsedGender,
           birthDate: cachedProfile.birthDate,
+          governorateId: cachedProfile.governorateId || null,
           governorate: cachedProfile.governorate,
+          cityId: cachedProfile.cityId || null,
           city: cachedProfile.city,
           email: cachedProfile.email || 'noura@example.com',
           profileImageUri: resolveProfileImageUri(cachedProfile),
@@ -162,8 +168,10 @@ export const useProfileStore = create<ProfileState>((set) => ({
           fullName: data.fullName,
           gender: parsedGender,
           birthDate: data.birthDate,
-          governorate: data.governorate,
-          city: data.city,
+          governorateId: data.governorateId || null,
+          governorate: data.governorate || '',
+          cityId: data.cityId || null,
+          city: data.city || '',
           email: data.email || 'noura@example.com',
           profileImageUri: resolveProfileImageUri(data),
           roles,
@@ -192,8 +200,10 @@ export const useProfileStore = create<ProfileState>((set) => ({
           fullName: data.fullName,
           gender: data.gender as any,
           birthDate: data.birthDate,
-          governorate: data.governorate,
-          city: data.city,
+          governorateId: data.governorateId || null,
+          governorate: data.governorate || '',
+          cityId: data.cityId || null,
+          city: data.city || '',
           profileImageUri: resolveProfileImageUri(data),
           isLoading: false,
         });

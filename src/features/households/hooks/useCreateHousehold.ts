@@ -12,7 +12,9 @@ import { authService } from '@/src/services/api/auth.service';
 export interface CreateHouseholdForm {
   name: string;
   address: string;
+  governorateId: string | null;
   governorate: string;
+  cityId: string | null;
   city: string;
 }
 
@@ -23,7 +25,9 @@ export function useCreateHousehold() {
   const [formData, setFormData] = useState<CreateHouseholdForm>({
     name: '',
     address: '',
+    governorateId: null,
     governorate: '',
+    cityId: null,
     city: '',
   });
 
@@ -63,8 +67,8 @@ export function useCreateHousehold() {
       const payload: CreateHouseholdRequest = {
         name: formData.name.trim(),
         ...(formData.address.trim() && { address: formData.address.trim() }),
-        ...(formData.governorate.trim() && { governorate: formData.governorate.trim() }),
-        ...(formData.city.trim() && { city: formData.city.trim() }),
+        ...(formData.governorateId && { governorateId: formData.governorateId }),
+        ...(formData.cityId && { cityId: formData.cityId }),
       };
 
       // Real API Call: POST /api/Households

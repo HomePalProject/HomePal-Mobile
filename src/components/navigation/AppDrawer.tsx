@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+
 import {
   View,
   Pressable,
@@ -9,6 +10,7 @@ import {
   StyleSheet,
   I18nManager,
 } from 'react-native';
+
 import { router, Href, usePathname } from 'expo-router';
 import {
   Home,
@@ -28,6 +30,7 @@ import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { useAppSelector, useAppDispatch } from '@/src/store';
 import { logoutUser } from '@/src/store/slices/authSlice';
+
 import { useTheme } from '@/src/providers/ThemeProvider';
 import { useColorScheme } from 'nativewind';
 import { lightColors, darkColors } from '@/src/theme/colors';
@@ -49,7 +52,6 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
   const { resolvedMode, setMode } = useTheme();
   const { t } = useTranslation('common');
 
-  // Fix: Re-adding the missing toggleTheme function
   const toggleTheme = () => {
     setMode(resolvedMode === 'dark' ? 'light' : 'dark');
   };

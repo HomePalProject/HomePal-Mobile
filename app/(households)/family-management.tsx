@@ -72,25 +72,27 @@ export default function FamilyManagementScreen() {
       </View>
 
       {/* ── FAB: Invite Member ── */}
-      <Pressable
-        onPress={onInviteMember}
-        className="absolute end-6 z-50 flex-row items-center gap-2 rounded-full bg-brand-primary pe-6 ps-5 active:bg-brand-primary-pressed"
-        style={{
-          bottom: Math.max(insets.bottom + 24, 24),
-          height: 56,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.25,
-          shadowRadius: 12,
-          elevation: 8,
-        }}
-        accessibilityRole="button"
-        accessibilityLabel={t('familyManagement.inviteMember', 'Invite Member')}>
-        <Icon as={Plus} size={22} color="#fff" />
-        <Text className="font-cairo text-[14px] font-bold leading-[20px] tracking-[0.01em] text-white">
-          {t('familyManagement.inviteMember', 'Invite Member')}
-        </Text>
-      </Pressable>
+      {detailedMembers.find((m) => m.isCurrentUser)?.role === 'Household Manager' && (
+        <Pressable
+          onPress={onInviteMember}
+          className="absolute end-6 z-50 flex-row items-center gap-2 rounded-full bg-brand-primary pe-6 ps-5 active:bg-brand-primary-pressed"
+          style={{
+            bottom: Math.max(insets.bottom + 24, 24),
+            height: 56,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.25,
+            shadowRadius: 12,
+            elevation: 8,
+          }}
+          accessibilityRole="button"
+          accessibilityLabel={t('familyManagement.inviteMember', 'Invite Member')}>
+          <Icon as={Plus} size={22} color="#fff" />
+          <Text className="font-cairo text-[14px] font-bold leading-[20px] tracking-[0.01em] text-white">
+            {t('familyManagement.inviteMember', 'Invite Member')}
+          </Text>
+        </Pressable>
+      )}
     </SafeAreaView>
   );
 }

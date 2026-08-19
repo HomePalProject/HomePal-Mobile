@@ -25,6 +25,8 @@ export function useMemberPreferences(memberId: string) {
   // For the header, we also need to find the target member's details
   const targetMember = members.find((m) => m.id === memberId);
 
+  const canEdit = isManager || !!targetMember?.isCurrentUser;
+
   const fetchAllData = useCallback(async () => {
     if (!memberId) return;
 
@@ -63,7 +65,7 @@ export function useMemberPreferences(memberId: string) {
 
   const togglePreference = useCallback(
     async (preferenceId: string) => {
-      if (!isManager) return; // Only managers can edit
+      if (!canEdit) return; // Only managers or the user themselves can edit
 
       // Set this chip to loading state
       setLoadingPreferences((prev) => {
@@ -129,7 +131,7 @@ export function useMemberPreferences(memberId: string) {
     selectedPreferenceIds,
     loadingPreferences,
     targetMember,
-    isManager,
+    canEdit,
     togglePreference,
     refetch: fetchAllData,
   };

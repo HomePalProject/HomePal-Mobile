@@ -132,6 +132,35 @@ export default function MealPlanDetailsScreen() {
                 },
                 bullet_list: { textAlign, color: theme.colors.text.primary },
                 ordered_list: { textAlign, color: theme.colors.text.primary },
+                table: {
+                  borderColor: theme.colors.surface.border,
+                  borderWidth: 1,
+                  borderRadius: 8,
+                },
+                thead: {
+                  backgroundColor: theme.colors.brand.primary,
+                },
+                th: {
+                  color: 'white',
+                  padding: 10,
+                  fontFamily: 'Cairo',
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                  borderColor: theme.colors.surface.border,
+                  borderWidth: 1,
+                },
+                tr: {
+                  borderBottomWidth: 1,
+                  borderColor: theme.colors.surface.border,
+                },
+                td: {
+                  padding: 10,
+                  fontFamily: 'Cairo',
+                  textAlign: 'center',
+                  color: theme.colors.text.primary,
+                  borderColor: theme.colors.surface.border,
+                  borderWidth: 1,
+                },
               }}>
               {currentPlanDetails.planData || 'No meal plan content available.'}
             </Markdown>

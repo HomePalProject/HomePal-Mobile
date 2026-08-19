@@ -9,6 +9,8 @@ import { useHouseholdSettings } from '@/src/features/households/hooks/useHouseho
 import { useAppSelector, useAppDispatch } from '@/src/store';
 import { ProTipCard } from '@/src/components/ui/pro-tip-card';
 import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
+import { LocationSelectorModal } from '@/src/components/ui/LocationSelectorModal';
 
 export default function HouseholdSettingsRoute() {
   const {
@@ -19,8 +21,12 @@ export default function HouseholdSettingsRoute() {
     setName,
     address,
     setAddress,
+    governorateId,
+    setGovernorateId,
     governorate,
     setGovernorate,
+    cityId,
+    setCityId,
     city,
     setCity,
     onUpdate,
@@ -33,6 +39,8 @@ export default function HouseholdSettingsRoute() {
   const { fullName, profileImageUri } = useAppSelector((state) => state.profile);
   const handleOpenDrawer = useDrawerStore((state) => state.openDrawer);
   const insets = useSafeAreaInsets();
+  const [selectorType, setSelectorType] = useState<'governorate' | 'city'>('governorate');
+  const [isSelectorVisible, setIsSelectorVisible] = useState(false);
 
   const userInitials = fullName ? fullName.trim()[0]?.toUpperCase() : 'U';
 
@@ -147,17 +155,17 @@ export default function HouseholdSettingsRoute() {
                     {t('settings.governorate')}
                   </Text>
                 </View>
-                <TextInput
-                  value={governorate}
-                  onChangeText={setGovernorate}
-                  placeholder={t('settings.governoratePlaceholder')}
-                  placeholderTextColor="#A8A29B"
-                  className="bg-surface-surfaceVariant rounded-xl border border-surface-border px-3 py-2 text-text-primary"
-                  style={{
-                    fontFamily: 'Cairo',
-                    fontSize: 14,
+                <Pressable
+                  onPress={() => {
+                    setSelectorType('governorate');
+                    setIsSelectorVisible(true);
                   }}
-                />
+                  className="bg-surface-surfaceVariant h-[40px] justify-center rounded-xl border border-surface-border px-3 py-2">
+                  <Text
+                    className={`font-cairo text-[14px] ${governorate ? 'text-text-primary' : 'text-[#A8A29B]'}`}>
+                    {governorate || t('settings.governoratePlaceholder', 'Select Governorate')}
+                  </Text>
+                </Pressable>
               </View>
 
               <View className="flex-1" style={{ gap: 6 }}>
@@ -167,17 +175,17 @@ export default function HouseholdSettingsRoute() {
                     {t('settings.city')}
                   </Text>
                 </View>
-                <TextInput
-                  value={city}
-                  onChangeText={setCity}
-                  placeholder={t('settings.cityPlaceholder')}
-                  placeholderTextColor="#A8A29B"
-                  className="bg-surface-surfaceVariant rounded-xl border border-surface-border px-3 py-2 text-text-primary"
-                  style={{
-                    fontFamily: 'Cairo',
-                    fontSize: 14,
+                <Pressable
+                  onPress={() => {
+                    setSelectorType('city');
+                    setIsSelectorVisible(true);
                   }}
-                />
+                  className="bg-surface-surfaceVariant h-[40px] justify-center rounded-xl border border-surface-border px-3 py-2">
+                  <Text
+                    className={`font-cairo text-[14px] ${city ? 'text-text-primary' : 'text-[#A8A29B]'}`}>
+                    {city || t('settings.cityPlaceholder', 'Select City')}
+                  </Text>
+                </Pressable>
               </View>
             </View>
 
@@ -234,6 +242,27 @@ export default function HouseholdSettingsRoute() {
           </View>
         </ScrollView>
       )}
+
+      <LocationSelectorModal
+        visible={isSelectorVisible}
+        onClose={() => setIsSelectorVisible(false)}
+        type={selectorType}
+        governorateId={governorateId}
+        selectedId={selectorType === 'governorate' ? governorateId : cityId}
+        onSelect={(id, name) => {
+          if (selectorType === 'governorate') {
+            setGovernorateId(id);
+            setGovernorate(name);
+            if (governorateId !== id) {
+              setCityId(null);
+              setCity('');
+            }
+          } else {
+            setCityId(id);
+            setCity(name);
+          }
+        }}
+      />
     </SafeAreaView>
   );
 }

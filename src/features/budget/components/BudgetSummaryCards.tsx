@@ -9,6 +9,7 @@ interface BudgetSummaryCardsProps {
   remainingAmount: number;
   onSetTargetPress: () => void;
   isLoading?: boolean;
+  isReadOnly?: boolean;
 }
 
 /**
@@ -30,6 +31,7 @@ export function BudgetSummaryCards({
   remainingAmount,
   onSetTargetPress,
   isLoading = false,
+  isReadOnly = false,
 }: BudgetSummaryCardsProps) {
   const { t } = useTranslation('budget');
   return (
@@ -79,18 +81,20 @@ export function BudgetSummaryCards({
           </Text>
         </View>
 
-        <AnimatedPressable
-          onPress={onSetTargetPress}
-          disabled={isLoading}
-          accessibilityRole="button"
-          accessibilityLabel={t('setTarget', 'Set Budget Target')}
-          pressScale={0.93}
-          hapticStyle="medium"
-          className="rounded-radius-full bg-brand-accent px-spacing-16 py-spacing-8 disabled:opacity-50">
-          <Text className="font-cairo text-sm font-bold text-brand-primary">
-            {t('setTargetBtn', 'Set Target')}
-          </Text>
-        </AnimatedPressable>
+        {!isReadOnly && (
+          <AnimatedPressable
+            onPress={onSetTargetPress}
+            disabled={isLoading}
+            accessibilityRole="button"
+            accessibilityLabel={t('setTarget', 'Set Budget Target')}
+            pressScale={0.93}
+            hapticStyle="medium"
+            className="rounded-radius-full bg-brand-accent px-spacing-16 py-spacing-8 disabled:opacity-50">
+            <Text className="font-cairo text-sm font-bold text-brand-primary">
+              {t('setTargetBtn', 'Set Target')}
+            </Text>
+          </AnimatedPressable>
+        )}
       </View>
     </View>
   );

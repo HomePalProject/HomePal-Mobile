@@ -241,13 +241,15 @@ export function MemberCard({
       {/* ── Row 3: Action Buttons (right-aligned) ── */}
       <View className="mt-1 flex-row flex-wrap items-center justify-end gap-2">
         {/* Preferences — outline */}
-        <Pressable
-          onPress={() => onPreferences(member.id)}
-          className="rounded-full border border-surface-border bg-surface-surface px-3 py-1.5 active:opacity-70">
-          <Text className="font-cairo text-[12px] font-semibold text-text-primary">
-            {t('membersList.preferences')}
-          </Text>
-        </Pressable>
+        {(isCurrentUser || isCurrentUserAdmin) && (
+          <Pressable
+            onPress={() => onPreferences(member.id)}
+            className="rounded-full border border-surface-border bg-surface-surface px-3 py-1.5 active:opacity-70">
+            <Text className="font-cairo text-[12px] font-semibold text-text-primary">
+              {t('membersList.preferences')}
+            </Text>
+          </Pressable>
+        )}
 
         {/* Edit — solid amber */}
         {isCurrentUserAdmin && (
