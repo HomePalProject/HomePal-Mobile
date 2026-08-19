@@ -73,7 +73,7 @@ export function AgentChatScreen() {
   // Paywall View for unsubscribed accounts
   if (error === 'SUBSCRIPTION_REQUIRED') {
     return (
-      <SafeAreaView className="flex-1 bg-surface-background">
+      <SafeAreaView edges={['top', 'left', 'right']} className="flex-1 bg-surface-background">
         <StatusBar
           backgroundColor={theme.colors.surface.surface}
           barStyle={resolvedMode === 'dark' ? 'light-content' : 'dark-content'}
@@ -104,7 +104,7 @@ export function AgentChatScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-surface-background">
+    <SafeAreaView edges={['top', 'left', 'right']} className="flex-1 bg-surface-background">
       <StatusBar
         backgroundColor={theme.colors.surface.surface}
         barStyle={resolvedMode === 'dark' ? 'light-content' : 'dark-content'}

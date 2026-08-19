@@ -23,9 +23,9 @@ export function ChatInputBar({
   const { theme } = useTheme();
 
   return (
-    <View className="flex-row items-center gap-spacing-8 border-t border-surface-border bg-surface-background px-spacing-16 py-spacing-8">
+    <View className="flex-row items-center gap-spacing-8 border-t border-surface-border bg-surface-background px-spacing-16 pt-spacing-8">
       {/* Left: Plus/Attach Button */}
-      <Pressable
+      {/* <Pressable
         onPress={onAttachPress}
         disabled={disabled || isStreaming}
         accessibilityRole="button"
@@ -33,11 +33,11 @@ export function ChatInputBar({
         style={{ width: 44, height: 44, borderRadius: 22 }}
         className="bg-surface-surfaceVariant/60 items-center justify-center active:opacity-75 disabled:opacity-50">
         <Plus size={22} color={theme.colors.text.secondary} />
-      </Pressable>
+      </Pressable> */}
 
       {/* Middle/Right: Rounded wrapper containing both TextInput and Send Button */}
       <View
-        style={{ height: 48 }}
+        style={{ height: 55 }}
         className="flex-1 flex-row items-center rounded-radius-full border border-surface-border bg-surface-surface pl-spacing-16 pr-spacing-4">
         <TextInput
           value={value}
