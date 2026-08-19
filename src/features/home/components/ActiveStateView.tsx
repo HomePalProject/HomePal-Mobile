@@ -163,6 +163,7 @@ export function ActiveStateView({
   const router = useRouter();
   const { theme } = useTheme();
   const { overviewData, isLoading, isFetching, refetch } = useOverview();
+  const { t } = useTranslation('home');
 
   const handlePrint = async () => {
     if (!overviewData) return;
@@ -171,14 +172,13 @@ export function ActiveStateView({
       const { uri } = await Print.printToFileAsync({ html });
       await Sharing.shareAsync(uri, {
         mimeType: 'application/pdf',
-        dialogTitle: 'Share Household Overview Report',
+        dialogTitle: t('active.shareReportTitle', 'Share Household Overview Report'),
         UTI: 'com.adobe.pdf',
       });
     } catch (error) {
       console.error('Failed to generate report PDF', error);
     }
   };
-  const { t } = useTranslation('home');
 
   return (
     <View className="flex-1">
@@ -269,10 +269,13 @@ export function ActiveStateView({
         <View className="gap-y-spacing-16 rounded-radius-large border border-surface-border bg-surface-surface p-spacing-16">
           <View style={{ gap: 4 }}>
             <Text className="font-cairo text-lg font-bold text-text-primary">
-              Household Overview
+              {t('active.overviewTitle', 'Household Overview')}
             </Text>
             <Text className="font-cairo text-sm text-text-secondary">
-              Your household activity, spending, shopping and inventory at a glance.
+              {t(
+                'active.overviewSubtitle',
+                'Your household activity, spending, shopping and inventory at a glance.'
+              )}
             </Text>
           </View>
 
@@ -284,7 +287,9 @@ export function ActiveStateView({
               hapticStyle="light"
               className="flex-1 items-center justify-center rounded-radius-medium bg-brand-accent py-spacing-8 disabled:opacity-50">
               <Text className="font-cairo text-sm font-bold text-brand-primary">
-                {isFetching ? 'Refreshing...' : 'Refresh'}
+                {isFetching
+                  ? t('active.refreshing', 'Refreshing...')
+                  : t('active.refresh', 'Refresh')}
               </Text>
             </AnimatedPressable>
 
@@ -295,7 +300,9 @@ export function ActiveStateView({
               hapticStyle="light"
               className="flex-1 flex-row items-center justify-center gap-x-spacing-8 rounded-radius-medium border border-surface-border bg-surface-surface py-spacing-8 disabled:opacity-50">
               <Icon as={Printer} size={16} className="text-text-primary" />
-              <Text className="font-cairo text-sm font-semibold text-text-primary">Print</Text>
+              <Text className="font-cairo text-sm font-semibold text-text-primary">
+                {t('active.print', 'Print')}
+              </Text>
             </AnimatedPressable>
           </View>
         </View>
