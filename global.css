@@ -28,32 +28,9 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-
-    /* HomePal Brand & Surface Variables - Light */
-    --surface-bg: 43 41% 97%; /* #faf8f3 */
-    --surface-card: 0 0% 100%; /* #ffffff */
-    --surface-variant: 40 21% 95%; /* #f4f2ee */
-    --surface-border: 36 16% 87%; /* #e4e0da */
-    --surface-divider: 36 16% 87%; /* #e4e0da */
-    --text-primary: 34 8% 16%; /* #2d2a26 */
-    --text-secondary: 33 5% 41%; /* #6d6862 */
-    --text-disabled: 32 7% 63%; /* #a8a29b */
-    --text-inverse: 0 0% 100%; /* #ffffff */
-    --brand-primary: 162 32% 31%; /* #356859 */
-    --brand-primary-pressed: 162 33% 25%; /* #2a5347 */
-    --brand-primary-container: 160 35% 90%; /* #dceee8 */
-    --brand-accent: 36 67% 55%; /* #d99a3d */
-    --brand-accent-container: 39 74% 88%; /* #f7e7ca */
-    --brand-amber-300: 41 86% 65%; /* #f3c35b */
-    --status-error: 2 64% 58%; /* #d9534f */
-    --status-error-container: 5 79% 95%; /* #fce8e6 */
-    --status-success: 147 42% 46%; /* #43a66f */
-    --status-warning: 37 77% 56%; /* #e6a33a */
-    --status-info: 218 91% 64%; /* #4f8ef7 */
   }
 
-  .dark:root,
-  .dark {
+  .dark:root {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
@@ -77,27 +54,5 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-
-    /* HomePal Brand & Surface Variables - Dark */
-    --surface-bg: 150 5% 7%; /* #121413 */
-    --surface-card: 150 5% 15%; /* #242826 */
-    --surface-variant: 160 5% 11%; /* #1a1d1c */
-    --surface-border: 154 6% 23%; /* #363d3a */
-    --surface-divider: 154 6% 23%; /* #363d3a */
-    --text-primary: 40 26% 93%; /* #f2efe9 */
-    --text-secondary: 36 11% 73%; /* #c2bcb3 */
-    --text-disabled: 33 5% 41%; /* #6d6862 */
-    --text-inverse: 150 5% 7%; /* #121413 */
-    --brand-primary: 162 33% 38%; /* #42826f */
-    --brand-primary-pressed: 162 32% 31%; /* #356859 */
-    --brand-primary-container: 161 32% 15%; /* #1a332b */
-    --brand-accent: 36 75% 60%; /* #e6a84d */
-    --brand-accent-container: 37 64% 18%; /* #4a3410 */
-    --brand-amber-300: 43 57% 46%; /* #b89132 */
-    --status-error: 0 100% 71%; /* #ff6b6b */
-    --status-error-container: 0 37% 17%; /* #3d1c1c */
-    --status-success: 144 49% 55%; /* #52c480 */
-    --status-warning: 37 90% 61%; /* #f5b041 */
-    --status-info: 215 90% 66%; /* #5b9cf6 */
   }
 }
