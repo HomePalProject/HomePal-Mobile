@@ -11,6 +11,7 @@ import shoppingListReducer from '@/src/store/slices/shoppingListSlice';
 import budgetReducer from '@/src/store/slices/budgetSlice';
 import mealPlansReducer from '@/src/store/slices/mealPlansSlice';
 import agentChatReducer from '@/src/store/slices/agentChatSlice';
+import subscriptionReducer from '@/src/store/slices/subscriptionSlice';
 
 export const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ export const store = configureStore({
     budget: budgetReducer,
     mealPlans: mealPlansReducer,
     agentChat: agentChatReducer,
+    subscription: subscriptionReducer,
     [baseApi.reducerPath]: baseApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
