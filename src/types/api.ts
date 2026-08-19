@@ -378,3 +378,62 @@ export interface CityResponse {
   name: string;
   governorateId: string;
 }
+
+// --- Subscription API Schemas ---
+
+export enum SubscriptionStatus {
+  Active = 'Active',
+  Expired = 'Expired',
+  Cancelled = 'Cancelled',
+  Pending = 'Pending',
+}
+
+export enum PaymentStatus {
+  Pending = 'Pending',
+  Success = 'Success',
+  Failed = 'Failed',
+}
+
+export interface SubscriptionPlanResponse {
+  id: string;
+  code: string;
+  name: string;
+  description: string | null;
+  price: number;
+  currency: string;
+  durationInDays: number;
+}
+
+export interface UserSubscriptionResponse {
+  id: string;
+  userId: string;
+  planId: string | null;
+  planName: string | null;
+  status: SubscriptionStatus;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+}
+
+export interface InitiatePaymentRequest {
+  planId: string;
+}
+
+export interface InitiatePaymentResponse {
+  paymentToken: string;
+  iframeUrl: string;
+  paymobOrderId: string;
+  amount: number;
+  currency: string;
+}
+
+export interface PaymentTransactionResponse {
+  id: string;
+  paymobOrderId: string | null;
+  paymobTransactionId: string | null;
+  amount: number;
+  currency: string;
+  status: PaymentStatus;
+  paymentMethod: string | null;
+  createdAt: string;
+}
