@@ -1,0 +1,70 @@
+{
+  "loading": "جاري تحميل لوحة التحكم...",
+  "orphan": {
+    "welcome": "مرحباً بك في هوم بال!",
+    "noHousehold": "أنت لا تنتمي إلى أي منزل حتى الآن",
+    "description": "أنشئ منزلك الخاص للبدء في إدارة البقالة والوجبات، أو تحقق مما إذا كان لديك دعوات معلقة",
+    "createBtn": "إنشاء منزل جديد",
+    "invitationsBtn": "عرض الدعوات المعلقة",
+    "proTip": "تسمح لك المنازل بمزامنة قوائم التسوق وخطط الوجبات مع العائلة أو زملاء السكن في الوقت الفعلي."
+  },
+  "active": {
+    "goodMorning": "صباح الخير، {{firstName}}!",
+    "welcomeBack": "مرحباً بعودتك إلى مركزك المنزلي الرقمي.",
+    "primaryResidence": "المنزل الأساسي",
+    "manager": "مدير",
+    "member": "عضو",
+    "shareReportTitle": "مشاركة تقرير ملخص المنزل",
+    "overviewTitle": "ملخص المنزل",
+    "overviewSubtitle": "أنشطة منزلك، النفقات، التسوق والمخزون في لمحة سريعة.",
+    "refreshing": "جاري التحديث...",
+    "refresh": "تحديث",
+    "print": "طباعة",
+    "welcomeUser": "مرحباً، {{name}}",
+    "homeContent": "محتوى الصفحة الرئيسية",
+    "kpis": {
+      "itemsInInventory": "المواد في المخزن",
+      "inventoryRecords": "سجلات المخزن",
+      "householdMembers": "أعضاء المنزل",
+      "activeMembers": "أعضاء نشطون",
+      "monthlyBudget": "الميزانية الشهرية",
+      "monthlyExpenses": "النفقات الشهرية",
+      "egpPerMonth": "ج.م شهرياً",
+      "currency": "ج.م"
+    },
+    "charts": {
+      "expensesOverTime": "النفقات بمرور الوقت",
+      "expensesSubtitle": "تتبع نفقات المنزل خلال آخر 6 أشهر.",
+      "last6months": "آخر 6 أشهر",
+      "noData": "لا تتوفر بيانات تاريخية",
+      "inventoryDistribution": "توزيع المخزن",
+      "inventorySubtitle": "توزيع مواد المخزن حسب الفئة.",
+      "itemCount_one": "عنصر واحد",
+      "itemCount_other": "{{count}} عناصر",
+      "noInventory": "لا توجد مواد في المخزن",
+      "itemsLabel": "عناصر",
+      "budgetOverview": "نظرة عامة على الميزانية",
+      "budgetSubtitle": "انظر كم تم صرفه من ميزانيتك الشهرية.",
+      "currentMonth": "الشهر الحالي",
+      "spentLabel": "المصروف",
+      "monthlyBudgetTable": "الميزانية الشهرية",
+      "spentTable": "المصروف",
+      "remainingTable": "المتبقي",
+      "other": "أخرى",
+      "months": {
+        "jan": "يناير",
+        "feb": "فبراير",
+        "mar": "مارس",
+        "apr": "أبريل",
+        "may": "مايو",
+        "jun": "يونيو",
+        "jul": "يوليو",
+        "aug": "أغسطس",
+        "sep": "سبتمبر",
+        "oct": "أكتوبر",
+        "nov": "نوفمبر",
+        "dec": "ديسمبر"
+      }
+    }
+  }
+}

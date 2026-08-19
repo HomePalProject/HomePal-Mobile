@@ -39,3 +39,8 @@ yarn-error.*
 
 expo-env.d.ts
 # @end expo-cli
+
+#android files
+android
+HomePal - Household Management System.html
+.agents

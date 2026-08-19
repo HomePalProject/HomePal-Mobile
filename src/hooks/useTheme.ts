@@ -1,16 +1,21 @@
 import { useContext } from 'react';
-import { ThemeContext } from '../providers/ThemeProvider';
-import { theme as defaultTheme, AppTheme } from '../theme';
+import { ThemeContext, ThemeContextType } from '../providers/ThemeProvider';
+import { theme as defaultTheme } from '../theme';
 
 /**
- * Custom hook to access the current application theme.
- * Exposes colors, typography, spacing, radius, and shadows.
- * Falls back to the default light theme if used outside the ThemeProvider.
+ * Custom hook to access the current application theme context.
+ * Exposes { theme, mode, resolvedMode, setMode }.
  */
-export function useTheme(): AppTheme {
+export function useTheme(): ThemeContextType {
   const context = useContext(ThemeContext);
   if (!context) {
-    return defaultTheme;
+    return {
+      theme: defaultTheme,
+
+      mode: 'system',
+      resolvedMode: 'light',
+      setMode: () => {},
+    };
   }
-  return context.theme;
+  return context;
 }

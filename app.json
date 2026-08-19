@@ -7,15 +7,19 @@
     "icon": "./assets/images/icon.png",
     "scheme": "homepal",
     "userInterfaceStyle": "automatic",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
+        "foregroundImage": "./assets/images/icon-foreground.png",
+        "monochromeImage": "./assets/images/icon-foreground.png",
+        "backgroundColor": "#2A5347"
+      },
+      "package": "com.homepal.app"
     },
     "web": {
       "bundler": "metro",
@@ -27,15 +31,34 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash.png",
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#FAF8F3",
+          "image": "./assets/images/splash-icon-light.png",
+          "dark": {
+            "backgroundColor": "#356859",
+            "image": "./assets/images/splash-icon-dark.png"
+          },
+          "imageWidth": 200,
+          "resizeMode": "contain"
         }
       ],
-      "expo-status-bar"
+      "expo-status-bar",
+      "expo-font",
+      "expo-secure-store",
+"@react-native-google-signin/google-signin",
+"expo-sharing",
+"expo-localization",
+"expo-updates"
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "apiBaseUrl": "https://homepal.runasp.net/",
+      "googleWebClientId": "815260218319-25gl1soin1gf2cavndjoqmtt501dkn1s.apps.googleusercontent.com",
+      "router": {},
+      "eas": {
+        "projectId": "a1e8b0f4-f845-4b19-bd73-185efe9984b5"
+      }
     }
   }
 }

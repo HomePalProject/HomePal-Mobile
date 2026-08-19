@@ -1,0 +1,66 @@
+{
+  "overview": "Profile Overview",
+  "editProfile": "Edit Profile",
+  "preferences": {
+    "title": "Preferences",
+    "language": "Language",
+    "themeMode": "Theme Mode",
+    "systemDefault": "System Default",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode"
+  },
+  "support": {
+    "title": "Support",
+    "helpCenter": "Help Center",
+    "privacyPolicy": "Privacy Policy"
+  },
+  "logout": {
+    "button": "Log Out",
+    "confirmTitle": "Confirm Logout",
+    "confirmMessage": "Are you sure you want to log out of HomePal?"
+  },
+  "themeModal": {
+    "title": "Choose Theme",
+    "done": "Done"
+  },
+  "cancel": "Cancel",
+  "edit": {
+    "title": "Account Settings",
+    "changePhoto": "Change Profile Photo",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Full Name",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "birthDate": "Birth Date",
+    "selectBirthDate": "Select birth date",
+    "governorate": "Governorate",
+    "governoratePlaceholder": "Governorate",
+    "city": "City",
+    "cityPlaceholder": "City",
+    "securityTitle": "Account Security",
+    "securityDesc": "Two-factor authentication active",
+    "saving": "Saving Changes...",
+    "save": "Save Changes",
+    "validation": {
+      "fullNameReq": "Full Name is required",
+      "governorateReq": "Governorate is required",
+      "genderReq": "Gender is required",
+      "cityReq": "City is required",
+      "birthDateReq": "Birth Date is required",
+      "saveFailed": "Failed to save changes. Please try again."
+    },
+    "photoModal": {
+      "title": "Profile Photo",
+      "subtitle": "Choose an option to update your photo",
+      "takePhoto": "Take Photo",
+      "chooseLibrary": "Choose from Library",
+      "removePhoto": "Remove Current Photo"
+    },
+    "cameraPermission": {
+      "title": "Camera Permission Required",
+      "message": "You need to grant camera permission to take a photo. Please enable camera access in your device settings.",
+      "ok": "OK"
+    }
+  }
+}
