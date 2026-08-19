@@ -458,6 +458,12 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
 
             <Pressable
               onPress={toggleTheme}
+              accessibilityRole="button"
+              accessibilityLabel={
+                resolvedMode === 'dark'
+                  ? t('labels.darkMode', 'Dark Mode')
+                  : t('labels.lightMode', 'Light Mode')
+              }
               className="active:bg-surface-surfaceVariant flex-row items-center justify-between rounded-full px-4 py-3.5">
               <View className="flex-row items-center gap-3.5">
                 <Icon
@@ -466,7 +472,9 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
                   className="text-text-primary"
                 />
                 <Text className="font-cairo text-[15px] font-semibold text-text-primary">
-                  {resolvedMode === 'dark' ? 'Dark Mode' : 'Light Mode'}
+                  {resolvedMode === 'dark'
+                    ? t('labels.darkMode', 'Dark Mode')
+                    : t('labels.lightMode', 'Light Mode')}
                 </Text>
               </View>
             </Pressable>
@@ -477,10 +485,14 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
             style={{ paddingBottom: Math.max(insets.bottom, 16) }}>
             <Pressable
               onPress={() => setLogoutModalVisible(true)}
+              accessibilityRole="button"
+              accessibilityLabel={t('navigation.signOut', 'Sign Out')}
               className="h-12 w-full flex-row items-center justify-center gap-2 rounded-full"
               style={{ backgroundColor: '#C82333' }}>
               <Icon as={LogOut} size={20} color="#ffffff" />
-              <Text className="font-cairo text-[16px] font-bold text-white">Sign Out</Text>
+              <Text className="font-cairo text-[16px] font-bold text-white">
+                {t('navigation.signOut', 'Sign Out')}
+              </Text>
             </Pressable>
           </View>
         </Animated.View>
@@ -500,22 +512,24 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
               className="w-full max-w-[320px] rounded-2xl border border-surface-border bg-surface-surface p-6 shadow-xl"
               onPress={(e) => e.stopPropagation()}>
               <Text className="mb-2 text-center font-cairo text-[18px] font-bold text-text-primary">
-                Confirm Logout
+                {t('logoutModal.title', 'Confirm Logout')}
               </Text>
               <Text className="mb-6 text-center font-cairo text-[14px] leading-[20px] text-text-secondary">
-                Are you sure you want to log out of HomePal?
+                {t('logoutModal.message', 'Are you sure you want to log out of HomePal?')}
               </Text>
               <View style={{ gap: 12 }}>
                 <Pressable
                   onPress={handleConfirmLogout}
                   className="h-12 flex-row items-center justify-center rounded-xl bg-brand-error">
-                  <Text className="font-cairo text-[15px] font-bold text-white">Log Out</Text>
+                  <Text className="font-cairo text-[15px] font-bold text-white">
+                    {t('logoutModal.confirm', 'Log Out')}
+                  </Text>
                 </Pressable>
                 <Pressable
                   onPress={() => setLogoutModalVisible(false)}
                   className="h-12 flex-row items-center justify-center rounded-xl border border-surface-border">
                   <Text className="font-cairo text-[15px] font-bold text-text-secondary">
-                    Cancel
+                    {t('buttons.cancel', 'Cancel')}
                   </Text>
                 </Pressable>
               </View>

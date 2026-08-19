@@ -52,7 +52,9 @@
     "sentInvitations": "Sent Invitations",
     "receivedInvitations": "Received Invitations",
     "profileSettings": "Profile & Settings",
-    "householdBudget": "Household Budget"
+    "householdBudget": "Household Budget",
+    "aiAssistant": "AI Assistant",
+    "signOut": "Sign Out"
   },
   "logoutModal": {
     "title": "Confirm Logout",
