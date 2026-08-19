@@ -42,6 +42,27 @@
     "household": "Household Supplies",
     "other": "Other"
   },
+  "categoryDescriptions": {
+    "dairy": "Milk, cheese, butter, eggs, and dairy products.",
+    "produce": "Fresh and frozen fruits and vegetables.",
+    "meat": "Chicken, turkey, and other poultry and meat products.",
+    "bakery": "Fresh bread, cakes, pastries and baked goods.",
+    "beverages": "Juices, soft drinks, water and hot beverages.",
+    "pantryStaples": "Essential staples and dry goods including rice and pasta.",
+    "snacks": "Chips, nuts, chocolates, sweets and snacks.",
+    "frozen": "Frozen meals, vegetables and ready-to-cook items.",
+    "household": "Cleaning supplies, detergents and home essentials.",
+    "sauces": "Sauces, ketchup, mayonnaise, vinegar, and condiments.",
+    "spices": "Spices, herbs, and seasonings used in cooking.",
+    "canned": "Canned foods, preserved foods, and pickles.",
+    "pasta": "Pasta, noodles, macaroni, and related products.",
+    "legumes": "Beans, lentils, chickpeas, and other legumes.",
+    "oils": "Cooking oils, butter, ghee, and other fats.",
+    "readyMeals": "Prepared meals and ready-to-eat foods.",
+    "personalCare": "Personal care items, shampoos, soaps, and cosmetics.",
+    "breakfast": "Breakfast cereals, jams, honey, and other breakfast items.",
+    "other": "Other items not listed in the categories above."
+  },
   "locations": {
     "fridge": "Refrigerator",
     "freezer": "Freezer",
