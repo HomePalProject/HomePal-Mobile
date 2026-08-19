@@ -322,6 +322,39 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
             })()}
 
             {(() => {
+              const isActive = checkActive('/subscriptions');
+              return (
+                <Pressable
+                  onPress={() => navigateTo('/subscriptions')}
+                  className={[
+                    'flex-row items-center gap-3.5 rounded-full px-4 py-3.5',
+                    isActive
+                      ? 'bg-brand-primary'
+                      : 'active:bg-surface-surfaceVariant bg-transparent',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}>
+                  <Icon
+                    as={Sparkles}
+                    size={22}
+                    className={[isActive ? 'text-text-inverse' : 'text-text-primary']
+                      .filter(Boolean)
+                      .join(' ')}
+                  />
+                  <Text
+                    className={[
+                      'font-cairo text-[15px] font-semibold',
+                      isActive ? 'text-text-inverse' : 'text-text-primary',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}>
+                    {t('navigation.subscription', 'Subscription & Plans')}
+                  </Text>
+                </Pressable>
+              );
+            })()}
+
+            {(() => {
               const isActive = checkActive('/(households)/family-management');
               return (
                 <Pressable

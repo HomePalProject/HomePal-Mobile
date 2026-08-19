@@ -2,16 +2,18 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useDrawerStore } from '@/src/store/useDrawerStore';
 import { View, Text, ScrollView, Pressable, Image, Modal } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router, Href } from 'expo-router';
+import { router, Href, useFocusEffect } from 'expo-router';
 import Svg, { Circle, Defs, LinearGradient, RadialGradient, Stop } from 'react-native-svg';
 import * as Clipboard from 'expo-clipboard';
 import { SvgIcon } from '../../../components/ui/SvgIcon';
 import { ProfileListItem } from '../components/ProfileListItem';
-import { Menu, ChevronDown, Check, LogOut, Calendar, Copy } from 'lucide-react-native';
+import { Menu, ChevronDown, Check, LogOut, Calendar, Copy, Sparkles } from 'lucide-react-native';
 import { Icon } from '../../../components/ui/icon';
 import { useToast } from '@/src/providers/ToastProvider';
 import { useAppSelector, useAppDispatch } from '../../../store';
 import { logoutUser } from '../../../store/slices/authSlice';
+import { fetchCurrentSubscription } from '../../../store/slices/subscriptionSlice';
+import { SubscriptionStatus } from '@/src/types/api';
 import { useTheme, ThemeMode } from '../../../providers/ThemeProvider';
 import { useLanguage } from '@/src/localization';
 import { LanguageSelectionModal } from '@/src/components/common/LanguageSelectionModal';
@@ -28,6 +30,7 @@ export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
 
   const { fullName, email, profileImageUri, birthDate } = useAppSelector((state) => state.profile);
+  const { currentSubscription } = useAppSelector((state) => state.subscription);
   const { showToast } = useToast();
 
   const { t } = useTranslation(['profile', 'common']);
@@ -43,7 +46,11 @@ export default function ProfileScreen() {
   };
 
   // Profile is fetched by authSlice during app bootstrap
-  useEffect(() => {}, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(fetchCurrentSubscription());
+    }, [dispatch])
+  );
 
   const handleLogout = () => {
     setLogoutModalVisible(true);
@@ -252,6 +259,32 @@ export default function ProfileScreen() {
             <ProfileListItem title="Dietary Preferences" iconName="diet" showDivider={false} />
           </View>
         </View> */}
+
+        <View className="mb-spacing-24 px-spacing-16">
+          <Text className="text-caption mb-spacing-8 pl-spacing-8 font-cairo font-bold uppercase tracking-widest text-text-secondary">
+            {t('navigation.subscription', 'Subscription')}
+          </Text>
+          {currentSubscription?.status === SubscriptionStatus.Active ? (
+            <View className="overflow-hidden rounded-[12px] border border-surface-border bg-surface-surface p-spacing-16 shadow-sm">
+              <Text className="text-bodyLarge mb-1 font-cairo font-bold text-brand-primary">
+                {currentSubscription.planName || t('premiumPlan', 'Premium Plan')}
+              </Text>
+              <Text className="text-bodySmall font-cairo text-text-secondary">
+                {t('validUntil', 'Valid until')}:{' '}
+                {new Date(currentSubscription.endDate).toLocaleDateString()}
+              </Text>
+            </View>
+          ) : (
+            <Pressable
+              onPress={() => router.push('/subscriptions' as Href)}
+              className="active:bg-surface-surfaceVariant flex-row items-center justify-between overflow-hidden rounded-radius-large border border-surface-border bg-surface-surface px-spacing-16 py-spacing-16 shadow-sm">
+              <Text className="text-body font-cairo font-medium text-text-primary">
+                {t('navigation.subscription', 'Subscription & Plans')}
+              </Text>
+              <Icon as={ChevronDown} size={16} className="text-brand-primary" />
+            </Pressable>
+          )}
+        </View>
 
         <View className="mb-spacing-24 px-spacing-16">
           <Text className="text-caption mb-spacing-8 pl-spacing-8 font-cairo font-bold uppercase tracking-widest text-text-secondary">

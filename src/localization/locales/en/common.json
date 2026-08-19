@@ -55,10 +55,37 @@
     "householdBudget": "Household Budget",
     "aiAssistant": "AI Assistant",
     "signOut": "Sign Out"
+    "subscription": "Subscription & Plans"
   },
   "logoutModal": {
     "title": "Confirm Logout",
     "message": "Are you sure you want to log out of HomePal?",
     "confirm": "Log Out"
+  },
+  "subscriptions": {
+    "title": "Subscription & Plans",
+    "subscriptionPlanDesc": "Unlimited access to HomePal AI Assistant",
+    "days": "Days",
+    "subFeat1": "Full Access to HomePal AI Chatbot",
+    "subFeat2": "Smart 7-Day Meal Planning & Recipes",
+    "subFeat3": "Automated Pantry Expiry Alerts",
+    "subFeat4": "Offer-Optimized Grocery Lists",
+    "subscribePaymob": "Subscribe with Paymob",
+    "mostPopular": "MOST POPULAR",
+    "paymentHistory": "Payment & Invoices History",
+    "noPayments": "No previous payments found.",
+    "success": "Success",
+    "pending": "Pending/Failed",
+    "freePlan": "Free Plan",
+    "activePlan": "Active Plan",
+    "currentPlanStatus": "Current Plan Status",
+    "validUntil": "Valid until",
+    "availablePlans": "Available Subscription Plans",
+    "noPlansAvailable": "No subscription plans are currently available.",
+    "paymobTrustTitle": "Powered by Paymob Accept Gateway",
+    "paymobTrustSub": "Accepts Visa, MasterCard, Meeza, and Mobile Wallets",
+    "paymentFailedDesc": "There was an issue processing your payment.",
+    "freePlanDesc": "No active subscription found. Upgrade now to unlock full AI Chatbot capabilities.",
+    "premiumPlan": "Premium Plan"
   }
 }
