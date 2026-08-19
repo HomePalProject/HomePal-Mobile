@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import authReducer, { forceLogout } from '@/src/store/slices/authSlice';
 import { registerOnUnauthorizedCallback } from '@/src/services/api/client';
@@ -13,19 +13,40 @@ import mealPlansReducer from '@/src/store/slices/mealPlansSlice';
 import agentChatReducer from '@/src/store/slices/agentChatSlice';
 import subscriptionReducer from '@/src/store/slices/subscriptionSlice';
 
+const appReducer = combineReducers({
+  auth: authReducer,
+  ui: uiReducer,
+  profile: profileReducer,
+  pantry: pantryReducer,
+  shoppingList: shoppingListReducer,
+  budget: budgetReducer,
+  mealPlans: mealPlansReducer,
+  agentChat: agentChatReducer,
+  subscription: subscriptionReducer,
+  [baseApi.reducerPath]: baseApi.reducer,
+});
+
+const rootReducer = (state: any, action: any) => {
+  if (action.type === 'auth/logout/fulfilled' || action.type === 'auth/forceLogout') {
+    // Preserve ui state and auth.isBootstrapped so the app doesn't reset preferences or get stuck loading
+    const uiState = state?.ui;
+    const isBootstrapped = state?.auth?.isBootstrapped;
+
+    const resetState = appReducer(undefined, action);
+    return {
+      ...resetState,
+      ui: uiState,
+      auth: {
+        ...resetState.auth,
+        isBootstrapped,
+      },
+    };
+  }
+  return appReducer(state, action);
+};
+
 export const store = configureStore({
-  reducer: {
-    auth: authReducer,
-    ui: uiReducer,
-    profile: profileReducer,
-    pantry: pantryReducer,
-    shoppingList: shoppingListReducer,
-    budget: budgetReducer,
-    mealPlans: mealPlansReducer,
-    agentChat: agentChatReducer,
-    subscription: subscriptionReducer,
-    [baseApi.reducerPath]: baseApi.reducer,
-  },
+  reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,

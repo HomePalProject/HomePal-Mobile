@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDrawerStore } from '@/src/store/useDrawerStore';
-import { View, Text, ScrollView, Pressable, Image, Modal } from 'react-native';
+import { View, Text, ScrollView, Pressable, Image, Modal, Linking } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, Href, useFocusEffect } from 'expo-router';
 import Svg, { Circle, Defs, LinearGradient, RadialGradient, Stop } from 'react-native-svg';
@@ -330,11 +330,11 @@ export default function ProfileScreen() {
             {t('profile:support.title')}
           </Text>
           <View className="overflow-hidden rounded-radius-large border border-surface-border bg-surface-surface shadow-sm">
-            <ProfileListItem title={t('profile:support.helpCenter')} iconName="help" />
             <ProfileListItem
-              title={t('profile:support.privacyPolicy')}
-              iconName="privacy"
+              title={t('profile:support.helpCenter')}
+              iconName="help"
               showDivider={false}
+              onPress={() => Linking.openURL('https://forms.gle/FPwiRJhPFfkRMykt8')}
             />
           </View>
         </View>

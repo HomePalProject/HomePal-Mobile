@@ -44,7 +44,7 @@ export default function EditProfileScreen() {
           const foundGov = govs.find((g) => g.id === profile.governorateId);
           if (foundGov) setGovernorate(foundGov.name);
         }
-        if (profile.cityId && !profile.city) {
+        if (profile.cityId && !profile.city && profile.governorateId) {
           const { locationsService } = await import('@/src/services/api/locations.service');
           const cities = await locationsService.getCities(profile.governorateId);
           const foundCity = cities.find((c) => c.id === profile.cityId);
@@ -301,25 +301,6 @@ export default function EditProfileScreen() {
               </Pressable>
             </View>
           </View>
-
-          <Pressable className="active:bg-surface-surfaceVariant/40 mt-spacing-8 flex-row items-center justify-between rounded-radius-large border border-surface-border/40 bg-surface-surface p-spacing-16 shadow-sm">
-            <View className="flex-row items-center gap-spacing-16">
-              <View className="h-10 w-10 items-center justify-center rounded-radius-full bg-brand-primary-container">
-                <SvgIcon name="security-shield" width={18} height={20} fill="#356859" />
-              </View>
-              <View>
-                <Text className="text-body font-cairo font-bold text-text-primary">
-                  {t('edit.securityTitle')}
-                </Text>
-                <Text className="text-caption font-cairo text-text-secondary">
-                  {t('edit.securityDesc')}
-                </Text>
-              </View>
-            </View>
-            <View className="h-3 w-[7.4px] items-center justify-center">
-              <SvgIcon name="chevron-right-thick" width={7.4} height={12} fill="#6D6862" />
-            </View>
-          </Pressable>
 
           {errorMsg && (
             <Text className="mt-spacing-8 text-center font-cairo text-[13px] font-bold text-brand-error">

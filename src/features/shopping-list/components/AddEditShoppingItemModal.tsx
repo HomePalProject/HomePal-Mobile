@@ -1,8 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable, Platform, Modal, ScrollView, Keyboard } from 'react-native';
-import { X, ChevronDown, Check } from 'lucide-react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Icon } from '@/src/components/ui/icon';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, Pressable, Keyboard } from 'react-native';
+import { Box, Paperclip } from 'lucide-react-native';
 import {
   ShoppingListItemResponse,
   CreateShoppingListItemRequest,
@@ -18,6 +16,16 @@ import {
   BottomSheetScrollView,
   BottomSheetTextInput as TextInput,
 } from '@gorhom/bottom-sheet';
+
+// Import shared pantry form UI components
+import { FieldLabel } from '@/src/features/pantry/components/FieldLabel';
+import { FormDropdown } from '@/src/features/pantry/components/FormDropdown';
+import { QuantityStepper } from '@/src/features/pantry/components/QuantityStepper';
+import {
+  CategorySelectorSheet,
+  getCategoryIconConfig,
+} from '@/src/features/pantry/components/CategorySelectorSheet';
+import { UnitSelectorSheet } from '@/src/features/pantry/components/UnitSelectorSheet';
 
 interface AddEditShoppingItemModalProps {
   visible: boolean;
@@ -60,8 +68,8 @@ export function AddEditShoppingItemModal({
   } = useAddEditShoppingItemForm(editItem);
 
   const mainBottomSheetRef = useRef<BottomSheetModal>(null);
-  const [unitModalVisible, setUnitModalVisible] = useState(false);
-  const [categoryModalVisible, setCategoryModalVisible] = useState(false);
+  const categorySheetRef = useRef<BottomSheetModal>(null);
+  const unitSheetRef = useRef<BottomSheetModal>(null);
 
   const isEditing = !!editItem;
 
@@ -70,8 +78,8 @@ export function AddEditShoppingItemModal({
       mainBottomSheetRef.current?.present();
     } else {
       mainBottomSheetRef.current?.dismiss();
-      setUnitModalVisible(false);
-      setCategoryModalVisible(false);
+      categorySheetRef.current?.dismiss();
+      unitSheetRef.current?.dismiss();
     }
   }, [visible]);
 
@@ -113,7 +121,9 @@ export function AddEditShoppingItemModal({
           {/* Header */}
           <View className="relative mb-spacing-24 items-center">
             <Text className="font-cairo text-lg font-bold text-text-primary">
-              {isEditing ? t('modal.editTitle') : t('modal.addTitle')}
+              {isEditing
+                ? t('modal.editTitle', 'Edit Shopping Item')
+                : t('modal.addTitle', 'Add Shopping Item')}
             </Text>
           </View>
 
@@ -121,112 +131,94 @@ export function AddEditShoppingItemModal({
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 24 }}>
             {/* Product Name */}
-            <View className="mb-spacing-16">
-              <Text className="mb-spacing-4 text-center font-cairo text-xs font-bold text-text-primary">
-                {t('modal.productName')}
-              </Text>
+            <View className="mb-spacing-24">
+              <FieldLabel label={t('modal.productName', 'Product Name')} required />
               <TextInput
                 value={name}
                 onChangeText={setName}
-                placeholder={t('modal.productPlaceholder')}
+                placeholder={t('modal.productPlaceholder', 'e.g. Fresh Milk, Olive Oil...')}
                 placeholderTextColor="#A8A29B"
-                className="px-spacing-12 py-spacing-10 rounded-radius-medium border border-surface-border bg-surface-surface font-cairo text-sm text-text-primary"
+                className="text-body h-14 rounded-radius-medium border border-surface-border bg-surface-surface px-spacing-16 font-cairo text-text-primary"
               />
             </View>
 
-            <View className="relative z-20 mb-spacing-16 flex-row gap-spacing-8">
-              <View className="flex-1">
-                <Text className="mb-spacing-4 text-center font-cairo text-xs font-bold text-text-primary">
-                  {t('modal.portionSize')}
-                </Text>
-                <TextInput
-                  value={quantity}
-                  onChangeText={setQuantity}
-                  keyboardType="decimal-pad"
-                  className="px-spacing-12 h-[44px] justify-center rounded-radius-medium border border-surface-border bg-surface-surface font-cairo text-sm text-text-primary"
+            {/* Quantity and Unit Row */}
+            <View className="gap-spacing-12 mb-spacing-24 flex-row">
+              <View className="flex-[0.8]">
+                <FieldLabel label={t('modal.portionSize', 'Quantity')} required />
+                <QuantityStepper
+                  value={parseFloat(quantity) || 1}
+                  onChange={(val) => setQuantity(String(val))}
+                  min={1}
                 />
               </View>
+
               <View className="flex-1">
-                <Text className="mb-spacing-4 text-center font-cairo text-xs font-bold text-text-primary">
-                  {t('modal.howMany')}
-                </Text>
-                <TextInput
-                  value={portionCount}
-                  onChangeText={setPortionCount}
-                  keyboardType="number-pad"
-                  className="px-spacing-12 h-[44px] justify-center rounded-radius-medium border border-surface-border bg-surface-surface font-cairo text-sm text-text-primary"
+                <FormDropdown
+                  label={t('modal.measuringUnit', 'Unit')}
+                  value={selectedUnit?.name}
+                  placeholder={t('modal.chooseUnit', 'Select')}
+                  leadingIcon={Paperclip}
+                  onPress={() => {
+                    Keyboard.dismiss();
+                    unitSheetRef.current?.present();
+                  }}
                 />
               </View>
             </View>
 
-            <View className="relative z-10 mb-spacing-16 flex-row gap-spacing-8">
-              <View className="relative flex-1">
-                <Text className="mb-spacing-4 text-center font-cairo text-xs font-bold text-text-primary">
-                  {t('modal.measuringUnit')}
-                </Text>
-                <Pressable
-                  onPress={() => {
-                    Keyboard.dismiss();
-                    setUnitModalVisible(true);
-                  }}
-                  android_ripple={{ color: 'rgba(0,0,0,0.1)' }}
-                  className="px-spacing-12 h-[44px] flex-row items-center justify-between overflow-hidden rounded-radius-medium bg-surface-surface-variant active:opacity-70">
-                  <View style={{ width: 14 }} />
-                  <Text
-                    numberOfLines={1}
-                    className="flex-1 text-center font-cairo text-xs font-bold text-text-primary">
-                    {selectedUnit ? `${selectedUnit.name}` : t('modal.chooseUnit')}
-                  </Text>
-                  <Icon as={ChevronDown} size={14} className="text-text-primary" />
-                </Pressable>
-              </View>
-              <View className="relative flex-1">
-                <Text className="mb-spacing-4 text-center font-cairo text-xs font-bold text-text-primary">
-                  {t('modal.category')}
-                </Text>
-                <Pressable
-                  onPress={() => {
-                    Keyboard.dismiss();
-                    setCategoryModalVisible(true);
-                  }}
-                  android_ripple={{ color: 'rgba(0,0,0,0.1)' }}
-                  className="px-spacing-12 h-[44px] flex-row items-center justify-between overflow-hidden rounded-radius-medium bg-surface-surface-variant active:opacity-70">
-                  <View style={{ width: 14 }} />
-                  <Text
-                    numberOfLines={1}
-                    className="flex-1 text-center font-cairo text-xs font-bold text-text-primary">
-                    {selectedCategory ? selectedCategory.name : t('modal.chooseCategory')}
-                  </Text>
-                  <Icon as={ChevronDown} size={14} className="text-text-primary" />
-                </Pressable>
-              </View>
+            {/* How Many Portions */}
+            <View className="mb-spacing-24">
+              <FieldLabel label={t('modal.howMany', 'How Many (Portions)')} />
+              <QuantityStepper
+                value={parseInt(portionCount, 10) || 1}
+                onChange={(val) => setPortionCount(String(val))}
+                min={1}
+              />
             </View>
 
-            <View className="mb-spacing-16">
-              <Text className="mb-spacing-4 text-center font-cairo text-xs font-bold text-text-primary">
-                {t('modal.unitPrice')}
-              </Text>
+            {/* Category */}
+            <View className="mb-spacing-24">
+              <FormDropdown
+                label={t('modal.category', 'Category')}
+                value={selectedCategory?.name}
+                placeholder={t('modal.chooseCategory', 'Select a category')}
+                leadingIcon={Box}
+                activeIcon={
+                  selectedCategory ? getCategoryIconConfig(selectedCategory.name).icon : undefined
+                }
+                activeIconColor={
+                  selectedCategory ? getCategoryIconConfig(selectedCategory.name).color : undefined
+                }
+                onPress={() => {
+                  Keyboard.dismiss();
+                  categorySheetRef.current?.present();
+                }}
+              />
+            </View>
+
+            {/* Unit Price */}
+            <View className="mb-spacing-24">
+              <FieldLabel label={t('modal.unitPrice', 'Unit Price (EGP)')} />
               <TextInput
                 value={price}
                 onChangeText={handlePriceChange}
                 keyboardType="decimal-pad"
-                placeholder={t('modal.optional')}
+                placeholder={t('modal.optional', 'Optional')}
                 placeholderTextColor="#A8A29B"
-                className="px-spacing-12 h-[44px] justify-center rounded-radius-medium border border-surface-border bg-surface-surface font-cairo text-sm text-text-primary"
+                className="text-body h-14 rounded-radius-medium border border-surface-border bg-surface-surface px-spacing-16 font-cairo text-text-primary"
               />
             </View>
 
             {/* Notes */}
             <View className="mb-spacing-24">
-              <Text className="mb-spacing-4 text-center font-cairo text-xs font-bold text-text-primary">
-                {t('modal.notes')}
-              </Text>
+              <FieldLabel label={t('modal.notes', 'Notes')} />
               <TextInput
                 value={notes}
                 onChangeText={setNotes}
-                placeholder={t('modal.notesPlaceholder')}
+                placeholder={t('modal.notesPlaceholder', 'Brand name, size, preference...')}
                 placeholderTextColor="#A8A29B"
-                className="px-spacing-12 h-[44px] justify-center rounded-radius-medium border border-surface-border bg-surface-surface font-cairo text-sm text-text-primary"
+                className="text-body h-14 rounded-radius-medium border border-surface-border bg-surface-surface px-spacing-16 font-cairo text-text-primary"
               />
             </View>
           </BottomSheetScrollView>
@@ -235,138 +227,39 @@ export function AddEditShoppingItemModal({
           <View className="gap-spacing-12 mb-spacing-16 mt-spacing-8 flex-row pt-spacing-8">
             <Pressable
               onPress={() => mainBottomSheetRef.current?.dismiss()}
-              className="flex-1 items-center justify-center rounded-radius-full border border-text-secondary bg-surface-background py-spacing-16 active:opacity-70">
-              <Text className="font-cairo text-sm font-bold text-brand-primary">
-                {t('modal.cancel')}
+              className="active:bg-surface-surfaceVariant h-14 flex-1 items-center justify-center rounded-radius-full border border-surface-border bg-surface-surface">
+              <Text className="text-bodyLarge font-cairo font-bold text-text-secondary">
+                {t('modal.cancel', 'Cancel')}
               </Text>
             </Pressable>
             <Pressable
               onPress={handleSave}
               disabled={!name.trim() || isSaving}
-              className={`flex-1 items-center justify-center rounded-radius-full py-spacing-16 active:opacity-80 ${
+              className={`h-14 flex-1 items-center justify-center rounded-radius-full active:opacity-80 ${
                 !name.trim() || isSaving ? 'bg-surface-border' : 'bg-brand-primary'
               }`}>
-              <Text className="font-cairo text-sm font-bold text-text-inverse">
-                {isSaving ? t('modal.saving') : t('modal.saveItem')}
+              <Text className="text-bodyLarge font-cairo font-bold text-text-inverse">
+                {isSaving ? t('modal.saving', 'Saving...') : t('modal.saveItem', 'Save Item')}
               </Text>
             </Pressable>
           </View>
         </View>
       </AppBottomSheet>
 
-      {/* Unit Selection Modal */}
-      <Modal
-        visible={unitModalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setUnitModalVisible(false)}>
-        <View className="flex-1 items-center justify-center bg-black/50 px-spacing-24">
-          <View className="max-h-[70%] w-full overflow-hidden rounded-3xl bg-surface-surface">
-            <View className="flex-row items-center justify-between border-b border-surface-border px-6 py-4">
-              <Text className="font-cairo text-[18px] font-bold text-text-primary">
-                {t('modal.selectUnit')}
-              </Text>
-              <Pressable
-                onPress={() => setUnitModalVisible(false)}
-                className="h-8 w-8 items-center justify-center rounded-full bg-surface-surface-variant active:opacity-70">
-                <Icon as={X} size={16} className="text-text-primary" />
-              </Pressable>
-            </View>
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 20 }}>
-              <Pressable
-                onPress={() => {
-                  setUnitId(null);
-                  setUnitModalVisible(false);
-                }}
-                android_ripple={{ color: 'rgba(0,0,0,0.1)' }}
-                className="flex-row items-center justify-between border-b border-surface-border px-6 py-4">
-                <Text
-                  className={`font-cairo text-[15px] ${!unitId ? 'font-bold text-brand-primary' : 'text-text-primary'}`}>
-                  {t('modal.noUnit')}
-                </Text>
-                {!unitId && <Icon as={Check} size={18} className="text-brand-primary" />}
-              </Pressable>
-              {(measuringUnits || []).map((unit) => (
-                <Pressable
-                  key={unit.id}
-                  onPress={() => {
-                    setUnitId(unit.id);
-                    setUnitModalVisible(false);
-                  }}
-                  android_ripple={{ color: 'rgba(0,0,0,0.1)' }}
-                  className="flex-row items-center justify-between border-b border-surface-border px-6 py-4">
-                  <Text
-                    className={`font-cairo text-[15px] ${unitId === unit.id ? 'font-bold text-brand-primary' : 'text-text-primary'}`}>
-                    {unit.name} ({unit.symbol})
-                  </Text>
-                  {unitId === unit.id && (
-                    <Icon as={Check} size={18} className="text-brand-primary" />
-                  )}
-                </Pressable>
-              ))}
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
+      {/* Reused Pantry Modals */}
+      <CategorySelectorSheet
+        ref={categorySheetRef}
+        categories={categories}
+        selectedId={selectedCategory?.id}
+        onSelect={(cat) => setCategoryId(cat.id)}
+      />
 
-      {/* Category Selection Modal */}
-      <Modal
-        visible={categoryModalVisible}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setCategoryModalVisible(false)}>
-        <View className="flex-1 items-center justify-center bg-black/50 px-spacing-24">
-          <View className="max-h-[70%] w-full overflow-hidden rounded-3xl bg-surface-surface">
-            <View className="flex-row items-center justify-between border-b border-surface-border px-6 py-4">
-              <Text className="font-cairo text-[18px] font-bold text-text-primary">
-                {t('modal.selectCategory')}
-              </Text>
-              <Pressable
-                onPress={() => setCategoryModalVisible(false)}
-                className="h-8 w-8 items-center justify-center rounded-full bg-surface-surface-variant active:opacity-70">
-                <Icon as={X} size={16} className="text-text-primary" />
-              </Pressable>
-            </View>
-            <ScrollView
-              showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 20 }}>
-              <Pressable
-                onPress={() => {
-                  setCategoryId(null);
-                  setCategoryModalVisible(false);
-                }}
-                android_ripple={{ color: 'rgba(0,0,0,0.1)' }}
-                className="flex-row items-center justify-between border-b border-surface-border px-6 py-4">
-                <Text
-                  className={`font-cairo text-[15px] ${!categoryId ? 'font-bold text-brand-primary' : 'text-text-primary'}`}>
-                  {t('modal.noCategory')}
-                </Text>
-                {!categoryId && <Icon as={Check} size={18} className="text-brand-primary" />}
-              </Pressable>
-              {(categories || []).map((category) => (
-                <Pressable
-                  key={category.id}
-                  onPress={() => {
-                    setCategoryId(category.id);
-                    setCategoryModalVisible(false);
-                  }}
-                  android_ripple={{ color: 'rgba(0,0,0,0.1)' }}
-                  className="flex-row items-center justify-between border-b border-surface-border px-6 py-4">
-                  <Text
-                    className={`font-cairo text-[15px] ${categoryId === category.id ? 'font-bold text-brand-primary' : 'text-text-primary'}`}>
-                    {category.name}
-                  </Text>
-                  {categoryId === category.id && (
-                    <Icon as={Check} size={18} className="text-brand-primary" />
-                  )}
-                </Pressable>
-              ))}
-            </ScrollView>
-          </View>
-        </View>
-      </Modal>
+      <UnitSelectorSheet
+        ref={unitSheetRef}
+        units={measuringUnits}
+        selectedId={selectedUnit?.id}
+        onSelect={(u) => setUnitId(u.id)}
+      />
     </>
   );
 }

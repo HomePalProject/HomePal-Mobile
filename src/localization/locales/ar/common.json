@@ -43,7 +43,7 @@
   "navigation": {
     "home": "الرئيسية",
     "pantry": "المخزن",
-    "meals": "الذوق والوجبات",
+    "meals": "الوجبات",
     "offers": "العروض",
     "profile": "الحساب",
     "myHousehold": "منزلي",
@@ -61,6 +61,7 @@
     "confirm": "تسجيل الخروج"
   },
   "subscriptions": {
+    "subscriptionRequired": "اشتراك مطلوب",
     "title": "الاشتراكات والباقات",
     "subscriptionPlanDesc": "وصول غير محدود للمساعد الذكي",
     "days": "أيام",

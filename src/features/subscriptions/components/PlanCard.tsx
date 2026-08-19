@@ -4,6 +4,7 @@ import { SubscriptionPlanResponse } from '@/src/types/api';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/src/components/ui/icon';
 import { Check } from 'lucide-react-native';
+import { useTheme } from '@/src/hooks/useTheme';
 
 interface PlanCardProps {
   plan: SubscriptionPlanResponse;
@@ -14,10 +15,17 @@ interface PlanCardProps {
 
 export const PlanCard: React.FC<PlanCardProps> = ({ plan, onSubscribe, isLoading, isPopular }) => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
 
   return (
     <View
-      className={`relative mb-5 rounded-[24px] border-2 p-6 shadow-sm ${isPopular ? 'bg-surface-surfaceVariant border-brand-primary' : 'border-surface-border bg-surface-surface'}`}>
+      style={{
+        backgroundColor: isPopular
+          ? theme.colors.surface.surfaceVariant
+          : theme.colors.surface.surface,
+        borderColor: isPopular ? theme.colors.brand.primary : theme.colors.surface.border,
+      }}
+      className="relative mb-5 rounded-[24px] border-2 p-6">
       {isPopular && (
         <View className="absolute -top-3 right-5 rounded-[16px] bg-brand-primary px-3 py-1 shadow-sm">
           <Text className="font-cairo text-[12px] font-bold tracking-wider text-text-inverse">

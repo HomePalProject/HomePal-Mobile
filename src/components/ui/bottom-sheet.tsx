@@ -75,6 +75,7 @@ export const AppBottomSheet = forwardRef<BottomSheetModal, AppBottomSheetProps>(
     return (
       <BottomSheetModal
         ref={ref}
+        stackBehavior="push"
         snapPoints={snapPoints}
         enableDynamicSizing={enableDynamicSizing}
         backdropComponent={backdropComponent || renderBackdrop}

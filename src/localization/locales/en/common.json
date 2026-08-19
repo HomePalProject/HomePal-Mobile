@@ -61,6 +61,7 @@
     "confirm": "Log Out"
   },
   "subscriptions": {
+    "subscriptionRequired": "Subscription Required",
     "title": "Subscription & Plans",
     "subscriptionPlanDesc": "Unlimited access to HomePal AI Assistant",
     "days": "Days",

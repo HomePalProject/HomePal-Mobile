@@ -9,6 +9,7 @@ import {
   Modal,
   StyleSheet,
   I18nManager,
+  Alert,
 } from 'react-native';
 
 import { router, Href, usePathname } from 'expo-router';
@@ -30,6 +31,7 @@ import { Text } from '@/src/components/ui/text';
 import { Icon } from '@/src/components/ui/icon';
 import { useAppSelector, useAppDispatch } from '@/src/store';
 import { logoutUser } from '@/src/store/slices/authSlice';
+import { SubscriptionStatus } from '@/src/types/api';
 
 import { useTheme } from '@/src/providers/ThemeProvider';
 import { useColorScheme } from 'nativewind';
@@ -48,6 +50,7 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
   const { colorScheme } = useColorScheme();
   const themeColors = colorScheme === 'dark' ? darkColors : lightColors;
   const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+  const [subscriptionAlertVisible, setSubscriptionAlertVisible] = useState(false);
 
   const { resolvedMode, setMode } = useTheme();
   const { t } = useTranslation('common');
@@ -72,6 +75,10 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
   const { fullName, email, profileImageUri, hasHousehold, isManager } = useAppSelector(
     (state) => state.profile
   );
+
+  const currentSubscription = useAppSelector((state) => state.subscription.currentSubscription);
+  const isFreePlan =
+    !currentSubscription || currentSubscription.status !== SubscriptionStatus.Active;
 
   const isRTL = I18nManager.isRTL;
   const closedPosition = isRTL ? DRAWER_WIDTH : -DRAWER_WIDTH;
@@ -289,7 +296,14 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
               const isActive = checkActive('/(tabs)/agent-chat');
               return (
                 <Pressable
-                  onPress={() => navigateTo('/(tabs)/agent-chat')}
+                  onPress={() => {
+                    if (isFreePlan) {
+                      setSubscriptionAlertVisible(true);
+                    } else {
+                      navigateTo('/(tabs)/agent-chat');
+                    }
+                  }}
+                  style={{ opacity: isFreePlan ? 0.4 : 1 }}
                   className={[
                     'flex-row items-center gap-3.5 rounded-full px-4 py-3.5',
                     isActive
@@ -551,6 +565,51 @@ export function AppDrawer({ children }: { children?: React.ReactNode }) {
                     Cancel
                   </Text>
                 </Pressable>
+                {/* 4. Subscription Alert Modal */}
+                {subscriptionAlertVisible && (
+                  <Modal
+                    animationType="fade"
+                    transparent={true}
+                    visible={true}
+                    onRequestClose={() => setSubscriptionAlertVisible(false)}>
+                    <Pressable
+                      className="flex-1 items-center justify-center bg-black/50 px-6"
+                      onPress={() => setSubscriptionAlertVisible(false)}>
+                      <Pressable
+                        className="w-full max-w-[320px] rounded-2xl border border-surface-border bg-surface-surface p-6 shadow-xl"
+                        onPress={(e) => e.stopPropagation()}>
+                        <Text className="mb-2 text-center font-cairo text-[18px] font-bold text-text-primary">
+                          {t('subscriptions.subscriptionRequired', 'Subscription Required')}
+                        </Text>
+                        <Text className="mb-6 text-center font-cairo text-[14px] leading-[20px] text-text-secondary">
+                          {t(
+                            'subscriptions.freePlanDesc',
+                            'No active subscription found. Upgrade now to unlock full AI Chatbot capabilities.'
+                          )}
+                        </Text>
+                        <View style={{ gap: 12 }}>
+                          <Pressable
+                            onPress={() => {
+                              setSubscriptionAlertVisible(false);
+                              navigateTo('/subscriptions');
+                            }}
+                            className="h-12 flex-row items-center justify-center rounded-xl bg-brand-primary">
+                            <Text className="font-cairo text-[15px] font-bold text-white">
+                              {t('subscriptions.title', 'View Plans')}
+                            </Text>
+                          </Pressable>
+                          <Pressable
+                            onPress={() => setSubscriptionAlertVisible(false)}
+                            className="h-12 flex-row items-center justify-center rounded-xl border border-surface-border">
+                            <Text className="font-cairo text-[15px] font-bold text-text-secondary">
+                              {t('buttons.cancel', 'Cancel')}
+                            </Text>
+                          </Pressable>
+                        </View>
+                      </Pressable>
+                    </Pressable>
+                  </Modal>
+                )}
               </View>
             </Pressable>
           </Pressable>
