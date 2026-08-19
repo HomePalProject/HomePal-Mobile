@@ -89,5 +89,20 @@
   "selectYear": "Select Year",
   "selectMonth": "Select Month",
   "selectExpirationDate": "Select Expiration Date",
-  "backToDaysView": "Back to Days View"
+  "backToDaysView": "Back to Days View",
+  "stockAlert": {
+    "title": "Pantry Stock Alert",
+    "description": "Hey! Items in your pantry are running out or expiring soon. Wanna check supermarket offers?",
+    "itemCount_one": "{{count}} item",
+    "itemCount_other": "{{count}} items",
+    "checkDeals": "Check Supermarket Deals",
+    "statusExpired": "Expired",
+    "statusToday": "Expires today",
+    "statusSoon": "Expiring Soon ({{days}}d)",
+    "more_one": "+{{count}} more",
+    "more_other": "+{{count}} more"
+  },
+  "remaining": "remaining",
+  "statusLow": "Low",
+  "statusFresh": "Fresh"
 }

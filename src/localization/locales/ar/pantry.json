@@ -89,5 +89,20 @@
   "selectYear": "اختر السنة",
   "selectMonth": "اختر الشهر",
   "selectExpirationDate": "اختر تاريخ الانتهاء",
-  "backToDaysView": "العودة لعرض الأيام"
+  "backToDaysView": "العودة لعرض الأيام",
+  "stockAlert": {
+    "title": "تنبيه مخزن المؤن",
+    "description": "مرحباً! بعض الأصناف في مخزنك أوشكت على النفاد أو ستنتهي صلاحيتها قريباً. هل تود التحقق من عروض السوبرماركت؟",
+    "itemCount_one": "عنصر واحد",
+    "itemCount_other": "{{count}} عناصر",
+    "checkDeals": "التحقق من عروض السوبرماركت",
+    "statusExpired": "منتهي الصلاحية",
+    "statusToday": "ينتهي اليوم",
+    "statusSoon": "ينتهي قريباً (خلال {{days}} يوم)",
+    "more_one": "+عنصر واحد إضافي",
+    "more_other": "+{{count}} إضافية"
+  },
+  "remaining": "متبقي",
+  "statusLow": "منخفض",
+  "statusFresh": "طازج"
 }

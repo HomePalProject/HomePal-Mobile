@@ -5,6 +5,7 @@ import { Icon } from '@/src/components/ui/icon';
 import { PantryItemResponse } from '@/src/types/api';
 import { env } from '@/src/config/env';
 import { router, Href } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 interface PantryItemCardProps {
   item: PantryItemResponse;
@@ -27,6 +28,7 @@ const resolveImageUrl = (path?: string | null): string | null => {
 };
 
 export function PantryItemCard({ item, onPress }: PantryItemCardProps) {
+  const { t } = useTranslation('pantry');
   const imageUrl = resolveImageUrl(item.categoryImagePath);
   const unitLabel = item.measuringUnitSymbol || item.measuringUnitName || '';
 
@@ -34,7 +36,7 @@ export function PantryItemCard({ item, onPress }: PantryItemCardProps) {
   const getStatusBadge = () => {
     if (item.quantity <= 1) {
       return {
-        label: 'Low',
+        label: t('statusLow', 'Low'),
         isWarning: true,
       };
     }
@@ -46,14 +48,14 @@ export function PantryItemCard({ item, onPress }: PantryItemCardProps) {
 
       if (diffDays <= 3) {
         return {
-          label: 'Expiring soon',
+          label: t('expiringSoon', 'Expiring soon'),
           isWarning: true,
         };
       }
     }
 
     return {
-      label: 'Fresh',
+      label: t('statusFresh', 'Fresh'),
       isWarning: false,
     };
   };
@@ -95,7 +97,7 @@ export function PantryItemCard({ item, onPress }: PantryItemCardProps) {
 
         {/* Quantity & Unit */}
         <Text numberOfLines={1} className="text-caption font-cairo text-text-secondary">
-          {item.quantity} {unitLabel} remaining
+          {item.quantity} {unitLabel} {t('remaining', 'remaining')}
         </Text>
 
         {/* Status Badge */}
