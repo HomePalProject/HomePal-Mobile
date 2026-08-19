@@ -4,6 +4,7 @@ import Markdown from 'react-native-markdown-display';
 import { useTheme } from '@/src/hooks/useTheme';
 import { useAppSelector } from '@/src/store';
 import { ChatMessage } from '../types';
+import { useTranslation } from 'react-i18next';
 
 export interface ChatMessageItemProps {
   message: ChatMessage;
@@ -11,6 +12,7 @@ export interface ChatMessageItemProps {
 
 export function ChatMessageItem({ message }: ChatMessageItemProps) {
   const { theme } = useTheme();
+  const { t } = useTranslation('agentChat');
   const { profileImageUri, fullName } = useAppSelector((state) => state.profile);
   const isUser = message.role === 'user';
 
@@ -76,7 +78,7 @@ export function ChatMessageItem({ message }: ChatMessageItemProps) {
     const userInitial = fullName ? fullName.trim()[0]?.toUpperCase() : 'U';
 
     return (
-      <View className="mb-spacing-24 ml-spacing-32 mr-spacing-16 flex-row items-start justify-end">
+      <View className="mb-spacing-24 me-spacing-16 ms-spacing-32 flex-row items-start justify-end">
         <View className="max-w-[80%] rounded-radius-large rounded-br-radius-small bg-brand-primary px-spacing-16 py-spacing-16 shadow-sm">
           <Text className="text-bodySmall font-cairo text-text-inverse">{message.content}</Text>
         </View>
@@ -86,13 +88,13 @@ export function ChatMessageItem({ message }: ChatMessageItemProps) {
           <Image
             source={{ uri: profileImageUri }}
             style={{ width: 40, height: 40, borderRadius: 20 }}
-            className="ml-spacing-8"
+            className="ms-spacing-8"
             resizeMode="cover"
           />
         ) : (
           <View
             style={{ width: 40, height: 40, borderRadius: 20 }}
-            className="ml-spacing-8 items-center justify-center border border-surface-border bg-brand-primary-container">
+            className="ms-spacing-8 items-center justify-center border border-surface-border bg-brand-primary-container">
             <Text className="text-bodySmall font-cairo font-bold text-brand-primary">
               {userInitial}
             </Text>
@@ -106,12 +108,12 @@ export function ChatMessageItem({ message }: ChatMessageItemProps) {
   const showTypingIndicator = message.isStreaming && !message.content?.trim();
 
   return (
-    <View className="mb-spacing-24 ml-spacing-16 mr-spacing-32 flex-row items-start">
+    <View className="mb-spacing-24 me-spacing-32 ms-spacing-16 flex-row items-start">
       {/* Small Bot Avatar Image */}
       <Image
         source={require('@/src/assets/images/ai-avatar.png')}
         style={{ width: 40, height: 40, borderRadius: 16 }}
-        className="mr-spacing-8 mt-spacing-4"
+        className="me-spacing-8 mt-spacing-4"
         resizeMode="contain"
       />
 
@@ -121,7 +123,7 @@ export function ChatMessageItem({ message }: ChatMessageItemProps) {
           <View className="flex-row items-center gap-spacing-8">
             <ActivityIndicator size="small" color={theme.colors.brand.primary} />
             <Text className="text-caption font-cairo italic text-text-secondary">
-              HomePal is typing...
+              {t('messages.typing', 'HomePal is typing...')}
             </Text>
           </View>
         ) : (

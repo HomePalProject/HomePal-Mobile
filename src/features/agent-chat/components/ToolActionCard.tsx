@@ -11,6 +11,7 @@ import {
 } from 'lucide-react-native';
 import { useTheme } from '@/src/hooks/useTheme';
 import { ChatMessage } from '../types';
+import { useTranslation } from 'react-i18next';
 
 export interface ToolActionCardProps {
   message: ChatMessage;
@@ -34,6 +35,7 @@ interface MealPlanDetails {
 
 export function ToolActionCard({ message, onApprove }: ToolActionCardProps) {
   const { theme } = useTheme();
+  const { t } = useTranslation('agentChat');
 
   const isToolCall = message.role === 'tool_call';
   const isApproval = message.role === 'approval_request';
@@ -79,7 +81,11 @@ export function ToolActionCard({ message, onApprove }: ToolActionCardProps) {
       }
       if (parsed && typeof parsed === 'object') {
         return {
-          title: parsed.title || parsed.mealPlanName || parsed.name || 'Weekly Meal Plan',
+          title:
+            parsed.title ||
+            parsed.mealPlanName ||
+            parsed.name ||
+            t('chips.mealPlan', 'Weekly Meal Plan'),
           startDate: parsed.startDate || parsed.start || parsed.from || '',
           endDate: parsed.endDate || parsed.end || parsed.to || '',
           mealsCount: parsed.mealsCount || parsed.meals?.length || parsed.meals || '',
@@ -89,7 +95,7 @@ export function ToolActionCard({ message, onApprove }: ToolActionCardProps) {
       console.warn('[ToolActionCard] Failed to parse meal plan details:', e);
     }
     return null;
-  }, [message.args, isMealPlan]);
+  }, [message.args, isMealPlan, t]);
 
   // Safely parse key-value pairs (Fallback Case)
   const fallbackDetails = useMemo(() => {
@@ -118,10 +124,13 @@ export function ToolActionCard({ message, onApprove }: ToolActionCardProps) {
         <Bot size={16} color={theme.colors.brand.accent} />
         <Text className="text-caption flex-1 font-cairo font-semibold text-text-primary">
           {toolName === 'SearchOffers'
-            ? 'Checking Carrefour and Spinneys...'
+            ? t('tools.checkingOffers', 'Checking Carrefour and Spinneys...')
             : toolName === 'CheckPantry'
-              ? 'Checking pantry ingredients...'
-              : `Executing ${toolName || 'assistant tool'}...`}
+              ? t('tools.checkingPantry', 'Checking pantry ingredients...')
+              : t('tools.executing', {
+                  defaultValue: 'Executing {{name}}...',
+                  name: toolName || t('tools.assistantTool', 'assistant tool'),
+                })}
         </Text>
         {isDone ? (
           <CheckCircle size={16} color={theme.colors.brand.success} />
@@ -138,21 +147,21 @@ export function ToolActionCard({ message, onApprove }: ToolActionCardProps) {
     const isRejected = message.status === 'rejected';
 
     // Configure headers and action texts dynamically based on tool type
-    let cardTitle = 'CONFIRMATION REQUIRED';
+    let cardTitle = t('tools.confirmationRequired', 'CONFIRMATION REQUIRED');
     let IconComponent = CheckSquare;
-    let primaryButtonText = 'Approve';
-    let approvalSuccessText = 'Approved';
+    let primaryButtonText = t('tools.approve', 'Approve');
+    let approvalSuccessText = t('tools.approved', 'Approved');
 
     if (isShoppingList) {
-      cardTitle = 'ADD TO SHOPPING LIST';
+      cardTitle = t('tools.addToShoppingList', 'ADD TO SHOPPING LIST');
       IconComponent = CheckSquare;
-      primaryButtonText = 'Add to List';
-      approvalSuccessText = 'Added to List';
+      primaryButtonText = t('tools.addToList', 'Add to List');
+      approvalSuccessText = t('tools.addedToList', 'Added to List');
     } else if (isMealPlan) {
-      cardTitle = 'SAVE MEAL PLAN';
+      cardTitle = t('tools.saveMealPlan', 'SAVE MEAL PLAN');
       IconComponent = Calendar;
-      primaryButtonText = 'Save Meal Plan';
-      approvalSuccessText = 'Meal Plan Saved';
+      primaryButtonText = t('tools.saveMealPlanBtn', 'Save Meal Plan');
+      approvalSuccessText = t('tools.mealPlanSaved', 'Meal Plan Saved');
     } else if (toolName) {
       cardTitle = toolName
         .replace(/([A-Z])/g, ' $1')
@@ -195,7 +204,7 @@ export function ToolActionCard({ message, onApprove }: ToolActionCardProps) {
               })
             ) : (
               <Text className="text-bodySmall mt-spacing-12 font-cairo text-text-secondary">
-                No items details provided.
+                {t('tools.noItems', 'No items details provided.')}
               </Text>
             )}
           </View>
@@ -208,7 +217,9 @@ export function ToolActionCard({ message, onApprove }: ToolActionCardProps) {
             </Text>
             {!!mealPlan.startDate && (
               <View className="mt-spacing-4 flex-row items-center justify-between py-spacing-4">
-                <Text className="text-caption font-cairo text-text-secondary">Start Date</Text>
+                <Text className="text-caption font-cairo text-text-secondary">
+                  {t('tools.startDate', 'Start Date')}
+                </Text>
                 <Text className="text-bodySmall font-cairo font-medium text-text-primary">
                   {mealPlan.startDate}
                 </Text>
@@ -216,7 +227,9 @@ export function ToolActionCard({ message, onApprove }: ToolActionCardProps) {
             )}
             {!!mealPlan.endDate && (
               <View className="flex-row items-center justify-between py-spacing-4">
-                <Text className="text-caption font-cairo text-text-secondary">End Date</Text>
+                <Text className="text-caption font-cairo text-text-secondary">
+                  {t('tools.endDate', 'End Date')}
+                </Text>
                 <Text className="text-bodySmall font-cairo font-medium text-text-primary">
                   {mealPlan.endDate}
                 </Text>
@@ -224,7 +237,9 @@ export function ToolActionCard({ message, onApprove }: ToolActionCardProps) {
             )}
             {!!mealPlan.mealsCount && (
               <View className="flex-row items-center justify-between py-spacing-4">
-                <Text className="text-caption font-cairo text-text-secondary">Total Meals</Text>
+                <Text className="text-caption font-cairo text-text-secondary">
+                  {t('tools.totalMeals', 'Total Meals')}
+                </Text>
                 <Text className="text-bodySmall font-cairo font-medium text-text-primary">
                   {mealPlan.mealsCount}
                 </Text>
@@ -250,7 +265,7 @@ export function ToolActionCard({ message, onApprove }: ToolActionCardProps) {
               <Text className="text-bodySmall mt-spacing-12 font-cairo text-text-secondary">
                 {typeof message.args === 'string'
                   ? message.args
-                  : 'Confirmation details pending approval.'}
+                  : t('tools.pendingDetails', 'Confirmation details pending approval.')}
               </Text>
             )}
           </View>
@@ -265,7 +280,7 @@ export function ToolActionCard({ message, onApprove }: ToolActionCardProps) {
               accessibilityLabel="Cancel request"
               className="px-spacing-12 py-spacing-8 active:opacity-75">
               <Text className="text-bodySmall font-cairo font-bold text-text-secondary">
-                Cancel
+                {t('tools.cancelBtn', 'Cancel')}
               </Text>
             </Pressable>
             <Pressable
@@ -292,7 +307,9 @@ export function ToolActionCard({ message, onApprove }: ToolActionCardProps) {
         {isRejected && (
           <View className="mt-spacing-16 flex-row items-center justify-end gap-spacing-8">
             <XCircle size={16} color={theme.colors.brand.error} />
-            <Text className="text-bodySmall font-cairo font-bold text-brand-error">Rejected</Text>
+            <Text className="text-bodySmall font-cairo font-bold text-brand-error">
+              {t('tools.rejected', 'Rejected')}
+            </Text>
           </View>
         )}
       </View>
